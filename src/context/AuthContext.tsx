@@ -3,6 +3,9 @@ import {
   User, 
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut as fbSignOut
 } from 'firebase/auth';
 import { auth } from '../lib/firebase';
@@ -12,6 +15,8 @@ interface AuthContextType {
   isAdmin: boolean;
   loading: boolean;
   loginAdmin: (email: string, pass: string) => Promise<void>;
+  registerAdmin: (email: string, pass: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -30,7 +35,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginAdmin = async (email: string, pass: string) => {
-    const userCred = await signInWithEmailAndPassword(auth, email, pass);
+    const userCred = await signInWithEmailAndPassword(auth, email.trim(), pass);
+    setCurrentUser(userCred.user);
+  };
+
+  const registerAdmin = async (email: string, pass: string) => {
+    const userCred = await createUserWithEmailAndPassword(auth, email.trim(), pass);
+    setCurrentUser(userCred.user);
+  };
+
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const userCred = await signInWithPopup(auth, provider);
     setCurrentUser(userCred.user);
   };
 
@@ -51,6 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAdmin,
       loading,
       loginAdmin,
+      registerAdmin,
+      loginWithGoogle,
       logout
     }}>
       {children}
@@ -65,3 +84,4 @@ export function useAuth() {
   }
   return context;
 }
+
