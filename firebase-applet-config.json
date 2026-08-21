@@ -1,12 +1,9 @@
 {
-  "projectId": "diesel-aloe-f8gvj",
-  "appId": "1:676130498406:web:3ba9304da538937bfc8aa7",
-  "apiKey": "AIzaSyBK44GhAtykxYJ8PXTZvJv0Ky0mrij7Jq4",
-  "authDomain": "diesel-aloe-f8gvj.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-skilldotpy-7e69ac71-ef7f-44ce-8f23-47289dc67a30",
-  "storageBucket": "diesel-aloe-f8gvj.firebasestorage.app",
-  "messagingSenderId": "676130498406",
-  "measurementId": "",
-  "oAuthClientId": "676130498406-km5qti8b5adjput7195hhjohf2jv8jep.apps.googleusercontent.com",
-  "recaptchaSiteKey": ""
+  "apiKey": "AIzaSyAelMlU5ZZ_GJSNvrYBxvvMGWt8VFVxThY",
+  "authDomain": "myskilldotpy.firebaseapp.com",
+  "projectId": "myskilldotpy",
+  "storageBucket": "myskilldotpy.firebasestorage.app",
+  "messagingSenderId": "636284634557",
+  "appId": "1:636284634557:web:a2cf3f01c19f944cd53ed4",
+  "measurementId": "G-3YJW7G20W0"
 }
