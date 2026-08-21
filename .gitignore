@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Production and Build Outputs
+build/
+dist/
+
+# Testing
+coverage/
+
+# OS Logs and Files
+.DS_Store
+*.log
+
+# Secrets (DO NOT COMMIT)
+.env

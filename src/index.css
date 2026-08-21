@@ -1,0 +1,367 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .markdown-body {
+    @apply text-gray-800 leading-relaxed;
+  }
+  .markdown-body h1 {
+    @apply text-3xl font-bold mt-8 mb-4 text-gray-900;
+  }
+  .markdown-body h2 {
+    @apply text-2xl font-bold mt-8 mb-4 text-gray-900;
+  }
+  .markdown-body h3 {
+    @apply text-xl font-bold mt-6 mb-3 text-gray-900;
+  }
+  .markdown-body p {
+    @apply mb-4;
+  }
+  .markdown-body ul {
+    @apply list-disc list-inside mb-4 space-y-2;
+  }
+  .markdown-body ol {
+    @apply list-decimal list-inside mb-4 space-y-2;
+  }
+  .markdown-body a {
+    @apply text-blue-600 hover:underline;
+  }
+  .markdown-body strong {
+    @apply font-bold text-gray-900;
+  }
+  .markdown-body em {
+    @apply italic;
+  }
+}
+
+/* Notes Reader & Blog Typography */
+.notes-body {
+  color: #1e293b;
+  font-size: 16px;
+  line-height: 1.8;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* Font Size Modifiers for Reader */
+.notes-body.font-size-sm {
+  font-size: 14px;
+  line-height: 1.75;
+}
+.notes-body.font-size-sm h1 { font-size: 1.55rem; }
+.notes-body.font-size-sm h2 { font-size: 1.25rem; }
+.notes-body.font-size-sm h3 { font-size: 1.1rem; }
+
+.notes-body.font-size-md {
+  font-size: 16px;
+  line-height: 1.85;
+}
+.notes-body.font-size-md h1 { font-size: 1.85rem; }
+.notes-body.font-size-md h2 { font-size: 1.45rem; }
+.notes-body.font-size-md h3 { font-size: 1.25rem; }
+
+.notes-body.font-size-lg {
+  font-size: 18px;
+  line-height: 1.9;
+}
+.notes-body.font-size-lg h1 { font-size: 2.1rem; }
+.notes-body.font-size-lg h2 { font-size: 1.65rem; }
+.notes-body.font-size-lg h3 { font-size: 1.4rem; }
+
+.notes-body.font-size-xl {
+  font-size: 20px;
+  line-height: 1.95;
+}
+.notes-body.font-size-xl h1 { font-size: 2.35rem; }
+.notes-body.font-size-xl h2 { font-size: 1.85rem; }
+.notes-body.font-size-xl h3 { font-size: 1.55rem; }
+
+.notes-body h1 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-top: 2rem;
+  margin-bottom: 0.85rem;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+}
+
+.notes-body h2 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-top: 2.25rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #f1f5f9;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  overflow-wrap: break-word;
+}
+
+.notes-body h3 {
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 1.75rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+.notes-body h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  overflow-wrap: break-word;
+}
+
+.notes-body p {
+  margin-bottom: 1.25rem;
+  overflow-wrap: break-word;
+  line-height: 1.8;
+  color: #334155;
+}
+
+.notes-body strong {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.notes-body ul {
+  list-style-type: disc;
+  margin-left: 1.6rem;
+  margin-bottom: 1.25rem;
+  overflow-wrap: break-word;
+  space-y: 0.4rem;
+}
+
+.notes-body ol {
+  list-style-type: decimal;
+  margin-left: 1.6rem;
+  margin-bottom: 1.25rem;
+  overflow-wrap: break-word;
+  space-y: 0.4rem;
+}
+
+.notes-body li {
+  margin-bottom: 0.45rem;
+  overflow-wrap: break-word;
+  color: #334155;
+  line-height: 1.7;
+}
+
+.notes-body hr {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 2rem 0;
+}
+
+.notes-body pre {
+  background-color: #0f172a;
+  color: #38bdf8;
+  padding: 1.25rem 1.4rem;
+  border-radius: 0.875rem;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  margin: 1.5rem 0;
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.notes-body code:not(pre code) {
+  background-color: #f1f5f9;
+  color: #0369a1;
+  padding: 0.18rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.88em;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  border: 1px solid #e2e8f0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.notes-body blockquote {
+  border-left: 4px solid #3b82f6;
+  padding: 0.85rem 1.25rem;
+  background-color: #f8fafc;
+  border-radius: 0 0.75rem 0.75rem 0;
+  font-style: italic;
+  color: #475569;
+  margin: 1.5rem 0;
+  overflow-wrap: break-word;
+}
+
+/* Callout Note Boxes (Modernized with text wrapping and premium borders) */
+.note-box {
+  padding: 1.1rem 1.35rem;
+  border-radius: 0.875rem;
+  margin: 1.35rem 0;
+  border: 1px solid #e2e8f0;
+  border-left-width: 4px;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+}
+
+.note-box h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  letter-spacing: -0.01em;
+}
+
+.note-box p,
+.note-box ul,
+.note-box ol {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.note-box p:last-child,
+.note-box ul:last-child,
+.note-box ol:last-child {
+  margin-bottom: 0;
+}
+
+.note-info {
+  background: linear-gradient(180deg, #f0f7ff 0%, #e6f0fd 100%);
+  border-color: #bfdbfe;
+  border-left-color: #2563eb;
+  color: #1e3a8a;
+}
+
+.note-info h4 {
+  color: #1d4ed8;
+}
+
+.note-tip {
+  background: linear-gradient(180deg, #f0fdf4 0%, #e7f8ee 100%);
+  border-color: #bbf7d0;
+  border-left-color: #16a34a;
+  color: #065f46;
+}
+
+.note-tip h4 {
+  color: #15803d;
+}
+
+.note-warning {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fde68a;
+  border-left-color: #d97706;
+  color: #92400e;
+}
+
+.note-warning h4 {
+  color: #b45309;
+}
+
+.note-exam {
+  background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%);
+  border-color: #e9d5ff;
+  border-left-color: #9333ea;
+  color: #581c87;
+}
+
+.note-exam h4 {
+  color: #7e22ce;
+}
+
+.note-key {
+  background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%);
+  border-color: #fecdd3;
+  border-left-color: #e11d48;
+  color: #881337;
+}
+
+.note-key h4 {
+  color: #be123c;
+}
+
+/* Custom Table inside Notes */
+.notes-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.35rem 0;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.notes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 480px;
+}
+
+.notes-table th {
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #cbd5e1;
+  border-right: 1px solid #e2e8f0;
+}
+
+.notes-table th:last-child {
+  border-right: none;
+}
+
+.notes-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #f1f5f9;
+  color: #334155;
+  overflow-wrap: break-word;
+}
+
+.notes-table td:last-child {
+  border-right: none;
+}
+
+.notes-table tr:last-child td {
+  border-bottom: none;
+}
+
+.notes-table tr:nth-child(even) {
+  background-color: #f8fafc/60;
+}
+
+/* Print Friendly Stylesheet */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  header, footer, .no-print, .sticky, button, .bottom-bar {
+    display: none !important;
+  }
+  .print-only-header {
+    display: block !important;
+  }
+  .notes-main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+

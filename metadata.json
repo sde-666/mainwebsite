@@ -1,0 +1,6 @@
+{
+  "name": "Skilldotpy",
+  "description": "Skilldotpy - India's dedicated NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5) & CCC learning platform. Free notes, syllabus, Python, Web Design, LibreOffice, MS Office tutorials and Android app.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

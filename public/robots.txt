@@ -1,0 +1,23 @@
+# Skilldotpy - Robots.txt for Google & Major Search Engines
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/*
+
+# Googlebot specific directives
+User-agent: Googlebot
+Allow: /
+Allow: /o-level
+Allow: /ccc
+Allow: /mock-test
+Allow: /practical-practice
+Allow: /resources
+Allow: /courses
+Allow: /app
+Allow: /tutorials
+Allow: /youtube
+
+# Sitemaps
+Sitemap: https://skilldotpy.com/sitemap.xml
+Host: https://skilldotpy.com
