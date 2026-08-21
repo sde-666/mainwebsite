@@ -81,10 +81,11 @@ export function AdminLogin() {
       navigate('/admin');
     } catch (err: any) {
       console.error('Google Sign In Error:', err);
+      const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
       if (err.code === 'auth/popup-closed-by-user') {
         setError('Sign in cancelled: Google popup was closed before completing.');
       } else if (err.code === 'auth/unauthorized-domain') {
-        setError('This domain is not authorized. Go to Firebase Console > Authentication > Settings > Authorized domains and add your current website URL.');
+        setError(`Domain not authorized by Firebase: "${currentHost}". In Firebase Console > Authentication > Settings > Authorized domains, click "Add domain" and add exactly: ${currentHost}`);
       } else {
         setError(err.message || 'Google sign-in failed. Please try again or use Email/Password.');
       }
