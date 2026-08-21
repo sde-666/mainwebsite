@@ -2,6 +2,19 @@
   publish = "dist"
   command = "npm run build"
 
+# Allow direct static file downloads (.apk, .pdf, .mp4, images) without SPA rewrite
+[[redirects]]
+  from = "/*.apk"
+  to = "/:splat.apk"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/downloads/*"
+  to = "/downloads/:splat"
+  status = 200
+
+# SPA catch-all fallback for React Router
 [[redirects]]
   from = "/*"
   to = "/index.html"
