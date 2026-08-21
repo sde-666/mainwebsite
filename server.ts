@@ -1,14 +1,12 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -528,24 +526,49 @@ Return a structured JSON with:
 });
 
 async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa'
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  }
+  try {
+    if (process.env.NODE_ENV !== 'production') {
+      const { createServer: createViteServer } = await import('vite');
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: 'spa'
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.join(process.cwd(), 'dist');
+      const indexPath = path.join(distPath, 'index.html');
+      
+      if (fs.existsSync(distPath)) {
+        app.use(express.static(distPath));
+      }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Skilldotpy server running on http://0.0.0.0:${PORT}`);
-  });
+      app.get('*', (req, res) => {
+        if (fs.existsSync(indexPath)) {
+          res.sendFile(indexPath);
+        } else {
+          res.json({
+            status: 'ok',
+            service: 'Skilldotpy API Backend',
+            message: 'Render backend server is active and healthy.',
+            timestamp: Date.now(),
+            endpoints: [
+              '/api/health',
+              '/api/ai-doubt-solver',
+              '/api/evaluate-practical',
+              '/api/ai-code-helper'
+            ]
+          });
+        }
+      });
+    }
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Skilldotpy server running on http://0.0.0.0:${PORT}`);
+    });
+  } catch (err) {
+    console.error('Fatal Server Startup Error:', err);
+    process.exit(1);
+  }
 }
 
 startServer();
