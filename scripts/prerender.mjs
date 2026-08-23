@@ -84,11 +84,13 @@ async function safeMain() {
   for (const route of routes) {
     try {
       setupJsdomGlobals(JSDOM, 'http://localhost' + route);
-      const bodyHtml = renderRouteToHtml();
-      const outHtml = indexTemplate.replace(
+      const rawHtml = renderRouteToHtml();
+      const { headHtml, bodyHtml } = splitHeadAndBody(rawHtml);
+      let outHtml = indexTemplate.replace(
         '<div id="root"></div>',
         `<div id="root">${bodyHtml}</div>`
       );
+      outHtml = applyPageHeadTags(outHtml, headHtml);
       const outFile = route === '/'
         ? path.join(DIST, 'index.html')
         : path.join(DIST, route.replace(/^\//, ''), 'index.html');
@@ -108,6 +110,89 @@ async function safeMain() {
   } catch {
     // non-fatal cleanup failure, ignore
   }
+}
+
+// The app renders page-specific <title>/<meta>/<link> tags (via its own
+// Helmet-based SEO component) as literal elements at the START of the React
+// tree, right before the real Layout wrapper div. renderToStaticMarkup has
+// no way to "teleport" these into <head> like a browser does, so they land
+// inline inside <div id="root">, which is invalid there and ignored by
+// crawlers. This splits that leading chunk off, and applyPageHeadTags()
+// below copies the page-specific values into the REAL <head> of the output
+// file, so each route gets its own correct <title>/description/OG tags
+// instead of the generic homepage ones.
+const LAYOUT_MARKER = '<div class="flex min-h-screen';
+
+function splitHeadAndBody(rawHtml) {
+  const idx = rawHtml.indexOf(LAYOUT_MARKER);
+  if (idx <= 0) {
+    return { headHtml: '', bodyHtml: rawHtml };
+  }
+  return { headHtml: rawHtml.slice(0, idx), bodyHtml: rawHtml.slice(idx) };
+}
+
+function applyPageHeadTags(outHtml, headHtml) {
+  if (!headHtml) return outHtml;
+
+  const rules = [
+    {
+      extract: /<title>([\s\S]*?)<\/title>/,
+      applyTo: /<title>[\s\S]*?<\/title>/,
+      wrap: (v) => `<title>${v}</title>`,
+    },
+    {
+      extract: /<meta name="description" content="([^"]*)"\s*\/?>/,
+      applyTo: /<meta name="description" content="[^"]*"\s*\/?>/,
+      wrap: (v) => `<meta name="description" content="${v}" />`,
+    },
+    {
+      extract: /<meta name="keywords" content="([^"]*)"\s*\/?>/,
+      applyTo: /<meta name="keywords" content="[^"]*"\s*\/?>/,
+      wrap: (v) => `<meta name="keywords" content="${v}" />`,
+    },
+    {
+      extract: /<meta property="og:title" content="([^"]*)"\s*\/?>/,
+      applyTo: /<meta property="og:title" content="[^"]*"\s*\/?>/,
+      wrap: (v) => `<meta property="og:title" content="${v}" />`,
+    },
+    {
+      extract: /<link rel="canonical" href="([^"]*)"\s*\/?>/,
+      applyTo: /<link rel="canonical" href="[^"]*"\s*\/?>/,
+      wrap: (v) => `<link rel="canonical" href="${v}" />`,
+    },
+    {
+      extract: /<meta property="og:url" content="([^"]*)"\s*\/?>/,
+      applyTo: /<meta property="og:url" content="[^"]*"\s*\/?>/,
+      wrap: (v) => `<meta property="og:url" content="${v}" />`,
+    },
+    {
+      extract: /<meta property="og:description" content="([^"]*)"\s*\/?>/,
+      applyTo: /<meta property="og:description" content="[^"]*"\s*\/?>/,
+      wrap: (v) => `<meta property="og:description" content="${v}" />`,
+    },
+    {
+      extract: /<meta name="twitter:title" content="([^"]*)"\s*\/?>/,
+      applyTo: /<meta name="twitter:title" content="[^"]*"\s*\/?>/,
+      wrap: (v) => `<meta name="twitter:title" content="${v}" />`,
+    },
+    {
+      extract: /<meta name="twitter:description" content="([^"]*)"\s*\/?>/,
+      applyTo: /<meta name="twitter:description" content="[^"]*"\s*\/?>/,
+      wrap: (v) => `<meta name="twitter:description" content="${v}" />`,
+    },
+    // NOTE: canonical / og:url are now correctly page-specific too, since
+    // SEO.tsx auto-derives them from the current route (see the fix to
+    // src/components/SEO.tsx).
+  ];
+
+  let result = outHtml;
+  for (const rule of rules) {
+    const match = headHtml.match(rule.extract);
+    if (match && match[1] != null) {
+      result = result.replace(rule.applyTo, rule.wrap(match[1]));
+    }
+  }
+  return result;
 }
 
 function setupJsdomGlobals(JSDOM, url) {
