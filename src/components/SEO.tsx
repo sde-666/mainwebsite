@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { siteConfig } from '../data/config';
 
 interface BreadcrumbItem {
@@ -28,12 +29,17 @@ export function SEO({
   breadcrumbs,
 }: SEOProps) {
   // Page Title Construction (Brand included in every page for brand ranking dominance)
+  const location = useLocation();
   const pageTitle = title
     ? `${title} | ${siteConfig.name} - NIELIT O Level & CCC Preparation`
     : `${siteConfig.name} - NIELIT O Level (M1, M2, M3, M4) & CCC Free Notes, Courses & App`;
 
   const pageDesc = description || siteConfig.description;
-  const pageUrl = url || siteConfig.url;
+  // Auto-detect canonical URL from the current route so every page gets its
+  // own correct canonical/og:url, without every page having to remember to
+  // pass a `url` prop. An explicit `url` prop (if given) still wins.
+  const autoUrl = `${siteConfig.url}${location.pathname === '/' ? '' : location.pathname}`;
+  const pageUrl = url || autoUrl;
   const pageKeywords = keywords ? [...keywords, ...siteConfig.keywords.slice(0, 10)].join(', ') : siteConfig.keywords.join(', ');
 
   // Base Structured Data Schemas
