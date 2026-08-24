@@ -141,43 +141,23 @@ function splitHeadAndBody(rawHtml) {
 function applyPageHeadTags(outHtml, headHtml) {
   if (!headHtml) return outHtml;
 
-  // IMPORTANT: react-helmet-async marks every tag it manages with a
-  // data-rh="true" attribute, and on the client it looks specifically for
-  // <title data-rh>, <meta data-rh>, <link data-rh> when it hydrates — so
-  // it knows which existing tags are "its own" and can update/reuse them.
-  // Without this attribute, Helmet doesn't recognise our pre-rendered tags
-  // as its own and INSERTS a second copy of each one instead of reusing
-  // it — that's exactly the "More than one title tag" / "More than one
-  // canonical tag" errors Bing/Google flag.
-  //
-  // Fix, done generically (covers every tag SEO.tsx renders today AND any
-  // it renders in future, without needing a hand-maintained list here):
-  //   1. Tag every element in the rendered head chunk with data-rh="true".
-  //   2. Remove the matching tags (same name="…" / property="…" / rel="…")
-  //      from the static <head> in dist/index.html, so there's exactly
-  //      one copy of each.
-  //   3. Insert the freshly-rendered, data-rh-tagged chunk into <head>.
-  // Once Helmet hydrates on the client, it finds these exact elements via
-  // that attribute and takes over cleanly — no duplicates.
-
+  // Ensure every Helmet-managed tag has data-rh="true" for client hydration
   const taggedHead = headHtml
-    .replace(/<title>/, '<title data-rh="true">')
-    .replace(/<meta\s/g, '<meta data-rh="true" ')
-    .replace(/<link\s/g, '<link data-rh="true" ');
+    .replace(/<title(?![^>]*data-rh)[^>]*>/g, '<title data-rh="true">')
+    .replace(/<meta(?![^>]*data-rh)\s/g, '<meta data-rh="true" ')
+    .replace(/<link(?![^>]*data-rh)\s/g, '<link data-rh="true" ');
 
   const headEndIdx = outHtml.indexOf('</head>');
   if (headEndIdx === -1) return outHtml;
   let head = outHtml.slice(0, headEndIdx);
   const rest = outHtml.slice(headEndIdx);
 
-  // The static template always has a <title>; the fresh one replaces it.
-  if (/<title[ >]/.test(taggedHead)) {
-    head = head.replace(/<title>[\s\S]*?<\/title>/, '');
+  // Strip ANY existing <title> from the template head to avoid duplicate titles
+  if (/<title/i.test(taggedHead)) {
+    head = head.replace(/<title[^>]*>[\s\S]*?<\/title>/gi, '');
   }
 
-  // Remove any static <meta>/<link> tag whose identifying attribute
-  // (name="…" / property="…" / rel="…") matches one present in the
-  // freshly-rendered head chunk, so we end up with exactly one copy.
+  // Remove any static <meta>/<link> tag whose key (name/property/rel) matches
   const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const collectKeys = (attr) => {
     const re = new RegExp(`<(?:meta|link)[^>]*\\s${attr}="([^"]+)"`, 'g');
@@ -190,7 +170,7 @@ function applyPageHeadTags(outHtml, headHtml) {
   for (const attr of ['name', 'property', 'rel']) {
     for (const key of collectKeys(attr)) {
       const staticTagRe = new RegExp(
-        `<(?:meta|link)(?![^>]*data-rh)[^>]*\\s${attr}="${escapeRegex(key)}"[^>]*/?>`,
+        `<(?:meta|link)[^>]*\\s${attr}="${escapeRegex(key)}"[^>]*/?>`,
         'gi'
       );
       head = head.replace(staticTagRe, '');
