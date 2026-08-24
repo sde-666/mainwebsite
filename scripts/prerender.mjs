@@ -87,15 +87,22 @@ async function safeMain() {
       const rawHtml = renderRouteToHtml();
       const { headHtml, bodyHtml } = splitHeadAndBody(rawHtml);
       let outHtml = indexTemplate.replace(
-        '<div id="root"></div>',
+        /<div id="root">[\s\S]*?<\/div>/,
         `<div id="root">${bodyHtml}</div>`
       );
       outHtml = applyPageHeadTags(outHtml, headHtml);
-      const outFile = route === '/'
-        ? path.join(DIST, 'index.html')
-        : path.join(DIST, route.replace(/^\//, ''), 'index.html');
-      fs.mkdirSync(path.dirname(outFile), { recursive: true });
-      fs.writeFileSync(outFile, outHtml, 'utf-8');
+      if (route === '/') {
+        const outFile = path.join(DIST, 'index.html');
+        fs.writeFileSync(outFile, outHtml, 'utf-8');
+      } else {
+        const cleanPath = route.replace(/^\//, '');
+        const outDirFile = path.join(DIST, cleanPath, 'index.html');
+        const outFlatFile = path.join(DIST, `${cleanPath}.html`);
+        fs.mkdirSync(path.dirname(outDirFile), { recursive: true });
+        fs.writeFileSync(outDirFile, outHtml, 'utf-8');
+        fs.mkdirSync(path.dirname(outFlatFile), { recursive: true });
+        fs.writeFileSync(outFlatFile, outHtml, 'utf-8');
+      }
       okCount++;
     } catch (err) {
       failCount++;
