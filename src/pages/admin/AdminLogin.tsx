@@ -51,7 +51,7 @@ export function AdminLogin() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      <SEO title="Admin Portal Login - Skilldotpy" description="Secure educator login for managing syllabus notes and test series." />
+      <SEO title="Admin Portal Login - Skilldotpy" description="Secure educator login for managing syllabus notes and test series." noIndex />
 
       {/* Background decorative glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>

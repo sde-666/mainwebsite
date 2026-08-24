@@ -661,7 +661,7 @@ export function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 pb-20">
-      <SEO title="Skilldotpy Admin Control Panel" description="Manage NIELIT courses, PDF notes, and MCQ quizzes." />
+      <SEO title="Skilldotpy Admin Control Panel" description="Manage NIELIT courses, PDF notes, and MCQ quizzes." noIndex />
 
       {/* Top Navbar */}
       <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">

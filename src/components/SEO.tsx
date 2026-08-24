@@ -16,6 +16,7 @@ interface SEOProps {
   type?: string;
   image?: string;
   breadcrumbs?: BreadcrumbItem[];
+  noIndex?: boolean;
 }
 
 function formatTitle(title?: string): string {
@@ -52,6 +53,7 @@ export function SEO({
   type = 'website',
   image = siteConfig.ogImage,
   breadcrumbs,
+  noIndex = false,
 }: SEOProps) {
   // Page Title Construction (Strictly 30-60 characters for Bing & Google guidelines)
   const location = useLocation();
@@ -165,9 +167,9 @@ export function SEO({
       <meta name="description" content={pageDesc} />
       <meta name="keywords" content={pageKeywords} />
       <meta name="author" content={`${siteConfig.teacher.name} - Skilldotpy`} />
-      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-      <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-      <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+      <meta name="robots" content={noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+      <meta name="googlebot" content={noIndex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'} />
+      <meta name="bingbot" content={noIndex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'} />
 
       {/* Brand Search Ranking Meta */}
       <meta name="application-name" content="Skilldotpy" />
