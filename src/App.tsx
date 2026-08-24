@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, MemoryRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Layout } from './components/Layout';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -32,12 +33,24 @@ import { PrivacyPolicy, Terms, Disclaimer, RefundPolicy } from './pages/Legal';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminLogin } from './pages/admin/AdminLogin';
 
-export default function App() {
+export interface AppProps {
+  initialUrl?: string;
+  helmetContext?: Record<string, unknown>;
+}
+
+export default function App({ initialUrl, helmetContext }: AppProps = {}) {
+  const RouterWrapper = ({ children }: { children: React.ReactNode }) => {
+    if (initialUrl) {
+      return <MemoryRouter initialEntries={[initialUrl]}>{children}</MemoryRouter>;
+    }
+    return <BrowserRouter>{children}</BrowserRouter>;
+  };
+
   return (
-    <HelmetProvider>
+    <HelmetProvider context={helmetContext}>
       <AuthProvider>
         <AiAssistantProvider>
-          <BrowserRouter>
+          <RouterWrapper>
             <ScrollToTop />
             <Routes>
               {/* Standalone Fullscreen Practical Exam Environment */}
@@ -104,7 +117,7 @@ export default function App() {
                 } />
               </Route>
             </Routes>
-          </BrowserRouter>
+          </RouterWrapper>
         </AiAssistantProvider>
       </AuthProvider>
     </HelmetProvider>

@@ -65,6 +65,12 @@ class NotesService {
    */
   private loadFromStorage() {
     try {
+      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+        this.coursesCache = [...initialNoteCourses];
+        this.chaptersCache = [];
+        this.topicsCache = [];
+        return;
+      }
       const storedCourses = localStorage.getItem(STORAGE_KEYS.COURSES);
       if (storedCourses) {
         this.coursesCache = JSON.parse(storedCourses);
@@ -78,7 +84,6 @@ class NotesService {
       const storedTopics = localStorage.getItem(STORAGE_KEYS.TOPICS);
       this.topicsCache = storedTopics ? JSON.parse(storedTopics) : [];
     } catch (err) {
-      console.warn('Error reading from localStorage cache:', err);
       this.coursesCache = [...initialNoteCourses];
       this.chaptersCache = [];
       this.topicsCache = [];

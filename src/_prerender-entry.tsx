@@ -6,6 +6,8 @@ import ReactDOMServer from 'react-dom/server';
 import React from 'react';
 import App from './App';
 
-export function renderRouteToHtml(): string {
-  return ReactDOMServer.renderToStaticMarkup(React.createElement(App));
+export function renderRouteToHtml(route = '/'): string {
+  return ReactDOMServer.renderToString(React.createElement(App, { initialUrl: route }));
 }
+
+

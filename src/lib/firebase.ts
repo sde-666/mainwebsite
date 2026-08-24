@@ -9,8 +9,9 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 // Initialize Services
 export const auth = getAuth(app);
 // Note: When custom firestoreDatabaseId is provided in config, getFirestore uses it if supported
-export const db = firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'
-  ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
+const configWithDb = firebaseConfig as Record<string, string | undefined>;
+export const db = configWithDb.firestoreDatabaseId && configWithDb.firestoreDatabaseId !== '(default)'
+  ? getFirestore(app, configWithDb.firestoreDatabaseId)
   : getFirestore(app);
 
 export default app;

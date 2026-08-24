@@ -84,13 +84,15 @@ async function safeMain() {
   for (const route of routes) {
     try {
       setupJsdomGlobals(JSDOM, 'http://localhost' + route);
-      const rawHtml = renderRouteToHtml();
+      const rawHtml = renderRouteToHtml(route);
       const { headHtml, bodyHtml } = splitHeadAndBody(rawHtml);
+
       let outHtml = indexTemplate.replace(
         /<div id="root">[\s\S]*?<\/div>/,
         `<div id="root">${bodyHtml}</div>`
       );
       outHtml = applyPageHeadTags(outHtml, headHtml);
+
       if (route === '/') {
         const outFile = path.join(DIST, 'index.html');
         fs.writeFileSync(outFile, outHtml, 'utf-8');
@@ -119,29 +121,19 @@ async function safeMain() {
   }
 }
 
-// The app renders page-specific <title>/<meta>/<link> tags (via its own
-// Helmet-based SEO component) as literal elements at the START of the React
-// tree, right before the real Layout wrapper div. renderToStaticMarkup has
-// no way to "teleport" these into <head> like a browser does, so they land
-// inline inside <div id="root">, which is invalid there and ignored by
-// crawlers. This splits that leading chunk off, and applyPageHeadTags()
-// below copies the page-specific values into the REAL <head> of the output
-// file, so each route gets its own correct <title>/description/OG tags
-// instead of the generic homepage ones.
-const LAYOUT_MARKER = '<div class="flex min-h-screen';
-
 function splitHeadAndBody(rawHtml) {
-  const idx = rawHtml.indexOf(LAYOUT_MARKER);
-  if (idx <= 0) {
+  if (!rawHtml) return { headHtml: '', bodyHtml: '' };
+  const divIdx = rawHtml.indexOf('<div');
+  if (divIdx <= 0) {
     return { headHtml: '', bodyHtml: rawHtml };
   }
-  return { headHtml: rawHtml.slice(0, idx), bodyHtml: rawHtml.slice(idx) };
+  return { headHtml: rawHtml.slice(0, divIdx), bodyHtml: rawHtml.slice(divIdx) };
 }
 
 function applyPageHeadTags(outHtml, headHtml) {
   if (!headHtml) return outHtml;
 
-  // Ensure every Helmet-managed tag has data-rh="true" for client hydration
+  // Ensure every tag has data-rh="true"
   const taggedHead = headHtml
     .replace(/<title(?![^>]*data-rh)[^>]*>/g, '<title data-rh="true">')
     .replace(/<meta(?![^>]*data-rh)\s/g, '<meta data-rh="true" ')
@@ -152,12 +144,12 @@ function applyPageHeadTags(outHtml, headHtml) {
   let head = outHtml.slice(0, headEndIdx);
   const rest = outHtml.slice(headEndIdx);
 
-  // Strip ANY existing <title> from the template head to avoid duplicate titles
+  // If page provides title, remove existing title from template
   if (/<title/i.test(taggedHead)) {
     head = head.replace(/<title[^>]*>[\s\S]*?<\/title>/gi, '');
   }
 
-  // Remove any static <meta>/<link> tag whose key (name/property/rel) matches
+  // Remove any static meta/link tag whose key matches page tags
   const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const collectKeys = (attr) => {
     const re = new RegExp(`<(?:meta|link)[^>]*\\s${attr}="([^"]+)"`, 'g');
@@ -178,7 +170,7 @@ function applyPageHeadTags(outHtml, headHtml) {
   }
 
   head = head.replace(/\n[ \t]*\n/g, '\n');
-  return `${head}${taggedHead}${rest}`;
+  return `${head}\n${taggedHead}\n${rest}`;
 }
 
 function setupJsdomGlobals(JSDOM, url) {
