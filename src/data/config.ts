@@ -71,6 +71,7 @@ export const siteConfig = {
     'LibreOffice Writer Calc Impress practicals',
     'Skilldotpy app download apk latest version'
   ],
+  supportEmail: 'skilldotpy@gmail.com',
   links: {
     youtube: 'https://youtube.com/@skilldotpy',
     youtubeChannelId: 'UC_skilldotpy_official',
@@ -79,20 +80,26 @@ export const siteConfig = {
     email: 'skilldotpy@gmail.com',
     whatsapp: 'https://wa.me/919999999999?text=Hello%20Skilldotpy%2C%20I%20have%20a%20query%20about%20NIELIT%20O%20Level%20and%20CCC%20courses',
   },
+  social: {
+    youtube: 'https://youtube.com/@skilldotpy',
+    youtubeChannelId: 'UC_skilldotpy_official',
+    telegram: 'https://t.me/skilldotpy',
+    instagram: 'https://instagram.com/skilldotpy',
+    whatsapp: 'https://wa.me/9335521389?text=Hello%20Sir%2C%20I%20have%20a%20query%20about%20NIELIT%20O%20Level%20and%20CCC%20courses',
+  },
   app: {
     name: 'Skilldotpy Android App',
     apkUrl: '/skilldotpy-latest.apk',
     fallbackApkUrl: 'https://skilldotpy.com/skilldotpy-latest.apk',
-    googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.skilldotpy.app',
     version: '2.4.0 (Latest 2026 Edition)',
     releaseDate: 'August 2026',
     size: '18 MB',
     apkFileName: 'skilldotpy-latest.apk',
     installVideoUrl: '/videos/how-to-install-skilldotpy-apk.mp4',
     installVideoFallbackUrl: 'https://skilldotpy.com/videos/how-to-install-skilldotpy-apk.mp4',
-    requirements: 'Android 5.0 and above',
+    requirements: 'Android 7.0 and above',
     rating: '4.9 ★',
-    downloads: '10,000+ Active Students',
+    downloads: '100+ Active Students',
     highlights: [
       'Chapter-wise Full HD Video Lectures in Hindi & English',
       'Downloadable Printable PDF Notes & Handwritten Summaries',

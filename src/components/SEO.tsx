@@ -57,7 +57,9 @@ export function SEO({
   const location = useLocation();
   const pageTitle = formatTitle(title);
   const pageDesc = formatDescription(description);
-
+  // Auto-detect canonical URL from the current route so every page gets its
+  // own correct canonical/og:url, without every page having to remember to
+  // pass a `url` prop. An explicit `url` prop (if given) still wins.
   const autoUrl = `${siteConfig.url}${location.pathname === '/' ? '' : location.pathname}`;
   const pageUrl = url || autoUrl;
   const pageKeywords = keywords ? [...keywords, ...siteConfig.keywords.slice(0, 10)].join(', ') : siteConfig.keywords.join(', ');
@@ -86,54 +88,65 @@ export function SEO({
         jobTitle: siteConfig.teacher.role
       },
       sameAs: [
-        siteConfig.social.youtube,
-        siteConfig.social.telegram,
-        siteConfig.social.whatsapp
-      ]
+        siteConfig.links?.youtube || siteConfig.social?.youtube || 'https://youtube.com/@skilldotpy',
+        siteConfig.links?.telegram || siteConfig.social?.telegram || 'https://t.me/skilldotpy',
+        siteConfig.links?.instagram || siteConfig.social?.instagram || 'https://instagram.com/skilldotpy'
+      ].filter(Boolean)
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${siteConfig.url}/resources?q={search_term_string}`
+      },
+      'query-input': 'required name=search_term_string'
     }
   };
 
-  const organizationSchema = {
+  const orgSchema = {
     '@context': 'https://schema.org',
     '@type': 'EducationalOrganization',
     '@id': `${siteConfig.url}/#organization`,
-    name: siteConfig.name,
+    name: 'Skilldotpy - NIELIT & Computer Education Hub',
     alternateName: siteConfig.brandAlternates,
     url: siteConfig.url,
     logo: `${siteConfig.url}/skilldotpy-logo.svg`,
     description: siteConfig.description,
-    email: siteConfig.supportEmail,
     founder: {
       '@type': 'Person',
       name: siteConfig.teacher.name,
-      jobTitle: siteConfig.teacher.role
-    }
+      jobTitle: siteConfig.teacher.role,
+      description: siteConfig.teacher.bio
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: siteConfig.links?.email || siteConfig.supportEmail || 'skilldotpy@gmail.com',
+      contactType: 'customer support',
+      availableLanguage: ['Hindi', 'English']
+    },
+    sameAs: [
+      siteConfig.links?.youtube || siteConfig.social?.youtube || 'https://youtube.com/@skilldotpy',
+      siteConfig.links?.telegram || siteConfig.social?.telegram || 'https://t.me/skilldotpy',
+      siteConfig.links?.instagram || siteConfig.social?.instagram || 'https://instagram.com/skilldotpy'
+    ].filter(Boolean)
   };
 
-  const jsonLdGraph: Record<string, unknown>[] = [
-    websiteSchema,
-    organizationSchema
-  ];
+  // Breadcrumb schema if items provided
+  const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((b, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      name: b.name,
+      item: b.url.startsWith('http') ? b.url : `${siteConfig.url}${b.url.startsWith('/') ? b.url : `/${b.url}`}`
+    }))
+  } : null;
 
-  if (breadcrumbs && breadcrumbs.length > 0) {
-    const breadcrumbSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Home',
-          item: siteConfig.url
-        },
-        ...breadcrumbs.map((item, idx) => ({
-          '@type': 'ListItem',
-          position: idx + 2,
-          name: item.name,
-          item: item.url.startsWith('http') ? item.url : `${siteConfig.url}${item.url}`
-        }))
-      ]
-    };
+  // Build JSON-LD graph
+  const jsonLdGraph: Record<string, unknown>[] = [websiteSchema, orgSchema];
+
+  if (breadcrumbSchema) {
     jsonLdGraph.push(breadcrumbSchema);
   }
 
