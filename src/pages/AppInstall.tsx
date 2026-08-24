@@ -38,8 +38,8 @@ export function AppInstall() {
   return (
     <>
       <SEO 
-        title="How to Install the APK - Step by Step Guide" 
-        description="Learn how to install the official Skilldotpy Android APK safely on your phone with our quick video guide and step-by-step instructions." 
+        title="APK Installation Guide" 
+        description="Step-by-step tutorial on how to safely install and set up the official Skilldotpy Android App APK on your mobile phone for NIELIT exams." 
       />
       
       {/* Hero Header */}

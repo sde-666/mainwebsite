@@ -10,8 +10,8 @@ export function Tutorials() {
   return (
     <>
       <SEO 
-        title="Tutorials & Step-by-Step Guides" 
-        description="Step-by-step guides on how to study for NIELIT O Level & CCC, install the Skilldotpy Android app APK, and download study notes."
+        title="Tutorials & Guides" 
+        description="Step-by-step guides on preparing for NIELIT O Level & CCC exams, installing the Skilldotpy Android app, and accessing free PDF study notes."
         keywords={[
           'Skilldotpy tutorials',
           'How to install Skilldotpy APK',

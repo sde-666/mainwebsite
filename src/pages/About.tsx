@@ -26,8 +26,8 @@ export function About() {
   return (
     <>
       <SEO 
-        title="About Us - Mr. Aditya Pathak, Founder" 
-        description="Learn about Skilldotpy, our mission, and our founder Er. Aditya Pathak. Empowering over 50,000+ students across India for NIELIT O Level (R5.1) & CCC exams."
+        title="About Us - Founder Aditya Pathak" 
+        description="Learn about Skilldotpy, our mission, and founder Er. Aditya Pathak. Empowering over 50,000+ students across India for NIELIT O Level & CCC exams."
         keywords={[
           'About Skilldotpy',
           'Skilldotpy founder',

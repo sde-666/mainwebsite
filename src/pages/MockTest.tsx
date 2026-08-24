@@ -158,8 +158,8 @@ export function MockTest() {
   return (
     <div className="bg-slate-50 min-h-screen py-10">
       <SEO
-        title="O Level & CCC Free Online Mock Test 2026"
-        description="Practice official NIELIT CBT pattern online mock tests for O Level (M1-R5, M2-R5, M3-R5 Python, M4-R5 IoT) & CCC. Instant score, timer, negative marking & full answers by Skilldotpy."
+        title="O Level & CCC Online Mock Test 2026"
+        description="Practice NIELIT CBT pattern online mock tests for O Level (M1, M2, M3, M4) & CCC. Instant score, timer, detailed solutions & answers by Skilldotpy."
         keywords={[
           'Skilldotpy mock test',
           'NIELIT O Level online mock test free',

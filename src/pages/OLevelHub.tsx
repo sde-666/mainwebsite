@@ -117,8 +117,8 @@ export function OLevelHub() {
   return (
     <div className="bg-slate-50 min-h-screen">
       <SEO 
-        title={`${currentModule.code} ${currentModule.shortName} - Syllabus & Notes`}
-        description={`Complete NIELIT O Level ${currentModule.code} (${currentModule.title}) exam preparation: Unit-wise syllabus, marks weightage, chapter notes, PDFs & online practical lab simulator.`}
+        title={`${currentModule.code}: ${currentModule.shortName} Notes`}
+        description={`NIELIT O Level ${currentModule.code} (${currentModule.shortName}) complete study guide: Syllabus, chapter notes, PDF downloads & practical questions.`}
         keywords={[
           `NIELIT O level ${currentModule.code}`,
           `${currentModule.shortName} syllabus pdf`,

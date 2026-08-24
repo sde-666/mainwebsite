@@ -467,8 +467,8 @@ export function NotesReader() {
   return (
     <div className="bg-slate-100/70 min-h-screen text-slate-800">
       <SEO 
-        title={`${activeTopic?.title || 'Chapter Notes'} | ${currentCourse?.title || 'NIELIT O Level'}`}
-        description={activeTopic?.hindiTitle ? `${activeTopic.title} (${activeTopic.hindiTitle}) - Comprehensive free study notes for NIELIT exams.` : 'Comprehensive free chapter notes for NIELIT exams.'}
+        title={`${activeTopic?.title || 'Chapter Notes'} - ${currentCourse?.title || 'O Level'}`}
+        description={activeTopic?.hindiTitle ? `${activeTopic.title} (${activeTopic.hindiTitle}) - Comprehensive free chapter study notes and concepts for NIELIT exams by Skilldotpy.` : 'Comprehensive free chapter study notes, formulas and key concepts for NIELIT exams by Skilldotpy.'}
         keywords={[
           activeTopic?.title || 'NIELIT Notes',
           currentCourse?.title || 'O Level Notes',

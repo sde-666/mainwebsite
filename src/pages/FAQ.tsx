@@ -42,8 +42,8 @@ export function FAQ() {
   return (
     <>
       <SEO 
-        title="NIELIT O Level & CCC - FAQs & Answers" 
-        description="Get instant answers to all questions about NIELIT O Level (R5.1), CCC exam pattern, passing marks, practical exam, project synopsis, and Skilldotpy app by Er. Aditya Pathak."
+        title="NIELIT O Level & CCC FAQs" 
+        description="Instant answers for NIELIT O Level (R5.1) & CCC exams: Passing marks, exam pattern, practical guidelines, project submission & Skilldotpy app info."
         keywords={[
           'Skilldotpy FAQ',
           'NIELIT O level FAQ',
