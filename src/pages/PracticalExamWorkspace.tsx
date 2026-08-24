@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { SEO } from '../components/SEO';
 import {
   Clock,
   Maximize2,
@@ -30,6 +30,7 @@ import {
   FileText
 } from 'lucide-react';
 import { getPracticalTestById, evaluatePracticalExam, submitPracticalExam } from '../services/practicalService';
+import { initialPracticalTests } from '../data/practicalTests';
 import { PracticalTestSet, PracticalScorecard } from '../types/practical';
 import { PythonEditor } from '../components/practical/PythonEditor';
 import { WebEditor } from '../components/practical/WebEditor';
@@ -45,8 +46,10 @@ export const PracticalExamWorkspace: React.FC = () => {
   const { testId } = useParams<{ testId: string }>();
   const navigate = useNavigate();
 
-  const [test, setTest] = useState<PracticalTestSet | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [test, setTest] = useState<PracticalTestSet | null>(() => {
+    return initialPracticalTests.find((t) => t.id === testId) || null;
+  });
+  const [loading, setLoading] = useState(() => !initialPracticalTests.some((t) => t.id === testId));
 
   // Exam Workflow State: 'coding' | 'viva' | 'scorecard'
   const [examStep, setExamStep] = useState<'coding' | 'viva' | 'scorecard'>('coding');
@@ -320,9 +323,10 @@ export const PracticalExamWorkspace: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col font-sans">
-      <Helmet>
-        <title>{test.paperCode} Practical Exam | {test.title}</title>
-      </Helmet>
+      <SEO
+        title={`${test.paperCode} Practical Exam - ${test.title}`}
+        description={`Interactive online practical lab for NIELIT O Level ${test.paperCode} (${test.title}). Live code editor and exam simulation.`}
+      />
 
       {/* Top NIELIT Signature Header Bar */}
       <header className="bg-[#e65100] text-white px-4 py-2.5 flex items-center justify-between shadow-md select-none shrink-0">
