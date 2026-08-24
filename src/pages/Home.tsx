@@ -120,7 +120,7 @@ export function Home() {
   return (
     <div className="bg-slate-50 min-h-screen">
       <SEO 
-        title="Skilldotpy - NIELIT O Level & CCC Free Notes, Syllabus, Python & App"
+        title="NIELIT O Level & CCC Free Notes & Syllabus"
         description="India's #1 learning platform for NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5) & CCC exam preparation by Er. Aditya Pathak. Free PDF notes, CBT mock tests, Python tutorials, LibreOffice shortcuts & Android APK."
         keywords={[
           'Skilldotpy',

@@ -51,7 +51,7 @@ export function Courses() {
   return (
     <div className="bg-slate-50 min-h-screen py-12">
       <SEO
-        title="NIELIT O Level, CCC, Python & Web Development Video Courses - Skilldotpy"
+        title="O Level, CCC & Python Video Courses"
         description="Explore structured masterclass video courses for NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5), CCC exams, Python programming, Web Development & LibreOffice by Er. Aditya Pathak on Skilldotpy."
         keywords={[
           'Skilldotpy courses',

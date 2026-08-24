@@ -42,7 +42,7 @@ export function FAQ() {
   return (
     <>
       <SEO 
-        title="NIELIT O Level & CCC FAQ - Questions & Answers | Skilldotpy" 
+        title="NIELIT O Level & CCC - FAQs & Answers" 
         description="Get instant answers to all questions about NIELIT O Level (R5.1), CCC exam pattern, passing marks, practical exam, project synopsis, and Skilldotpy app by Er. Aditya Pathak."
         keywords={[
           'Skilldotpy FAQ',

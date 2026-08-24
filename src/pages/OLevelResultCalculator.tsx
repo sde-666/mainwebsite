@@ -216,7 +216,7 @@ export function OLevelResultCalculator() {
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
       <SEO 
-        title="NIELIT O Level Result & Marks Calculator 2026 | Skilldotpy"
+        title="NIELIT O Level Result & Marks Calculator 2026"
         description="Calculate your NIELIT O Level Theory (60%) & Practical (40%) weighted marks, qualifying criteria (min 33 marks each), overall pass/fail status, and final grade according to R5.1 rules."
         keywords={[
           'O Level result calculator',

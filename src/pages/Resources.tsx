@@ -88,7 +88,7 @@ export function Resources() {
   return (
     <div className="bg-slate-50 min-h-screen py-12">
       <SEO
-        title="NIELIT O Level & CCC Free PDF Notes, Syllabus, Old Papers Download"
+        title="O Level & CCC Free PDF Notes & Old Papers"
         description="Download 100% free official NIELIT O Level (M1-R5, M2-R5, M3-R5 Python, M4-R5 IoT) & CCC study notes PDF, solved papers, Python practical scripts & LibreOffice cheatsheets by Skilldotpy."
         keywords={[
           'Skilldotpy notes',

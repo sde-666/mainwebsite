@@ -104,7 +104,7 @@ export function CCCHub() {
   return (
     <div className="bg-slate-50 min-h-screen">
       <SEO
-        title="NIELIT CCC Syllabus, LibreOffice Shortcut Keys & Free Notes PDF Hub"
+        title="NIELIT CCC Syllabus, Notes & LibreOffice Guide"
         description="Crack NIELIT CCC exam in 15 days with Grade S. Complete 9 chapters syllabus breakdown, 100+ searchable LibreOffice Writer/Calc/Impress shortcuts table, free PDF notes & CBT mock test by Skilldotpy."
         keywords={[
           'Skilldotpy CCC',

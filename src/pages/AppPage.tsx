@@ -45,7 +45,7 @@ export function AppPage() {
   return (
     <div className="bg-slate-50 min-h-screen py-10 sm:py-16">
       <SEO
-        title="Download Skilldotpy Android App APK (Latest 2026) - NIELIT O Level & CCC"
+        title="Download Android App APK - Free Notes & MCQs"
         description="Download the official Skilldotpy Android App APK free for complete NIELIT O Level (M1, M2, M3, M4) & CCC preparation. Offline video lectures, online CBT mock tests, PDF notes & practical solutions by Er. Aditya Pathak."
         keywords={[
           'Skilldotpy app',

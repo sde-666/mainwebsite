@@ -134,65 +134,64 @@ function splitHeadAndBody(rawHtml) {
 function applyPageHeadTags(outHtml, headHtml) {
   if (!headHtml) return outHtml;
 
-  const rules = [
-    {
-      extract: /<title>([\s\S]*?)<\/title>/,
-      applyTo: /<title>[\s\S]*?<\/title>/,
-      wrap: (v) => `<title>${v}</title>`,
-    },
-    {
-      extract: /<meta name="description" content="([^"]*)"\s*\/?>/,
-      applyTo: /<meta name="description" content="[^"]*"\s*\/?>/,
-      wrap: (v) => `<meta name="description" content="${v}" />`,
-    },
-    {
-      extract: /<meta name="keywords" content="([^"]*)"\s*\/?>/,
-      applyTo: /<meta name="keywords" content="[^"]*"\s*\/?>/,
-      wrap: (v) => `<meta name="keywords" content="${v}" />`,
-    },
-    {
-      extract: /<meta property="og:title" content="([^"]*)"\s*\/?>/,
-      applyTo: /<meta property="og:title" content="[^"]*"\s*\/?>/,
-      wrap: (v) => `<meta property="og:title" content="${v}" />`,
-    },
-    {
-      extract: /<link rel="canonical" href="([^"]*)"\s*\/?>/,
-      applyTo: /<link rel="canonical" href="[^"]*"\s*\/?>/,
-      wrap: (v) => `<link rel="canonical" href="${v}" />`,
-    },
-    {
-      extract: /<meta property="og:url" content="([^"]*)"\s*\/?>/,
-      applyTo: /<meta property="og:url" content="[^"]*"\s*\/?>/,
-      wrap: (v) => `<meta property="og:url" content="${v}" />`,
-    },
-    {
-      extract: /<meta property="og:description" content="([^"]*)"\s*\/?>/,
-      applyTo: /<meta property="og:description" content="[^"]*"\s*\/?>/,
-      wrap: (v) => `<meta property="og:description" content="${v}" />`,
-    },
-    {
-      extract: /<meta name="twitter:title" content="([^"]*)"\s*\/?>/,
-      applyTo: /<meta name="twitter:title" content="[^"]*"\s*\/?>/,
-      wrap: (v) => `<meta name="twitter:title" content="${v}" />`,
-    },
-    {
-      extract: /<meta name="twitter:description" content="([^"]*)"\s*\/?>/,
-      applyTo: /<meta name="twitter:description" content="[^"]*"\s*\/?>/,
-      wrap: (v) => `<meta name="twitter:description" content="${v}" />`,
-    },
-    // NOTE: canonical / og:url are now correctly page-specific too, since
-    // SEO.tsx auto-derives them from the current route (see the fix to
-    // src/components/SEO.tsx).
-  ];
+  // IMPORTANT: react-helmet-async marks every tag it manages with a
+  // data-rh="true" attribute, and on the client it looks specifically for
+  // <title data-rh>, <meta data-rh>, <link data-rh> when it hydrates — so
+  // it knows which existing tags are "its own" and can update/reuse them.
+  // Without this attribute, Helmet doesn't recognise our pre-rendered tags
+  // as its own and INSERTS a second copy of each one instead of reusing
+  // it — that's exactly the "More than one title tag" / "More than one
+  // canonical tag" errors Bing/Google flag.
+  //
+  // Fix, done generically (covers every tag SEO.tsx renders today AND any
+  // it renders in future, without needing a hand-maintained list here):
+  //   1. Tag every element in the rendered head chunk with data-rh="true".
+  //   2. Remove the matching tags (same name="…" / property="…" / rel="…")
+  //      from the static <head> in dist/index.html, so there's exactly
+  //      one copy of each.
+  //   3. Insert the freshly-rendered, data-rh-tagged chunk into <head>.
+  // Once Helmet hydrates on the client, it finds these exact elements via
+  // that attribute and takes over cleanly — no duplicates.
 
-  let result = outHtml;
-  for (const rule of rules) {
-    const match = headHtml.match(rule.extract);
-    if (match && match[1] != null) {
-      result = result.replace(rule.applyTo, rule.wrap(match[1]));
+  const taggedHead = headHtml
+    .replace(/<title>/, '<title data-rh="true">')
+    .replace(/<meta\s/g, '<meta data-rh="true" ')
+    .replace(/<link\s/g, '<link data-rh="true" ');
+
+  const headEndIdx = outHtml.indexOf('</head>');
+  if (headEndIdx === -1) return outHtml;
+  let head = outHtml.slice(0, headEndIdx);
+  const rest = outHtml.slice(headEndIdx);
+
+  // The static template always has a <title>; the fresh one replaces it.
+  if (/<title[ >]/.test(taggedHead)) {
+    head = head.replace(/<title>[\s\S]*?<\/title>/, '');
+  }
+
+  // Remove any static <meta>/<link> tag whose identifying attribute
+  // (name="…" / property="…" / rel="…") matches one present in the
+  // freshly-rendered head chunk, so we end up with exactly one copy.
+  const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const collectKeys = (attr) => {
+    const re = new RegExp(`<(?:meta|link)[^>]*\\s${attr}="([^"]+)"`, 'g');
+    const keys = new Set();
+    let m;
+    while ((m = re.exec(taggedHead))) keys.add(m[1]);
+    return keys;
+  };
+
+  for (const attr of ['name', 'property', 'rel']) {
+    for (const key of collectKeys(attr)) {
+      const staticTagRe = new RegExp(
+        `<(?:meta|link)(?![^>]*data-rh)[^>]*\\s${attr}="${escapeRegex(key)}"[^>]*/?>`,
+        'gi'
+      );
+      head = head.replace(staticTagRe, '');
     }
   }
-  return result;
+
+  head = head.replace(/\n[ \t]*\n/g, '\n');
+  return `${head}${taggedHead}${rest}`;
 }
 
 function setupJsdomGlobals(JSDOM, url) {

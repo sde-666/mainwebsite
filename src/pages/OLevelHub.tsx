@@ -117,7 +117,7 @@ export function OLevelHub() {
   return (
     <div className="bg-slate-50 min-h-screen">
       <SEO 
-        title={`${currentModule.code}: ${currentModule.title} - Syllabus, Notes & Practicals | Skilldotpy`}
+        title={`${currentModule.code} ${currentModule.shortName} - Syllabus & Notes`}
         description={`Complete NIELIT O Level ${currentModule.code} (${currentModule.title}) exam preparation: Unit-wise syllabus, marks weightage, chapter notes, PDFs & online practical lab simulator.`}
         keywords={[
           `NIELIT O level ${currentModule.code}`,

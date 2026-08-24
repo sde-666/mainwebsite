@@ -20,7 +20,7 @@ export function Contact() {
   return (
     <>
       <SEO 
-        title="Contact Us - Student Support & Inquiries | Skilldotpy" 
+        title="Contact Us - Student Support & Inquiries" 
         description="Get in touch with the Skilldotpy student support team for guidance related to NIELIT O Level, CCC courses, PDF downloads, and the Android App." 
         keywords={[
           'Contact Skilldotpy',

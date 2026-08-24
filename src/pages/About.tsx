@@ -9,7 +9,7 @@ export function About() {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
     name: 'About Skilldotpy - India\'s NIELIT & Programming Hub',
-    description: 'Learn about Skilldotpy, founded by Er. Aditya Pathak, dedicated to high-quality NIELIT O Level (R5.1), CCC exam preparation, and Python programming education across India.',
+    description: 'Learn about Skilldotpy, founded by Mr. Aditya Pathak, dedicated to high-quality NIELIT O Level (R5.1), CCC exam preparation, and Python programming education across India.',
     mainEntity: {
       '@type': 'EducationalOrganization',
       name: 'Skilldotpy',
@@ -26,7 +26,7 @@ export function About() {
   return (
     <>
       <SEO 
-        title="About Skilldotpy - Founded by Er. Aditya Pathak | NIELIT O Level & CCC Hub" 
+        title="About Us - Mr. Aditya Pathak, Founder" 
         description="Learn about Skilldotpy, our mission, and our founder Er. Aditya Pathak. Empowering over 50,000+ students across India for NIELIT O Level (R5.1) & CCC exams."
         keywords={[
           'About Skilldotpy',

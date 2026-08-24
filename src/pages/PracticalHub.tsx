@@ -75,7 +75,7 @@ export const PracticalHub: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       <SEO
-        title="NIELIT O Level Practical Exam Simulator (PR1, PR2, PR3, PR4) - Online Lab"
+        title="O Level Practical Exam Simulator - Online Lab"
         description="Official NIELIT O Level Practical Exam Simulator (Revision 5.1). Practice Python programming (PR3), Web Designing HTML/CSS/JS (PR2), IoT Arduino (PR4), and IT Tools with live coding compilers, Wokwi simulation, Viva Voce & AI grading by Skilldotpy."
         keywords={[
           'Skilldotpy practical exam',

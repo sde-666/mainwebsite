@@ -96,7 +96,7 @@ export function ResourceCategory() {
 
   return (
     <>
-      <SEO title={`${category.title} Free Notes & Study Resources | Skilldotpy`} description={category.description} />
+      <SEO title={`${category.title} - Free Notes & Resources`} description={category.description} />
       
       {/* PDF Viewer Modal */}
       <PdfViewerModal

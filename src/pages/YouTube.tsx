@@ -79,7 +79,7 @@ export function YouTube() {
   return (
     <div className="bg-slate-50 min-h-screen py-12">
       <SEO
-        title="Skilldotpy YouTube Free Classes - NIELIT O Level (M1-R5 to M4-R5) & CCC"
+        title="Free YouTube Classes - O Level & CCC"
         description="Watch 100% free educational video lectures on the official Skilldotpy YouTube channel. Complete playlists for NIELIT O Level all 4 papers, CCC preparation, Python programming & LibreOffice by Er. Aditya Pathak."
         keywords={[
           'Skilldotpy YouTube',

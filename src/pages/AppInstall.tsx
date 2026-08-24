@@ -38,7 +38,7 @@ export function AppInstall() {
   return (
     <>
       <SEO 
-        title="How to Install Skilldotpy Android App APK - Step by Step Guide & Video" 
+        title="How to Install the APK - Step by Step Guide" 
         description="Learn how to install the official Skilldotpy Android APK safely on your phone with our quick video guide and step-by-step instructions." 
       />
       

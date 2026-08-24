@@ -4,7 +4,7 @@ export const siteConfig = {
   brandAlternates: ['Skill.py', 'Skill Dot Py', 'Skilldotpy NIELIT', 'Skilldotpy Academy', 'Skilldotpy Education'],
   title: 'Skilldotpy - NIELIT O Level (M1, M2, M3, M4) & CCC Free Notes, Courses, Mock Tests & App',
   tagline: 'India\'s #1 Learning Hub for NIELIT O Level (R5.1), CCC, Python & Practical Computer Education',
-  description: 'Skilldotpy is India\'s dedicated NIELIT O Level (M1-R5 IT Tools, M2-R5 Web Design, M3-R5 Python, M4-R5 IoT) & CCC exam preparation platform by Er. Aditya Pathak. Access 100% free PDF notes, R5.1 revised syllabus, previous year solved papers, online CBT mock tests, Python practical code, LibreOffice shortcut keys & Android APK.',
+  description: 'Free NIELIT O Level (M1-M4) & CCC exam prep - PDF notes, syllabus, mock tests, Python tutorials, LibreOffice shortcuts & Android app.',
   url: 'https://skilldotpy.com',
   ogImage: 'https://skilldotpy.com/skilldotpy-logo.svg',
   teacher: {
