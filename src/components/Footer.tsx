@@ -209,7 +209,7 @@ export function Footer() {
         {/* Bottom copyright and NIELIT trademark disclaimer */}
         <div className="mt-12 border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <p>
-            &copy; {currentYear} {siteConfig.name} ({siteConfig.url}). Created by {siteConfig.teacher.name}. All rights reserved.
+            &copy; {currentYear} {siteConfig.name} ({siteConfig.url}). Created by <Link to="/founder" className="text-slate-400 hover:text-blue-400 transition-colors underline decoration-slate-700 hover:decoration-blue-400">{siteConfig.teacher.name}</Link>. All rights reserved.
           </p>
           <p className="text-center md:text-right max-w-lg">
             Disclaimer: Skilldotpy is an independent educational platform. NIELIT is a registered autonomous society under MeitY, Govt. of India. All study materials are created for examination preparation.

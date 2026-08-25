@@ -24,6 +24,7 @@ import { TutorialDetail } from './pages/TutorialDetail';
 import { YouTubePage } from './pages/YouTube';
 import { FAQ } from './pages/FAQ';
 import { About } from './pages/About';
+import { Founder } from './pages/Founder';
 import { Contact } from './pages/Contact';
 import { PrivacyPolicy, Terms, Disclaimer, RefundPolicy } from './pages/Legal';
 
@@ -84,6 +85,7 @@ export default function App() {
                 {/* Info & Legal */}
                 <Route path="faq" element={<FAQ />} />
                 <Route path="about" element={<About />} />
+                <Route path="founder" element={<Founder />} />
                 <Route path="contact" element={<Contact />} />
                 
                 <Route path="privacy-policy" element={<PrivacyPolicy />} />
