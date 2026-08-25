@@ -1,14 +1,10 @@
-
-
-
-Sitemap · XML
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
- 
+
   <!-- 1. Homepage (Highest Priority) -->
   <url>
     <loc>https://skilldotpy.com</loc>
@@ -16,7 +12,7 @@ Sitemap · XML
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
- 
+
   <!-- 2. NIELIT O Level Core Hub & Module Pages -->
   <url>
     <loc>https://skilldotpy.com/o-level</loc>
@@ -54,7 +50,7 @@ Sitemap · XML
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
- 
+
   <!-- 3. NIELIT CCC Hub -->
   <url>
     <loc>https://skilldotpy.com/ccc</loc>
@@ -62,7 +58,7 @@ Sitemap · XML
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
- 
+
   <!-- 4. Online CBT Mock Tests & Exam Simulator -->
   <url>
     <loc>https://skilldotpy.com/mock-test</loc>
@@ -70,7 +66,7 @@ Sitemap · XML
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
- 
+
   <!-- 5. Practical Exam Practice Lab & Real-Time IDEs -->
   <url>
     <loc>https://skilldotpy.com/practical-practice</loc>
@@ -102,7 +98,7 @@ Sitemap · XML
     <changefreq>weekly</changefreq>
     <priority>0.90</priority>
   </url>
- 
+
   <!-- 6. Free Notes & Blog Reader Engine -->
   <url>
     <loc>https://skilldotpy.com/notes</loc>
@@ -140,7 +136,7 @@ Sitemap · XML
     <changefreq>weekly</changefreq>
     <priority>0.90</priority>
   </url>
- 
+
   <!-- 7. Study Materials & PDF Download Hub -->
   <url>
     <loc>https://skilldotpy.com/resources</loc>
@@ -172,7 +168,7 @@ Sitemap · XML
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
- 
+
   <!-- 8. Master Courses & Batch Details -->
   <url>
     <loc>https://skilldotpy.com/courses</loc>
@@ -240,7 +236,7 @@ Sitemap · XML
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
- 
+
   <!-- 9. Mobile App & APK Download -->
   <url>
     <loc>https://skilldotpy.com/app</loc>
@@ -254,7 +250,7 @@ Sitemap · XML
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
   </url>
- 
+
   <!-- 10. Tutorials & YouTube Video Classes -->
   <url>
     <loc>https://skilldotpy.com/tutorials</loc>
@@ -280,7 +276,7 @@ Sitemap · XML
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
- 
+
   <!-- 11. Informational & Support Pages -->
   <url>
     <loc>https://skilldotpy.com/faq</loc>
@@ -300,7 +296,7 @@ Sitemap · XML
     <changefreq>monthly</changefreq>
     <priority>0.70</priority>
   </url>
- 
+
   <!-- 12. Legal & Transparency Policies -->
   <url>
     <loc>https://skilldotpy.com/privacy-policy</loc>
@@ -327,4 +323,3 @@ Sitemap · XML
     <priority>0.40</priority>
   </url>
 </urlset>
- 
