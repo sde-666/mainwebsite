@@ -1,6 +1,4 @@
-import React from 'react';
-import { BrowserRouter, MemoryRouter, Routes, Route } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ScrollToTop } from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
@@ -33,25 +31,12 @@ import { PrivacyPolicy, Terms, Disclaimer, RefundPolicy } from './pages/Legal';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminLogin } from './pages/admin/AdminLogin';
 
-export interface AppProps {
-  initialUrl?: string;
-  helmetContext?: Record<string, unknown>;
-}
-
-export default function App({ initialUrl, helmetContext }: AppProps = {}) {
-  const RouterWrapper = ({ children }: { children: React.ReactNode }) => {
-    if (initialUrl) {
-      return <MemoryRouter initialEntries={[initialUrl]}>{children}</MemoryRouter>;
-    }
-    return <BrowserRouter>{children}</BrowserRouter>;
-  };
-
+export default function App() {
   return (
-    <HelmetProvider context={helmetContext}>
-      <AuthProvider>
-        <AiAssistantProvider>
-          <RouterWrapper>
-            <ScrollToTop />
+    <AuthProvider>
+      <AiAssistantProvider>
+        <BrowserRouter>
+          <ScrollToTop />
             <Routes>
               {/* Standalone Fullscreen Practical Exam Environment */}
               <Route path="/practical-practice/:testId" element={<PracticalExamWorkspace />} />
@@ -117,9 +102,8 @@ export default function App({ initialUrl, helmetContext }: AppProps = {}) {
                 } />
               </Route>
             </Routes>
-          </RouterWrapper>
-        </AiAssistantProvider>
-      </AuthProvider>
-    </HelmetProvider>
+        </BrowserRouter>
+      </AiAssistantProvider>
+    </AuthProvider>
   );
 }

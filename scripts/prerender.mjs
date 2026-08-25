@@ -84,15 +84,13 @@ async function safeMain() {
   for (const route of routes) {
     try {
       setupJsdomGlobals(JSDOM, 'http://localhost' + route);
-      const rawHtml = renderRouteToHtml(route);
+      const rawHtml = renderRouteToHtml();
       const { headHtml, bodyHtml } = splitHeadAndBody(rawHtml);
-
       let outHtml = indexTemplate.replace(
         /<div id="root">[\s\S]*?<\/div>/,
         `<div id="root">${bodyHtml}</div>`
       );
       outHtml = applyPageHeadTags(outHtml, headHtml);
-
       if (route === '/') {
         const outFile = path.join(DIST, 'index.html');
         fs.writeFileSync(outFile, outHtml, 'utf-8');
@@ -121,19 +119,29 @@ async function safeMain() {
   }
 }
 
+// The app renders page-specific <title>/<meta>/<link> tags (via its own
+// Helmet-based SEO component) as literal elements at the START of the React
+// tree, right before the real Layout wrapper div. renderToStaticMarkup has
+// no way to "teleport" these into <head> like a browser does, so they land
+// inline inside <div id="root">, which is invalid there and ignored by
+// crawlers. This splits that leading chunk off, and applyPageHeadTags()
+// below copies the page-specific values into the REAL <head> of the output
+// file, so each route gets its own correct <title>/description/OG tags
+// instead of the generic homepage ones.
+const LAYOUT_MARKER = '<div class="flex min-h-screen';
+
 function splitHeadAndBody(rawHtml) {
-  if (!rawHtml) return { headHtml: '', bodyHtml: '' };
-  const divIdx = rawHtml.indexOf('<div');
-  if (divIdx <= 0) {
+  const idx = rawHtml.indexOf(LAYOUT_MARKER);
+  if (idx <= 0) {
     return { headHtml: '', bodyHtml: rawHtml };
   }
-  return { headHtml: rawHtml.slice(0, divIdx), bodyHtml: rawHtml.slice(divIdx) };
+  return { headHtml: rawHtml.slice(0, idx), bodyHtml: rawHtml.slice(idx) };
 }
 
 function applyPageHeadTags(outHtml, headHtml) {
   if (!headHtml) return outHtml;
 
-  // Ensure every tag has data-rh="true"
+  // Ensure every Helmet-managed tag has data-rh="true" for client hydration
   const taggedHead = headHtml
     .replace(/<title(?![^>]*data-rh)[^>]*>/g, '<title data-rh="true">')
     .replace(/<meta(?![^>]*data-rh)\s/g, '<meta data-rh="true" ')
@@ -144,12 +152,12 @@ function applyPageHeadTags(outHtml, headHtml) {
   let head = outHtml.slice(0, headEndIdx);
   const rest = outHtml.slice(headEndIdx);
 
-  // If page provides title, remove existing title from template
+  // Strip ANY existing <title> from the template head to avoid duplicate titles
   if (/<title/i.test(taggedHead)) {
     head = head.replace(/<title[^>]*>[\s\S]*?<\/title>/gi, '');
   }
 
-  // Remove any static meta/link tag whose key matches page tags
+  // Remove any static <meta>/<link> tag whose key (name/property/rel) matches
   const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const collectKeys = (attr) => {
     const re = new RegExp(`<(?:meta|link)[^>]*\\s${attr}="([^"]+)"`, 'g');
@@ -170,7 +178,7 @@ function applyPageHeadTags(outHtml, headHtml) {
   }
 
   head = head.replace(/\n[ \t]*\n/g, '\n');
-  return `${head}\n${taggedHead}\n${rest}`;
+  return `${head}${taggedHead}${rest}`;
 }
 
 function setupJsdomGlobals(JSDOM, url) {
@@ -193,6 +201,11 @@ function setupJsdomGlobals(JSDOM, url) {
   global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
   global.cancelAnimationFrame = (id) => clearTimeout(id);
   global.self = global.window;
+  // Tells src/components/SEO.tsx it's running inside this build-time SSR
+  // pass (not a real browser), so it should render its tags as literal JSX
+  // for us to scrape into the static <head> below, instead of using the
+  // real-browser direct-DOM-update path. See SEO.tsx for the full story.
+  global.__PRERENDER__ = true;
 }
 
 function readRoutesFromSitemap() {
