@@ -33,13 +33,20 @@
   }
 }
 
-/* Notes Reader & Blog Typography */
+/* Notes Reader & Blog Typography with Content Protection */
+.notes-protected-content,
 .notes-body {
   color: #1e293b;
   font-size: 16px;
   line-height: 1.8;
   overflow-wrap: break-word;
   word-break: normal;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
 }
 
 /* Font Size Modifiers for Reader */
@@ -75,6 +82,7 @@
 .notes-body.font-size-xl h2 { font-size: 1.85rem; }
 .notes-body.font-size-xl h3 { font-size: 1.55rem; }
 
+/* BASE TYPOGRAPHY & ELEMENTS */
 .notes-body h1 {
   font-size: 1.85rem;
   font-weight: 800;
@@ -199,7 +207,7 @@
   overflow-wrap: break-word;
 }
 
-/* Callout Note Boxes (Modernized with text wrapping and premium borders) */
+/* Callout Note Boxes */
 .note-box {
   padding: 1.1rem 1.35rem;
   border-radius: 0.875rem;
@@ -242,10 +250,7 @@
   border-left-color: #2563eb;
   color: #1e3a8a;
 }
-
-.note-info h4 {
-  color: #1d4ed8;
-}
+.note-info h4 { color: #1d4ed8; }
 
 .note-tip {
   background: linear-gradient(180deg, #f0fdf4 0%, #e7f8ee 100%);
@@ -253,10 +258,7 @@
   border-left-color: #16a34a;
   color: #065f46;
 }
-
-.note-tip h4 {
-  color: #15803d;
-}
+.note-tip h4 { color: #15803d; }
 
 .note-warning {
   background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
@@ -264,10 +266,7 @@
   border-left-color: #d97706;
   color: #92400e;
 }
-
-.note-warning h4 {
-  color: #b45309;
-}
+.note-warning h4 { color: #b45309; }
 
 .note-exam {
   background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%);
@@ -275,10 +274,7 @@
   border-left-color: #9333ea;
   color: #581c87;
 }
-
-.note-exam h4 {
-  color: #7e22ce;
-}
+.note-exam h4 { color: #7e22ce; }
 
 .note-key {
   background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%);
@@ -286,10 +282,7 @@
   border-left-color: #e11d48;
   color: #881337;
 }
-
-.note-key h4 {
-  color: #be123c;
-}
+.note-key h4 { color: #be123c; }
 
 /* Custom Table inside Notes */
 .notes-table-wrapper {
@@ -318,10 +311,7 @@
   border-bottom: 1px solid #cbd5e1;
   border-right: 1px solid #e2e8f0;
 }
-
-.notes-table th:last-child {
-  border-right: none;
-}
+.notes-table th:last-child { border-right: none; }
 
 .notes-table td {
   padding: 0.75rem 1rem;
@@ -330,17 +320,223 @@
   color: #334155;
   overflow-wrap: break-word;
 }
+.notes-table td:last-child { border-right: none; }
+.notes-table tr:last-child td { border-bottom: none; }
+.notes-table tr:nth-child(even) { background-color: #f8fafc/60; }
 
-.notes-table td:last-child {
-  border-right: none;
+/* ========================================================================= */
+/* 🌟 DARK MODE STYLING OVERRIDES (Ultra High Contrast, Crisp Slate-100) */
+/* ========================================================================= */
+.notes-reader-theme-dark .notes-body h1,
+.notes-reader-theme-dark .notes-body h2,
+.notes-reader-theme-dark .notes-body h3,
+.notes-reader-theme-dark .notes-body h4 {
+  color: #F8FAFC !important;
 }
 
-.notes-table tr:last-child td {
-  border-bottom: none;
+.notes-reader-theme-dark .notes-body h2 {
+  border-bottom-color: #334155 !important;
 }
 
-.notes-table tr:nth-child(even) {
-  background-color: #f8fafc/60;
+.notes-reader-theme-dark .notes-body p,
+.notes-reader-theme-dark .notes-body li,
+.notes-reader-theme-dark .notes-body span:not([class*="bg-"]):not([class*="text-"]) {
+  color: #E2E8F0 !important;
+}
+
+.notes-reader-theme-dark .notes-body strong {
+  color: #FFFFFF !important;
+}
+
+.notes-reader-theme-dark .notes-body hr {
+  border-top-color: #334155 !important;
+}
+
+.notes-reader-theme-dark .notes-body pre {
+  background-color: #020617 !important;
+  color: #38BDF8 !important;
+  border-color: #1E293B !important;
+}
+
+.notes-reader-theme-dark .notes-body code:not(pre code) {
+  background-color: #1E293B !important;
+  color: #38BDF8 !important;
+  border-color: #334155 !important;
+}
+
+.notes-reader-theme-dark .notes-body blockquote {
+  background-color: #0F172A !important;
+  color: #CBD5E1 !important;
+  border-left-color: #3B82F6 !important;
+}
+
+/* Dark Mode Callout Overrides */
+.notes-reader-theme-dark .note-info {
+  background: linear-gradient(180deg, rgba(30, 58, 138, 0.35) 0%, rgba(30, 58, 138, 0.2) 100%) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  border-left-color: #3B82F6 !important;
+  color: #BFDBFE !important;
+}
+.notes-reader-theme-dark .note-info h4 { color: #93C5FD !important; }
+.notes-reader-theme-dark .note-info p, 
+.notes-reader-theme-dark .note-info li { color: #DBEAFE !important; }
+
+.notes-reader-theme-dark .note-tip {
+  background: linear-gradient(180deg, rgba(6, 78, 59, 0.35) 0%, rgba(6, 78, 59, 0.2) 100%) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  border-left-color: #10B981 !important;
+  color: #A7F3D0 !important;
+}
+.notes-reader-theme-dark .note-tip h4 { color: #6EE7B7 !important; }
+.notes-reader-theme-dark .note-tip p, 
+.notes-reader-theme-dark .note-tip li { color: #D1FAE5 !important; }
+
+.notes-reader-theme-dark .note-warning {
+  background: linear-gradient(180deg, rgba(120, 53, 15, 0.35) 0%, rgba(120, 53, 15, 0.2) 100%) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  border-left-color: #F59E0B !important;
+  color: #FDE68A !important;
+}
+.notes-reader-theme-dark .note-warning h4 { color: #FCD34D !important; }
+.notes-reader-theme-dark .note-warning p, 
+.notes-reader-theme-dark .note-warning li { color: #FEF3C7 !important; }
+
+.notes-reader-theme-dark .note-exam {
+  background: linear-gradient(180deg, rgba(88, 28, 135, 0.35) 0%, rgba(88, 28, 135, 0.2) 100%) !important;
+  border-color: rgba(147, 51, 234, 0.4) !important;
+  border-left-color: #A855F7 !important;
+  color: #E9D5FF !important;
+}
+.notes-reader-theme-dark .note-exam h4 { color: #C084FC !important; }
+.notes-reader-theme-dark .note-exam p, 
+.notes-reader-theme-dark .note-exam li { color: #F3E8FF !important; }
+
+.notes-reader-theme-dark .note-key {
+  background: linear-gradient(180deg, rgba(136, 19, 55, 0.35) 0%, rgba(136, 19, 55, 0.2) 100%) !important;
+  border-color: rgba(225, 29, 72, 0.4) !important;
+  border-left-color: #F43F5E !important;
+  color: #FECDD3 !important;
+}
+.notes-reader-theme-dark .note-key h4 { color: #FB7185 !important; }
+.notes-reader-theme-dark .note-key p, 
+.notes-reader-theme-dark .note-key li { color: #FFE4E6 !important; }
+
+/* Dark Mode Table Overrides */
+.notes-reader-theme-dark .notes-table-wrapper {
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+}
+.notes-reader-theme-dark .notes-table th {
+  background-color: #1E293B !important;
+  color: #F8FAFC !important;
+  border-bottom-color: #334155 !important;
+  border-right-color: #334155 !important;
+}
+.notes-reader-theme-dark .notes-table td {
+  color: #E2E8F0 !important;
+  border-bottom-color: #334155 !important;
+  border-right-color: #334155 !important;
+}
+.notes-reader-theme-dark .notes-table tr:nth-child(even) {
+  background-color: rgba(30, 41, 59, 0.5) !important;
+}
+
+/* Dark Mode Raw HTML Class Adapters */
+.notes-reader-theme-dark .notes-body .bg-white {
+  background-color: #1E293B !important;
+  color: #F1F5F9 !important;
+}
+.notes-reader-theme-dark .notes-body .text-slate-900,
+.notes-reader-theme-dark .notes-body .text-slate-800,
+.notes-reader-theme-dark .notes-body .text-slate-700 {
+  color: #F1F5F9 !important;
+}
+.notes-reader-theme-dark .notes-body .text-slate-600,
+.notes-reader-theme-dark .notes-body .text-slate-500 {
+  color: #94A3B8 !important;
+}
+.notes-reader-theme-dark .notes-body .bg-slate-50,
+.notes-reader-theme-dark .notes-body .bg-slate-100 {
+  background-color: #0F172A !important;
+  color: #CBD5E1 !important;
+}
+.notes-reader-theme-dark .notes-body .border-slate-200,
+.notes-reader-theme-dark .notes-body .border-slate-300,
+.notes-reader-theme-dark .notes-body .border-slate-100 {
+  border-color: #334155 !important;
+}
+.notes-reader-theme-dark .notes-body .bg-blue-50 {
+  background-color: rgba(30, 58, 138, 0.3) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+.notes-reader-theme-dark .notes-body .text-blue-900,
+.notes-reader-theme-dark .notes-body .text-blue-800,
+.notes-reader-theme-dark .notes-body .text-blue-700 {
+  color: #93C5FD !important;
+}
+.notes-reader-theme-dark .notes-body .bg-emerald-50 {
+  background-color: rgba(6, 78, 59, 0.3) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+.notes-reader-theme-dark .notes-body .text-emerald-900,
+.notes-reader-theme-dark .notes-body .text-emerald-800,
+.notes-reader-theme-dark .notes-body .text-emerald-700 {
+  color: #6EE7B7 !important;
+}
+
+/* ========================================================================= */
+/* ☕ SEPIA MODE STYLING OVERRIDES (Warm Paper, Rich Umber #3D3231) */
+/* ========================================================================= */
+.notes-reader-theme-sepia .notes-body h1,
+.notes-reader-theme-sepia .notes-body h2,
+.notes-reader-theme-sepia .notes-body h3,
+.notes-reader-theme-sepia .notes-body h4 {
+  color: #2E2221 !important;
+}
+.notes-reader-theme-sepia .notes-body h2 {
+  border-bottom-color: #E2D5C3 !important;
+}
+.notes-reader-theme-sepia .notes-body p,
+.notes-reader-theme-sepia .notes-body li {
+  color: #4A3E3D !important;
+}
+.notes-reader-theme-sepia .notes-body strong {
+  color: #241A19 !important;
+}
+.notes-reader-theme-sepia .notes-body pre {
+  background-color: #2A2221 !important;
+  color: #F7D7A0 !important;
+  border-color: #3D3231 !important;
+}
+.notes-reader-theme-sepia .notes-body code:not(pre code) {
+  background-color: #EFE4CF !important;
+  color: #8C461B !important;
+  border-color: #DECDB3 !important;
+}
+.notes-reader-theme-sepia .notes-body blockquote {
+  background-color: #F3E9D5 !important;
+  color: #4A3E3D !important;
+  border-left-color: #A05A2C !important;
+}
+.notes-reader-theme-sepia .note-box {
+  background-color: #F7EFE0 !important;
+  border-color: #DFCBB0 !important;
+  color: #4A3E3D !important;
+}
+.notes-reader-theme-sepia .notes-table-wrapper {
+  background-color: #FFFDF9 !important;
+  border-color: #E2D5C3 !important;
+}
+.notes-reader-theme-sepia .notes-table th {
+  background-color: #F4EDE0 !important;
+  color: #2E2221 !important;
+  border-bottom-color: #E2D5C3 !important;
+  border-right-color: #E2D5C3 !important;
+}
+.notes-reader-theme-sepia .notes-table td {
+  color: #4A3E3D !important;
+  border-bottom-color: #E2D5C3 !important;
+  border-right-color: #E2D5C3 !important;
 }
 
 /* Print Friendly Stylesheet */

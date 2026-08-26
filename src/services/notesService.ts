@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { NoteCourse, NoteChapter, NoteTopic } from '../types/notes';
-import { initialNoteCourses } from '../data/notesData';
+import { initialNoteCourses, initialNoteChapters, initialNoteTopics } from '../data/notesData';
 
 const COURSES_COLLECTION = 'notes_courses';
 const CHAPTERS_COLLECTION = 'notes_chapters';
@@ -37,6 +37,56 @@ function cleanForFirestore<T extends Record<string, any>>(obj: T): Record<string
     }
   }
   return cleaned;
+}
+
+// Helper to prevent duplicate chapters across cloud sync & storage
+function deduplicateChapters(rawList: NoteChapter[]): NoteChapter[] {
+  const result: NoteChapter[] = [];
+  const seenId = new Set<string>();
+  const seenCourseAndNum = new Set<string>();
+
+  // Preserve initial canonical chapters first if present
+  const initialIds = new Set(initialNoteChapters.map(c => c.id));
+  const sorted = [...rawList].sort((a, b) => {
+    const aIsInit = initialIds.has(a.id) ? -1 : 1;
+    const bIsInit = initialIds.has(b.id) ? -1 : 1;
+    if (aIsInit !== bIsInit) return aIsInit - bIsInit;
+    return (a.chapterNumber || a.order || 0) - (b.chapterNumber || b.order || 0);
+  });
+
+  for (const ch of sorted) {
+    if (!ch || !ch.id) continue;
+    const courseNumKey = `${ch.courseId || ''}_${ch.chapterNumber || 0}`;
+    if (seenId.has(ch.id) || (ch.courseId && ch.chapterNumber && seenCourseAndNum.has(courseNumKey))) {
+      continue;
+    }
+    seenId.add(ch.id);
+    if (ch.courseId && ch.chapterNumber) {
+      seenCourseAndNum.add(courseNumKey);
+    }
+    result.push(ch);
+  }
+  return result;
+}
+
+function deduplicateTopics(rawList: NoteTopic[]): NoteTopic[] {
+  const result: NoteTopic[] = [];
+  const seenId = new Set<string>();
+  const seenTitle = new Set<string>();
+
+  for (const t of rawList) {
+    if (!t || !t.id) continue;
+    const titleKey = `${t.courseId || ''}_${t.chapterId || ''}_${(t.title || '').trim().toLowerCase()}`;
+    if (seenId.has(t.id) || (t.title && seenTitle.has(titleKey))) {
+      continue;
+    }
+    seenId.add(t.id);
+    if (t.title) {
+      seenTitle.add(titleKey);
+    }
+    result.push(t);
+  }
+  return result;
 }
 
 class NotesService {
@@ -79,14 +129,57 @@ class NotesService {
       }
 
       const storedChapters = localStorage.getItem(STORAGE_KEYS.CHAPTERS);
-      this.chaptersCache = storedChapters ? JSON.parse(storedChapters) : [];
+      if (storedChapters) {
+        const parsed: NoteChapter[] = JSON.parse(storedChapters);
+        // Merge missing initial chapters or fields like hindiTitle
+        const initialMap = new Map(initialNoteChapters.map(c => [c.id, c]));
+        const merged: NoteChapter[] = parsed.map(c => {
+          const init = initialMap.get(c.id);
+          return {
+            ...init,
+            ...c,
+            hindiTitle: c.hindiTitle || init?.hindiTitle
+          };
+        });
+        // Add any missing initial chapters
+        for (const init of initialNoteChapters) {
+          if (!merged.some(c => c.id === init.id)) {
+            merged.push(init);
+          }
+        }
+        this.chaptersCache = deduplicateChapters(merged);
+      } else {
+        this.chaptersCache = deduplicateChapters([...initialNoteChapters]);
+      }
 
       const storedTopics = localStorage.getItem(STORAGE_KEYS.TOPICS);
-      this.topicsCache = storedTopics ? JSON.parse(storedTopics) : [];
+      if (storedTopics) {
+        const parsed: NoteTopic[] = JSON.parse(storedTopics);
+        // Merge missing initial topics or fields like hindiTitle, hindiContent
+        const initialMap = new Map(initialNoteTopics.map(t => [t.id, t]));
+        const merged: NoteTopic[] = parsed.map(t => {
+          const init = initialMap.get(t.id);
+          return {
+            ...init,
+            ...t,
+            hindiTitle: t.hindiTitle || init?.hindiTitle,
+            hindiContent: t.hindiContent || init?.hindiContent
+          };
+        });
+        // Add any missing initial topics
+        for (const init of initialNoteTopics) {
+          if (!merged.some(t => t.id === init.id)) {
+            merged.push(init);
+          }
+        }
+        this.topicsCache = deduplicateTopics(merged);
+      } else {
+        this.topicsCache = deduplicateTopics([...initialNoteTopics]);
+      }
     } catch (err) {
       this.coursesCache = [...initialNoteCourses];
-      this.chaptersCache = [];
-      this.topicsCache = [];
+      this.chaptersCache = deduplicateChapters([...initialNoteChapters]);
+      this.topicsCache = deduplicateTopics([...initialNoteTopics]);
     }
   }
 
@@ -229,7 +322,22 @@ class NotesService {
           colRef,
           (snapshot) => {
             // Firestore is the Single Source of Truth
-            this.chaptersCache = snapshot.docs.map(d => ({ ...d.data(), id: d.id } as NoteChapter));
+            const fromCloud = snapshot.docs.map(d => ({ ...d.data(), id: d.id } as NoteChapter));
+            const initialMap = new Map(initialNoteChapters.map(c => [c.id, c]));
+            const merged: NoteChapter[] = fromCloud.map(c => {
+              const init = initialMap.get(c.id);
+              return {
+                ...init,
+                ...c,
+                hindiTitle: c.hindiTitle || init?.hindiTitle
+              };
+            });
+            for (const init of initialNoteChapters) {
+              if (!merged.some(c => c.id === init.id)) {
+                merged.push(init);
+              }
+            }
+            this.chaptersCache = deduplicateChapters(merged.length > 0 ? merged : [...initialNoteChapters]);
             this.persistStorage('chapters');
             this.notifyChapters();
           },
@@ -315,7 +423,23 @@ class NotesService {
           colRef,
           (snapshot) => {
             // Firestore is the Single Source of Truth for all devices
-            this.topicsCache = snapshot.docs.map(d => ({ ...d.data(), id: d.id } as NoteTopic));
+            const fromCloud = snapshot.docs.map(d => ({ ...d.data(), id: d.id } as NoteTopic));
+            const initialMap = new Map(initialNoteTopics.map(t => [t.id, t]));
+            const merged: NoteTopic[] = fromCloud.map(t => {
+              const init = initialMap.get(t.id);
+              return {
+                ...init,
+                ...t,
+                hindiTitle: t.hindiTitle || init?.hindiTitle,
+                hindiContent: t.hindiContent || init?.hindiContent
+              };
+            });
+            for (const init of initialNoteTopics) {
+              if (!merged.some(t => t.id === init.id)) {
+                merged.push(init);
+              }
+            }
+            this.topicsCache = deduplicateTopics(merged.length > 0 ? merged : [...initialNoteTopics]);
             this.persistStorage('topics');
             this.notifyTopics();
           },

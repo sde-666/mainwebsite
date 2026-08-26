@@ -3,60 +3,44 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Eye, 
   Clock, 
-  Printer, 
-  Check, 
-  Copy, 
   ChevronRight, 
-  ChevronDown, 
-  Folder, 
-  FolderOpen, 
-  FileText, 
-  BookOpen, 
+  ChevronUp,
   ArrowLeft, 
-  ArrowRight, 
-  Sparkles, 
   Search, 
   X, 
-  PanelLeftClose,
-  PanelLeftOpen,
+  Menu,
   Maximize2,
   Minimize2,
-  List,
-  Calculator,
   Bookmark,
   BookmarkCheck,
   Type,
-  AlignLeft,
   Share2,
-  Compass,
-  GraduationCap,
-  HelpCircle,
-  Hash,
-  ChevronUp,
-  FileCheck,
-  Zap,
-  BookMarked
+  Check,
+  Sun,
+  Moon,
+  Coffee,
+  CheckCircle2,
+  BookOpen,
+  Laptop,
+  Info
 } from 'lucide-react';
 import { NoteCourse, NoteChapter, NoteTopic } from '../types/notes';
 import { notesService } from '../services/notesService';
 import { SEO } from '../components/SEO';
-import { AdBanner } from '../components/AdBanner';
-import { useAiAssistant } from '../context/AiAssistantContext';
-
-interface TocHeading {
-  id: string;
-  text: string;
-  level: number;
-}
+import { useAuth } from '../context/AuthContext';
 
 export function NotesReader() {
-  const { courseId: paramCourseId, chapterId: paramChapterId, topicId: paramTopicId } = useParams<{ 
+  const { 
+    courseId: paramCourseId, 
+    chapterId: paramChapterId, 
+    topicId: paramTopicId 
+  } = useParams<{ 
     courseId?: string; 
     chapterId?: string; 
     topicId?: string 
   }>();
   const navigate = useNavigate();
-  const { openAssistant } = useAiAssistant();
+  const { currentUser } = useAuth();
 
   const [courses, setCourses] = useState<NoteCourse[]>([]);
   const [chapters, setChapters] = useState<NoteChapter[]>([]);
@@ -64,14 +48,21 @@ export function NotesReader() {
   const [loading, setLoading] = useState(true);
 
   // Layout View Controls
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isTocCollapsed, setIsTocCollapsed] = useState(false);
-  const [isWideReadingMode, setIsWideReadingMode] = useState(true); // Default to expansive, wide layout
-  
-  // Typography & Reading Preferences (Persisted in localStorage)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState<'contents' | 'saved'>('contents');
+  const [isBrowserFullscreen, setIsBrowserFullscreen] = useState(false);
+
+  // Theme & Appearance
+  const [readingTheme, setReadingTheme] = useState<'light' | 'sepia' | 'dark'>(() => {
+    return (localStorage.getItem('skilldotpy_notes_theme') as any) || 'light';
+  });
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg' | 'xl'>(() => {
     return (localStorage.getItem('skilldotpy_reader_fontsize') as any) || 'md';
   });
+  const [fontFamily, setFontFamily] = useState<'sans' | 'serif' | 'mono'>(() => {
+    return (localStorage.getItem('skilldotpy_reader_fontfamily') as any) || 'sans';
+  });
+  const [showTypographyMenu, setShowTypographyMenu] = useState(false);
 
   // Bookmarks state (Persisted in localStorage)
   const [bookmarks, setBookmarks] = useState<string[]>(() => {
@@ -84,24 +75,18 @@ export function NotesReader() {
 
   // Search & Filter in sidebar
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'bookmarked'>('all');
   
-  // Expanded folders in sidebar
-  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
-    'Memory Systems': true,
-    'Software': true
-  });
+  // Expanded chapters in accordion
+  const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
 
   // Mobile Drawers
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
 
-  // Interactive Elements
-  const [copied, setCopied] = useState(false);
+  // Interactive & Feedback Elements
+  const [shareToast, setShareToast] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeHeadingId, setActiveHeadingId] = useState<string>('');
 
-  const contentRef = useRef<HTMLDivElement>(null);
+  const mainScrollContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // 1. Live Subscribe to courses, chapters, and topics
@@ -124,22 +109,75 @@ export function NotesReader() {
     };
   }, []);
 
-  // 2. Reading Scroll Progress Tracker
+  // Save theme preferences
   useEffect(() => {
-    const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollTop;
-      const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      if (windowHeight > 0) {
-        const scrollPercent = Math.min(100, Math.max(0, (totalScroll / windowHeight) * 100));
-        setScrollProgress(scrollPercent);
+    localStorage.setItem('skilldotpy_notes_theme', readingTheme);
+  }, [readingTheme]);
+
+  useEffect(() => {
+    localStorage.setItem('skilldotpy_reader_fontsize', fontSize);
+  }, [fontSize]);
+
+  useEffect(() => {
+    localStorage.setItem('skilldotpy_reader_fontfamily', fontFamily);
+  }, [fontFamily]);
+
+  // Anti-Copy & Strict Content Protection
+  useEffect(() => {
+    const handleCopyProtection = (e: ClipboardEvent) => {
+      e.preventDefault();
+      if (e.clipboardData) {
+        e.clipboardData.clearData();
+      }
+      return false;
+    };
+
+    const handleKeyProtection = (e: KeyboardEvent) => {
+      const isModifier = e.ctrlKey || e.metaKey;
+      if (isModifier) {
+        const key = e.key.toLowerCase();
+        // Prevent Copy (C), Select All (A), Cut (X), View Source (U), Save (S), Print (P)
+        if (['c', 'a', 'x', 'u', 's', 'p'].includes(key)) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      return false;
+    };
+
+    document.addEventListener('copy', handleCopyProtection, true);
+    document.addEventListener('cut', handleCopyProtection, true);
+    document.addEventListener('contextmenu', handleContextMenu, true);
+    window.addEventListener('keydown', handleKeyProtection, true);
+
+    return () => {
+      document.removeEventListener('copy', handleCopyProtection, true);
+      document.removeEventListener('cut', handleCopyProtection, true);
+      document.removeEventListener('contextmenu', handleContextMenu, true);
+      window.removeEventListener('keydown', handleKeyProtection, true);
+    };
   }, []);
 
-  // 3. Resolve Active Course
+  // Save bookmarks
+  const toggleBookmark = (topicId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    setBookmarks(prev => {
+      const next = prev.includes(topicId) 
+        ? prev.filter(id => id !== topicId) 
+        : [...prev, topicId];
+      localStorage.setItem('skilldotpy_note_bookmarks', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  // 2. Resolve Active Course
   const currentCourse = useMemo(() => {
     if (courses.length === 0) return null;
     if (paramCourseId) {
@@ -147,22 +185,77 @@ export function NotesReader() {
       const match = courses.find(c => 
         c.id === paramCourseId || 
         c.id.toLowerCase() === cleanParam ||
-        c.code.toLowerCase().includes(cleanParam)
+        c.code.toLowerCase().includes(cleanParam) ||
+        (cleanParam.includes('m1') && c.id.includes('m1')) ||
+        (cleanParam.includes('m2') && c.id.includes('m2')) ||
+        (cleanParam.includes('m3') && c.id.includes('m3')) ||
+        (cleanParam.includes('m4') && c.id.includes('m4')) ||
+        (cleanParam.includes('ccc') && c.id.includes('ccc'))
       );
       if (match) return match;
     }
-    return courses[0] || null;
+    // Default to M2-R5 or first course
+    const m2Course = courses.find(c => c.id === 'm2-r5');
+    return m2Course || courses[0] || null;
   }, [courses, paramCourseId]);
 
-  // 4. Filtered Chapters for Active Course (Strictly isolated by courseId)
+  // 3. Filtered Chapters for Active Course (Strictly Deduplicated so chapters NEVER repeat)
   const currentCourseChapters = useMemo(() => {
     if (!currentCourse) return [];
-    return chapters
+    const courseChaps = chapters
       .filter(ch => ch.courseId === currentCourse.id)
       .sort((a, b) => (a.chapterNumber || a.order || 0) - (b.chapterNumber || b.order || 0));
+
+    const seenNumbers = new Set<number>();
+    const seenIds = new Set<string>();
+    const result: NoteChapter[] = [];
+
+    for (const ch of courseChaps) {
+      if (seenIds.has(ch.id)) continue;
+      const num = Number(ch.chapterNumber) || 0;
+      if (num > 0 && seenNumbers.has(num)) {
+        continue;
+      }
+      seenIds.add(ch.id);
+      if (num > 0) seenNumbers.add(num);
+      result.push(ch);
+    }
+    return result;
   }, [chapters, currentCourse]);
 
-  // 5. Resolve Active Chapter (Strictly within current course)
+  // Helper to get topics for any chapter, strictly deduplicated
+  const getTopicsForChapter = useMemo(() => {
+    return (chapter: NoteChapter): NoteTopic[] => {
+      if (!currentCourse) return [];
+      const chapNum = Number(chapter.chapterNumber) || 0;
+      const filtered = topics.filter(t => 
+        t.courseId === currentCourse.id && 
+        (t.chapterId === chapter.id || 
+         (chapNum > 0 && (
+           t.chapterId === `ch${chapNum}` || 
+           t.chapterId.endsWith(`ch${chapNum}`) || 
+           t.chapterId.includes(`ch${chapNum}-`) ||
+           t.chapterId.includes(`chapter-${chapNum}`)
+         )))
+      );
+
+      const seenIds = new Set<string>();
+      const seenTitles = new Set<string>();
+      const unique: NoteTopic[] = [];
+
+      const sorted = [...filtered].sort((a, b) => (a.order || 0) - (b.order || 0));
+      for (const t of sorted) {
+        const titleKey = (t.title || '').trim().toLowerCase();
+        if (seenIds.has(t.id) || seenTitles.has(titleKey)) continue;
+        seenIds.add(t.id);
+        if (titleKey) seenTitles.add(titleKey);
+        unique.push(t);
+      }
+      return unique;
+    };
+  }, [topics, currentCourse]);
+
+  // 4. Resolve Active Chapter
   const currentChapter = useMemo(() => {
     if (!currentCourse || currentCourseChapters.length === 0) {
       return null;
@@ -191,31 +284,41 @@ export function NotesReader() {
     if (paramTopicId) {
       const topicObj = topics.find(t => t.id === paramTopicId && t.courseId === currentCourse.id);
       if (topicObj) {
-        const matchingChap = currentCourseChapters.find(ch => ch.id === topicObj.chapterId);
+        const matchingChap = currentCourseChapters.find(ch => 
+          ch.id === topicObj.chapterId || 
+          (topicObj.chapterId && topicObj.chapterId.includes(`ch${ch.chapterNumber}`))
+        );
         if (matchingChap) return matchingChap;
       }
     }
 
     const chapWithTopics = currentCourseChapters.find(ch => 
-      topics.some(t => t.chapterId === ch.id && t.courseId === currentCourse.id)
+      getTopicsForChapter(ch).length > 0
     );
     if (chapWithTopics) return chapWithTopics;
 
     return currentCourseChapters[0] || null;
-  }, [currentCourseChapters, paramChapterId, paramTopicId, topics, currentCourse]);
+  }, [currentCourseChapters, paramChapterId, paramTopicId, topics, currentCourse, getTopicsForChapter]);
 
-  // 6. Filtered Topics for Active Chapter (Strictly isolated by courseId & chapterId)
+  // Expand active chapter by default
+  useEffect(() => {
+    if (currentChapter) {
+      setExpandedChapters(prev => ({
+        ...prev,
+        [currentChapter.id]: true
+      }));
+    }
+  }, [currentChapter?.id]);
+
+  // 5. Filtered Topics for Active Chapter
   const currentChapterTopics = useMemo(() => {
     if (!currentCourse || !currentChapter) {
       return [];
     }
-    const filtered = topics.filter(t => 
-      t.courseId === currentCourse.id && t.chapterId === currentChapter.id
-    );
-    return filtered.sort((a, b) => (a.order || 0) - (b.order || 0));
-  }, [topics, currentChapter, currentCourse]);
+    return getTopicsForChapter(currentChapter);
+  }, [currentChapter, currentCourse, getTopicsForChapter]);
 
-  // 7. Resolve Active Topic (Strictly within current course)
+  // 6. Resolve Active Topic
   const activeTopic = useMemo(() => {
     if (!currentCourse) return null;
 
@@ -244,1091 +347,1132 @@ export function NotesReader() {
     }
   }, [activeTopic?.id]);
 
-  // Group topics by parentFolder + Search filter
-  const groupedTopics = useMemo(() => {
-    const rootItems: NoteTopic[] = [];
-    const folders: Record<string, NoteTopic[]> = {};
+  // 7. Navigation (Previous & Next Topics in current chapter / course)
+  const currentTopicIndex = useMemo(() => {
+    if (!activeTopic || currentChapterTopics.length === 0) return -1;
+    return currentChapterTopics.findIndex(t => t.id === activeTopic.id);
+  }, [activeTopic, currentChapterTopics]);
 
-    currentChapterTopics.forEach(t => {
-      // Bookmark filter
-      if (selectedFilter === 'bookmarked' && !bookmarks.includes(t.id)) {
-        return;
-      }
-
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const match = t.title.toLowerCase().includes(q) || 
-                      (t.hindiTitle && t.hindiTitle.toLowerCase().includes(q)) ||
-                      (t.tags && t.tags.some(tag => tag.toLowerCase().includes(q)));
-        if (!match) return;
-      }
-
-      if (t.parentFolder) {
-        if (!folders[t.parentFolder]) {
-          folders[t.parentFolder] = [];
-        }
-        folders[t.parentFolder].push(t);
-      } else {
-        rootItems.push(t);
-      }
-    });
-
-    return { rootItems, folders };
-  }, [currentChapterTopics, searchQuery, selectedFilter, bookmarks]);
-
-  // Previous and Next topic navigation
-  const { prevTopic, nextTopic, currentIndex, totalTopics } = useMemo(() => {
-    if (!activeTopic || currentChapterTopics.length === 0) {
-      return { prevTopic: null, nextTopic: null, currentIndex: 0, totalTopics: 0 };
+  const prevTopic = useMemo(() => {
+    if (currentTopicIndex > 0) {
+      return currentChapterTopics[currentTopicIndex - 1];
     }
-    const idx = currentChapterTopics.findIndex(t => t.id === activeTopic.id);
-    return {
-      prevTopic: idx > 0 ? currentChapterTopics[idx - 1] : null,
-      nextTopic: idx >= 0 && idx < currentChapterTopics.length - 1 ? currentChapterTopics[idx + 1] : null,
-      currentIndex: idx + 1,
-      totalTopics: currentChapterTopics.length
-    };
-  }, [currentChapterTopics, activeTopic]);
+    return null;
+  }, [currentTopicIndex, currentChapterTopics]);
 
-  // 8. Extract Table of Contents (Headings) from the rendered HTML content
-  const tocHeadings = useMemo<TocHeading[]>(() => {
-    if (!activeTopic?.content) return [];
-    
-    // Parse h2 and h3 from HTML string
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(activeTopic.content, 'text/html');
-    const headings = doc.querySelectorAll('h1, h2, h3');
-    
-    const items: TocHeading[] = [];
-    headings.forEach((h, index) => {
-      const text = h.textContent?.trim() || '';
-      if (!text) return;
-      const level = parseInt(h.tagName.replace('H', ''), 10);
-      const slug = text
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '') || `heading-${index}`;
-      items.push({ id: slug, text, level });
-    });
-    
-    return items;
-  }, [activeTopic?.content]);
+  const nextTopic = useMemo(() => {
+    if (currentTopicIndex >= 0 && currentTopicIndex < currentChapterTopics.length - 1) {
+      return currentChapterTopics[currentTopicIndex + 1];
+    }
+    return null;
+  }, [currentTopicIndex, currentChapterTopics]);
 
-  // Insert IDs into rendered headings for TOC jumping & setup copy buttons
-  useEffect(() => {
-    if (!contentRef.current) return;
-    
-    const headings = contentRef.current.querySelectorAll('h1, h2, h3');
-    headings.forEach((h, index) => {
-      const text = h.textContent?.trim() || '';
-      const slug = text
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '') || `heading-${index}`;
-      h.setAttribute('id', slug);
-    });
+  // 8. Search Filter results
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim() || !currentCourse) return null;
+    const q = searchQuery.toLowerCase().trim();
+    return topics.filter(t => 
+      t.courseId === currentCourse.id && 
+      (t.title.toLowerCase().includes(q) || 
+       t.tags?.some(tag => tag.toLowerCase().includes(q)))
+    );
+  }, [topics, searchQuery, currentCourse]);
 
-    // Add Copy buttons to <pre> code blocks automatically
-    const preBlocks = contentRef.current.querySelectorAll('pre');
-    preBlocks.forEach((pre) => {
-      if (pre.querySelector('.code-copy-btn')) return;
-      
-      pre.style.position = 'relative';
-      const btn = document.createElement('button');
-      btn.className = 'code-copy-btn absolute top-2.5 right-2.5 px-2 py-1 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded text-[11px] font-mono border border-slate-700 transition-all cursor-pointer flex items-center gap-1';
-      btn.innerHTML = '<span>Copy</span>';
-      
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        const codeText = pre.querySelector('code')?.innerText || pre.innerText.replace('Copy', '');
-        navigator.clipboard.writeText(codeText.trim());
-        btn.innerHTML = '<span class="text-emerald-400 font-bold">Copied!</span>';
-        setTimeout(() => {
-          btn.innerHTML = '<span>Copy</span>';
-        }, 2000);
-      };
+  // 9. Bookmarked Topics list
+  const savedTopicsList = useMemo(() => {
+    return topics.filter(t => bookmarks.includes(t.id));
+  }, [topics, bookmarks]);
 
-      pre.appendChild(btn);
-    });
-
-  }, [activeTopic?.content]);
-
-  // Smooth scroll to heading
-  const scrollToHeading = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const offset = 100;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = el.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-      setActiveHeadingId(id);
-      setIsMobileTocOpen(false);
+  // Handle Scroll Progress inside the main reading container
+  const handleContainerScroll = () => {
+    const el = mainScrollContainerRef.current;
+    if (!el) return;
+    const totalScroll = el.scrollTop;
+    const scrollableHeight = el.scrollHeight - el.clientHeight;
+    if (scrollableHeight > 0) {
+      const pct = Math.min(100, Math.max(0, (totalScroll / scrollableHeight) * 100));
+      setScrollProgress(pct);
     }
   };
 
-  // Keyboard navigation shortcuts (Left/Right arrow for prev/next lesson, '/' for search)
+  // Scroll to top on topic change
+  useEffect(() => {
+    if (mainScrollContainerRef.current) {
+      mainScrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activeTopic?.id]);
+
+  // Share Note URL Handler (Works smoothly with Web Share API or Clipboard fallback)
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareTitle = `${activeTopic?.title || 'Notes'} - ${currentCourse?.title || 'Skilldotpy'}`;
+    const shareText = `Read notes on ${activeTopic?.title || 'this topic'} on Skilldotpy`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl
+        });
+      } catch {
+        // Ignore user cancellation
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setShareToast(true);
+        setTimeout(() => setShareToast(false), 2500);
+      } catch {
+        // Fallback for older environments
+      }
+    }
+  };
+
+  // Safe Fullscreen Request
+  const requestFullscreenSafe = () => {
+    try {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    } catch {}
+  };
+
+  // Automatically request fullscreen on mount and first interaction
+  useEffect(() => {
+    requestFullscreenSafe();
+    const handleFirstInteraction = () => {
+      requestFullscreenSafe();
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+    window.addEventListener('click', handleFirstInteraction, { once: true });
+    window.addEventListener('keydown', handleFirstInteraction, { once: true });
+    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+    return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, []);
+
+  // Sync fullscreen state with document events
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsBrowserFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  // Toggle Fullscreen mode
+  const toggleBrowserFullscreen = () => {
+    if (!document.fullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
+
+  // Step-by-Step Back Handler:
+  // Navigates back through notes one by one, and on the first note exits to the course page
+  const handleBackStep = () => {
+    if (prevTopic && currentCourse && currentChapter) {
+      requestFullscreenSafe();
+      navigate(`/notes/${currentCourse.id}/${currentChapter.id}/${prevTopic.id}`, { replace: true });
+    } else {
+      handleExitReader();
+    }
+  };
+
+  // Immediate and Safe Exit Handler:
+  // Releases fullscreen and immediately navigates out of the reader directly to the course page
+  const handleExitReader = () => {
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    } catch {}
+
+    if (currentCourse?.id === 'ccc') {
+      navigate('/ccc', { replace: true });
+    } else if (currentCourse?.id) {
+      navigate(`/o-level/${currentCourse.id}`, { replace: true });
+    } else {
+      navigate('/o-level', { replace: true });
+    }
+  };
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (['input', 'textarea'].includes((document.activeElement?.tagName || '').toLowerCase())) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
-      if (e.key === 'ArrowLeft' && prevTopic) {
-        handleSelectTopic(prevTopic);
-      } else if (e.key === 'ArrowRight' && nextTopic) {
-        handleSelectTopic(nextTopic);
-      } else if (e.key === '/') {
-        e.preventDefault();
-        searchInputRef.current?.focus();
+      if (e.key === 'Escape') {
+        handleExitReader();
+      } else if (e.key === 'ArrowRight' && nextTopic && currentCourse && currentChapter) {
+        navigate(`/notes/${currentCourse.id}/${currentChapter.id}/${nextTopic.id}`, { replace: true });
+      } else if (e.key === 'ArrowLeft' && prevTopic && currentCourse && currentChapter) {
+        navigate(`/notes/${currentCourse.id}/${currentChapter.id}/${prevTopic.id}`, { replace: true });
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [prevTopic, nextTopic]);
+  }, [nextTopic, prevTopic, currentCourse, currentChapter]);
 
-  // Toggle Bookmark
-  const toggleBookmark = (topicId: string) => {
-    setBookmarks(prev => {
-      const updated = prev.includes(topicId) 
-        ? prev.filter(id => id !== topicId) 
-        : [...prev, topicId];
-      localStorage.setItem('skilldotpy_note_bookmarks', JSON.stringify(updated));
-      return updated;
-    });
-  };
-
-  // Set Font Size
-  const changeFontSize = (size: 'sm' | 'md' | 'lg' | 'xl') => {
-    setFontSize(size);
-    localStorage.setItem('skilldotpy_reader_fontsize', size);
-  };
-
-  // Folder expand/collapse toggle
-  const toggleFolder = (folderName: string) => {
-    setExpandedFolders(prev => ({
-      ...prev,
-      [folderName]: !prev[folderName]
-    }));
-  };
-
-  // Handle Course Change
-  const handleSelectCourse = (newCourseId: string) => {
-    const firstChap = chapters.find(ch => ch.courseId === newCourseId);
-    if (firstChap) {
-      const firstTop = topics.find(t => t.chapterId === firstChap.id);
-      if (firstTop) {
-        navigate(`/notes/${newCourseId}/${firstChap.id}/${firstTop.id}`);
-      } else {
-        navigate(`/notes/${newCourseId}/${firstChap.id}`);
-      }
-    } else {
-      navigate(`/notes/${newCourseId}`);
+  // Dynamic Theme Colors
+  const themeClasses = useMemo(() => {
+    if (readingTheme === 'dark') {
+      return {
+        bg: 'bg-[#0F172A] text-slate-100',
+        headerBg: 'bg-[#1E293B]/95 border-slate-700/80 text-slate-100',
+        sidebarBg: 'bg-[#0B1120] border-slate-800 text-slate-200',
+        cardBg: 'bg-[#1E293B] border-slate-700/80 text-slate-100 shadow-xl shadow-black/20',
+        subtleBg: 'bg-[#1E293B] border-slate-700 text-slate-300',
+        accentText: 'text-blue-400',
+        hoverItem: 'hover:bg-slate-800/80 text-slate-300',
+        divider: 'border-slate-800',
+        textMuted: 'text-slate-400',
+        textBody: 'text-slate-200',
+        exitBtn: 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700',
+        calloutBg: 'bg-blue-950/40 border-blue-800/60 text-blue-200'
+      };
     }
-  };
-
-  // Handle Chapter Change
-  const handleSelectChapter = (newChapterId: string) => {
-    const courseIdToUse = currentCourse?.id || 'm1-r5';
-    const firstTop = topics.find(t => t.chapterId === newChapterId);
-    if (firstTop) {
-      navigate(`/notes/${courseIdToUse}/${newChapterId}/${firstTop.id}`);
-    } else {
-      navigate(`/notes/${courseIdToUse}/${newChapterId}`);
+    if (readingTheme === 'sepia') {
+      return {
+        bg: 'bg-[#FBF7EE] text-[#4A3E3D]',
+        headerBg: 'bg-[#F4EDE0]/95 border-[#E2D5C3] text-[#3D3231]',
+        sidebarBg: 'bg-[#F4EDE0] border-[#E2D5C3] text-[#4A3E3D]',
+        cardBg: 'bg-[#FFFDF9] border-[#E8DEC8] text-[#3D3231] shadow-xs',
+        subtleBg: 'bg-[#F0E6D2] border-[#E0D4BE] text-[#4A3E3D]',
+        accentText: 'text-[#A05A2C]',
+        hoverItem: 'hover:bg-[#EFE5D3] text-[#4A3E3D]',
+        divider: 'border-[#E2D5C3]',
+        textMuted: 'text-[#857470]',
+        textBody: 'text-[#3D3231]',
+        exitBtn: 'bg-[#EBDDC3] hover:bg-[#E2D2B5] text-[#3D3231] border-[#DCCBB0]',
+        calloutBg: 'bg-[#F5EAD4] border-[#DFCBB0] text-[#5A4638]'
+      };
     }
-  };
+    // Default Light Theme (Matches Reference UI)
+    return {
+      bg: 'bg-[#F8FAFC] text-slate-900',
+      headerBg: 'bg-white border-slate-200 text-slate-900',
+      sidebarBg: 'bg-white border-slate-200 text-slate-800',
+      cardBg: 'bg-white border-slate-200/90 text-slate-900 shadow-xs',
+      subtleBg: 'bg-slate-100 border-slate-200 text-slate-700',
+      accentText: 'text-blue-600',
+      hoverItem: 'hover:bg-slate-50 text-slate-700',
+      divider: 'border-slate-200',
+      textMuted: 'text-slate-500',
+      textBody: 'text-slate-800',
+      exitBtn: 'bg-white hover:bg-slate-50 text-slate-700 border-slate-300',
+      calloutBg: 'bg-blue-50/70 border-blue-100 text-slate-700'
+    };
+  }, [readingTheme]);
 
-  // Handle Topic Selection
-  const handleSelectTopic = (topic: NoteTopic) => {
-    const targetCourseId = topic.courseId || currentCourse?.id || 'm1-r5';
-    const targetChapterId = topic.chapterId || currentChapter?.id || 'm1-ch1-intro-computer';
-    navigate(`/notes/${targetCourseId}/${targetChapterId}/${topic.id}`);
-    setIsMobileSidebarOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const typographyStyleClass = useMemo(() => {
+    const sizeMap = {
+      sm: 'text-sm leading-relaxed',
+      md: 'text-base leading-relaxed',
+      lg: 'text-lg leading-loose',
+      xl: 'text-xl leading-loose'
+    };
+    const familyMap = {
+      sans: 'font-sans',
+      serif: 'font-serif',
+      mono: 'font-mono'
+    };
+    return `${sizeMap[fontSize]} ${familyMap[fontFamily]}`;
+  }, [fontSize, fontFamily]);
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const isCurrentBookmarked = activeTopic ? bookmarks.includes(activeTopic.id) : false;
+  const isCurrentTopicBookmarked = activeTopic ? bookmarks.includes(activeTopic.id) : false;
 
   return (
-    <div className="bg-slate-100/70 min-h-screen text-slate-800">
+    <div 
+      className={`fixed inset-0 z-50 h-screen w-screen overflow-hidden flex flex-col select-none notes-reader-theme-${readingTheme} ${readingTheme === 'dark' ? 'dark' : ''} ${themeClasses.bg}`}
+      onContextMenu={(e) => e.preventDefault()}
+      onCopy={(e) => { e.preventDefault(); return false; }}
+      onCut={(e) => { e.preventDefault(); return false; }}
+    >
+      
       <SEO 
-        title={`${activeTopic?.title || 'Chapter Notes'} - ${currentCourse?.title || 'O Level'}`}
-        description={activeTopic?.hindiTitle ? `${activeTopic.title} (${activeTopic.hindiTitle}) - Comprehensive free chapter study notes and concepts for NIELIT exams by Skilldotpy.` : 'Comprehensive free chapter study notes, formulas and key concepts for NIELIT exams by Skilldotpy.'}
-        keywords={[
-          activeTopic?.title || 'NIELIT Notes',
-          currentCourse?.title || 'O Level Notes',
-          'Skilldotpy free study notes',
-          'NIELIT exam notes pdf'
-        ]}
+        title={`${activeTopic?.title || 'Notes'} - ${currentCourse?.title || 'NIELIT'} | Skilldotpy`}
+        description={activeTopic ? `Read chapter-wise revision notes on ${activeTopic.title}.` : 'Minimalist clean NIELIT Notes reader.'}
+        url={`https://skilldotpy.com/notes/${currentCourse?.id || ''}/${currentChapter?.id || ''}/${activeTopic?.id || ''}`}
       />
 
-      {/* =========================================================================
-          TOP READING PROGRESS BAR (Sleek Gradient Indicator)
-         ========================================================================= */}
-      <div 
-        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500 z-50 transition-all duration-150"
-        style={{ width: `${scrollProgress}%` }}
-      />
-
-      {/* =========================================================================
-          MODERN COURSE SELECTOR TABS HEADER STRIP
-         ========================================================================= */}
-      <div className="bg-white border-b border-slate-200/90 sticky top-14 sm:top-15 z-30 shadow-2xs">
-        <div className="max-w-[1680px] mx-auto px-3 sm:px-6 py-2.5">
-          
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            
-            {/* 1. Interactive Course Selector Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-              <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 mr-1 hidden md:inline">
-                Courses:
-              </span>
-              {courses.map(c => {
-                const isActive = c.id === currentCourse?.id;
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => handleSelectCourse(c.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
-                      isActive
-                        ? 'bg-blue-600 text-white shadow-xs ring-2 ring-blue-500/20'
-                        : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700 border border-slate-200/60'
-                    }`}
-                  >
-                    <GraduationCap className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} />
-                    <span>{c.code}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* 2. Top Right Usability Controls (Chapter Dropdown, View Toggles) */}
-            <div className="flex items-center gap-2 ml-auto">
-              
-              {/* Chapter Selector Dropdown */}
-              <div className="relative">
-                <select
-                  value={currentChapter?.id || ''}
-                  onChange={(e) => handleSelectChapter(e.target.value)}
-                  className="text-xs font-bold bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-2xs max-w-[180px] sm:max-w-[240px] truncate pr-7"
-                >
-                  {currentCourseChapters.map(ch => (
-                    <option key={ch.id} value={ch.id}>
-                      Ch {ch.chapterNumber}: {ch.title}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-
-              {/* Toggle Left Sidebar Button */}
-              <button
-                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                className={`hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                  isSidebarCollapsed
-                    ? 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
-                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-                title={isSidebarCollapsed ? "Open Lecture Index" : "Collapse Sidebar for Wider View"}
-              >
-                {isSidebarCollapsed ? <PanelLeftOpen className="w-3.5 h-3.5 text-blue-600" /> : <PanelLeftClose className="w-3.5 h-3.5" />}
-                <span className="hidden xl:inline">{isSidebarCollapsed ? 'Show Index' : 'Hide Index'}</span>
-              </button>
-
-              {/* Toggle Reading Width (Standard / Expanded) */}
-              <button
-                onClick={() => setIsWideReadingMode(!isWideReadingMode)}
-                className={`hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                  isWideReadingMode
-                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'
-                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-                title="Toggle Reading Canvas Width"
-              >
-                {isWideReadingMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                <span className="hidden xl:inline">{isWideReadingMode ? 'Standard' : 'Full Canvas'}</span>
-              </button>
-
-              {/* Mobile Drawer Triggers */}
-              <button
-                onClick={() => setIsMobileSidebarOpen(true)}
-                className="lg:hidden p-1.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1 text-xs font-bold"
-              >
-                <List className="w-4 h-4" />
-                <span>Lectures</span>
-              </button>
-
-              {tocHeadings.length > 0 && (
-                <button
-                  onClick={() => setIsMobileTocOpen(true)}
-                  className="xl:hidden p-1.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1 text-xs font-bold"
-                >
-                  <Hash className="w-4 h-4 text-slate-500" />
-                  <span className="hidden sm:inline">On Page</span>
-                </button>
-              )}
-
-            </div>
-
-          </div>
-
+      {/* Share Toast Feedback */}
+      {shareToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-60 bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+          <Check className="w-4 h-4 text-emerald-400" />
+          <span>Note link copied to clipboard!</span>
         </div>
-      </div>
+      )}
 
-      {/* =========================================================================
-          MAIN EXPANSIVE CONTAINER (Extended Width Layout)
-         ========================================================================= */}
-      <div className="max-w-[1680px] mx-auto px-3 sm:px-6 py-5 sm:py-7">
+      {/* ========================================================================= */}
+      {/* 1. TOP NAVIGATION BAR */}
+      {/* ========================================================================= */}
+      <header className={`h-14 sm:h-16 px-2 sm:px-4 md:px-6 border-b flex items-center justify-between z-30 shrink-0 transition-colors gap-2 ${themeClasses.headerBg}`}>
         
-        {/* Full Page Mode Alert Banner */}
-        {isSidebarCollapsed && (
-          <div className="mb-4 hidden lg:flex items-center justify-between bg-blue-50/80 border border-blue-200/70 rounded-2xl px-4 py-2 text-xs text-blue-900 shadow-2xs">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-              <span><strong>Immersive Reading Canvas Active</strong>: Sidebar collapsed for maximum comfortable study space.</span>
+        {/* Left Side: Sidebar Toggle, Back Button & Step Breadcrumb */}
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
+          
+          {/* Hamburger Sidebar Toggle Button */}
+          <button
+            id="notes-toggle-sidebar-btn"
+            onClick={() => {
+              if (window.innerWidth < 768) {
+                setIsMobileSidebarOpen(!isMobileSidebarOpen);
+              } else {
+                setIsSidebarOpen(!isSidebarOpen);
+              }
+            }}
+            className="min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] p-2 sm:p-2.5 rounded-xl transition-colors cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center shrink-0"
+            title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
+            aria-label="Toggle notes navigation sidebar"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          {/* Back Step-by-Step Button: Backs topic by topic, lastly exits to previous course page */}
+          <button
+            id="notes-back-step-btn"
+            onClick={handleBackStep}
+            className="min-h-[36px] sm:min-h-[40px] px-2 sm:px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1 text-xs sm:text-sm font-semibold shrink-0 cursor-pointer shadow-2xs"
+            title={prevTopic ? "Back to previous topic" : "Exit back to course syllabus"}
+            aria-label="Back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden xs:inline">Back</span>
+          </button>
+
+          {/* Chapter / Topic Step Breadcrumb with Underline Bar */}
+          <div className="flex flex-col min-w-0 flex-1 pl-1">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-bold tracking-tight">
+              <span className="text-slate-900 dark:text-white shrink-0">
+                {currentChapter ? `Ch ${currentChapter.chapterNumber}` : 'Ch 1'}
+              </span>
+              <span className="text-slate-400 font-normal">/</span>
+              <span className="text-slate-600 dark:text-slate-300 font-medium truncate text-[11px] sm:text-xs md:text-sm">
+                {currentChapterTopics.length > 0 && currentTopicIndex >= 0 
+                  ? `Topic ${currentTopicIndex + 1} of ${currentChapterTopics.length}` 
+                  : (activeTopic?.title || 'Topic 1 of 6')}
+              </span>
             </div>
-            <button
-              onClick={() => setIsSidebarCollapsed(false)}
-              className="inline-flex items-center gap-1 font-bold text-blue-700 hover:text-blue-900 bg-white px-3 py-1 rounded-xl border border-blue-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
-            >
-              <PanelLeftOpen className="w-3.5 h-3.5" />
-              <span>Restore Sidebar</span>
-            </button>
+            
+            {/* Progress Underline */}
+            <div className="w-16 sm:w-36 md:w-56 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1">
+              <div 
+                className="h-full bg-blue-600 transition-all duration-300 rounded-full"
+                style={{ 
+                  width: `${currentChapterTopics.length > 0 && currentTopicIndex >= 0 
+                    ? ((currentTopicIndex + 1) / currentChapterTopics.length) * 100 
+                    : 16}%` 
+                }}
+              />
+            </div>
           </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          {/* =========================================================================
-              LEFT COLUMN: SEARCHABLE LECTURE TREE (Desktop)
-             ========================================================================= */}
-          {!isSidebarCollapsed && (
-            <aside className="hidden lg:block lg:col-span-3 sticky top-28 space-y-4 no-print animate-in fade-in duration-150">
-              
-              <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
-                
-                {/* 1. Sidebar Header */}
-                <div className="p-4 border-b border-slate-100 bg-slate-50/70">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60">
-                      Ch {currentChapter?.chapterNumber || 1} Syllabus
-                    </span>
-                    <button
-                      onClick={() => setIsSidebarCollapsed(true)}
-                      className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-200/70 transition-colors"
-                      title="Hide Sidebar"
-                    >
-                      <PanelLeftClose className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 mt-2 line-clamp-1">
-                    {currentChapter?.title || 'Chapter Index'}
-                  </h3>
-                  
-                  {/* 2. Fast Instant Search Input */}
-                  <div className="relative mt-3">
-                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      placeholder="Search lecture... (/)"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full text-xs pl-8 pr-7 py-2 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-slate-400 transition-all"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* 3. Filter Tabs (All / Bookmarked) */}
-                  <div className="flex items-center gap-1.5 mt-2.5">
-                    <button
-                      onClick={() => setSelectedFilter('all')}
-                      className={`flex-1 py-1 rounded-lg text-[11px] font-bold text-center transition-all cursor-pointer ${
-                        selectedFilter === 'all'
-                          ? 'bg-blue-600 text-white shadow-2xs'
-                          : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100'
-                      }`}
-                    >
-                      All ({currentChapterTopics.length})
-                    </button>
-                    <button
-                      onClick={() => setSelectedFilter('bookmarked')}
-                      className={`flex-1 py-1 rounded-lg text-[11px] font-bold text-center transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                        selectedFilter === 'bookmarked'
-                          ? 'bg-amber-600 text-white shadow-2xs'
-                          : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100'
-                      }`}
-                    >
-                      <Bookmark className="w-3 h-3" />
-                      <span>Saved ({currentChapterTopics.filter(t => bookmarks.includes(t.id)).length})</span>
-                    </button>
-                  </div>
-
-                </div>
-
-                {/* 4. Tree Items List */}
-                <div className="p-2.5 max-h-[62vh] overflow-y-auto space-y-1 text-xs">
-                  
-                  {/* Root Level Items */}
-                  {groupedTopics.rootItems.map(topic => {
-                    const isActive = topic.id === activeTopic?.id;
-                    const isBookmarked = bookmarks.includes(topic.id);
-                    return (
-                      <button
-                        key={topic.id}
-                        onClick={() => handleSelectTopic(topic)}
-                        className={`w-full text-left px-3 py-2.5 rounded-xl font-semibold transition-all flex items-center justify-between gap-2 cursor-pointer group ${
-                          isActive
-                            ? 'bg-blue-600 text-white font-bold shadow-xs'
-                            : 'text-slate-700 hover:bg-slate-100/90'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 truncate">
-                          <FileText className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-blue-600'}`} />
-                          <span className="truncate text-xs">{topic.title}</span>
-                        </div>
-                        {isBookmarked && (
-                          <BookmarkCheck className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-amber-300' : 'text-amber-500'}`} />
-                        )}
-                      </button>
-                    );
-                  })}
-
-                  {/* Subfolder Topic Groups */}
-                  {Object.entries(groupedTopics.folders).map(([folderName, childTopics]) => {
-                    const isExpanded = expandedFolders[folderName] ?? true;
-                    const isFolderActive = childTopics.some(t => t.id === activeTopic?.id);
-
-                    return (
-                      <div key={folderName} className="space-y-1 pt-1">
-                        
-                        {/* Folder Header Item */}
-                        <button
-                          onClick={() => toggleFolder(folderName)}
-                          className={`w-full text-left px-3 py-2 rounded-xl font-bold transition-all flex items-center justify-between cursor-pointer ${
-                            isFolderActive
-                              ? 'bg-blue-50 text-blue-900 border border-blue-200/80'
-                              : 'text-slate-800 hover:bg-slate-100'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            {isExpanded ? (
-                              <FolderOpen className="w-4 h-4 text-amber-500 shrink-0" />
-                            ) : (
-                              <Folder className="w-4 h-4 text-amber-500 shrink-0" />
-                            )}
-                            <span className="truncate text-xs">{folderName}</span>
-                            <span className="text-[10px] font-bold text-slate-400 ml-1">({childTopics.length})</span>
-                          </div>
-                          {isExpanded ? (
-                            <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          ) : (
-                            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          )}
-                        </button>
-
-                        {/* Child topics inside Folder */}
-                        {isExpanded && (
-                          <div className="pl-3 pr-1 py-1 space-y-1 border-l-2 border-slate-200 ml-3.5">
-                            {childTopics.map(child => {
-                              const isChildActive = child.id === activeTopic?.id;
-                              const isChildBookmarked = bookmarks.includes(child.id);
-                              return (
-                                <button
-                                  key={child.id}
-                                  onClick={() => handleSelectTopic(child)}
-                                  className={`w-full text-left px-2.5 py-2 rounded-lg text-xs transition-all flex items-center justify-between gap-2 cursor-pointer ${
-                                    isChildActive
-                                      ? 'bg-blue-600 text-white font-bold shadow-xs'
-                                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-1.5 truncate">
-                                    <FileText className={`w-3.5 h-3.5 shrink-0 ${isChildActive ? 'text-white' : 'text-slate-400'}`} />
-                                    <span className="truncate text-[11px]">{child.title}</span>
-                                  </div>
-                                  {isChildBookmarked && (
-                                    <BookmarkCheck className={`w-3 h-3 shrink-0 ${isChildActive ? 'text-amber-300' : 'text-amber-500'}`} />
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-
-                      </div>
-                    );
-                  })}
-
-                  {groupedTopics.rootItems.length === 0 && Object.keys(groupedTopics.folders).length === 0 && (
-                    <div className="text-center py-8 px-3 text-slate-400 text-xs">
-                      <FileText className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                      <p className="font-bold text-slate-600">
-                        {searchQuery ? `No topics match "${searchQuery}"` : 'No lecture notes found'}
-                      </p>
-                      {searchQuery && (
-                        <button
-                          onClick={() => setSearchQuery('')}
-                          className="mt-2 text-blue-600 hover:underline font-bold text-xs"
-                        >
-                          Clear Search
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                </div>
-
-                {/* 5. Bottom Navigation Shortcut Links */}
-                <div className="p-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs font-bold">
-                  <Link to={`/o-level/${currentCourse?.id || 'm1-r5'}`} className="text-blue-600 hover:underline flex items-center gap-1">
-                    <span>← Full Syllabus</span>
-                  </Link>
-                  <Link to="/o-level-result-calculator" className="text-emerald-700 hover:underline flex items-center gap-1">
-                    <Calculator className="w-3 h-3" />
-                    <span>Calculator</span>
-                  </Link>
-                </div>
-
-              </div>
-
-              {/* Sidebar Sponsor Card */}
-              <AdBanner slotId="notes-sidebar-sponsor" format="rectangle" fallbackType="app" />
-
-            </aside>
-          )}
-
-          {/* =========================================================================
-              CENTER COLUMN: EXPANSIVE & PROFESSIONAL NOTE ARTICLE CANVAS
-             ========================================================================= */}
-          <main className={`${
-            isSidebarCollapsed 
-              ? (isTocCollapsed || tocHeadings.length === 0 ? 'lg:col-span-12' : 'lg:col-span-9 xl:col-span-10')
-              : (isTocCollapsed || tocHeadings.length === 0 ? 'lg:col-span-9' : 'lg:col-span-6 xl:col-span-7')
-          } transition-all duration-200`}>
-            
-            <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-8 lg:p-12 notes-main-content">
-              
-              {activeTopic ? (
-                <div className={isWideReadingMode ? 'w-full' : 'max-w-[85ch] mx-auto'}>
-                  
-                  {/* 1. Header Badges & Quick Tools */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4 sm:mb-6">
-                    
-                    {/* Course & Chapter Breadcrumb Chips */}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="bg-blue-50 text-blue-800 text-xs font-extrabold uppercase px-3 py-1 rounded-xl tracking-wide border border-blue-200/80 flex items-center gap-1">
-                        <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
-                        <span>{currentCourse?.code || 'M1-R5.1'}</span>
-                      </span>
-                      <span className="bg-slate-100 text-slate-700 text-xs font-bold uppercase px-3 py-1 rounded-xl tracking-wide border border-slate-200">
-                        {currentChapter?.title} (Ch {currentChapter?.chapterNumber || 1})
-                      </span>
-                      {totalTopics > 0 && (
-                        <span className="bg-emerald-50 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-xl border border-emerald-200/60 hidden sm:inline-flex items-center gap-1">
-                          <FileCheck className="w-3 h-3 text-emerald-600" />
-                          <span>Topic {currentIndex} of {totalTopics}</span>
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Learning Toolbar: Font Size, Bookmark, Share, Print */}
-                    <div className="flex items-center gap-1.5 no-print">
-                      
-                      {/* Font Size Adjuster Group */}
-                      <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200/80">
-                        <button
-                          onClick={() => changeFontSize('sm')}
-                          className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                            fontSize === 'sm' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
-                          }`}
-                          title="Small font size"
-                        >
-                          A-
-                        </button>
-                        <button
-                          onClick={() => changeFontSize('md')}
-                          className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                            fontSize === 'md' ? 'bg-white text-blue-600 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
-                          }`}
-                          title="Default font size"
-                        >
-                          A
-                        </button>
-                        <button
-                          onClick={() => changeFontSize('lg')}
-                          className={`px-2 py-1 rounded-lg text-sm font-bold transition-all cursor-pointer ${
-                            fontSize === 'lg' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
-                          }`}
-                          title="Large font size"
-                        >
-                          A+
-                        </button>
-                        <button
-                          onClick={() => changeFontSize('xl')}
-                          className={`px-2 py-1 rounded-lg text-base font-bold transition-all cursor-pointer ${
-                            fontSize === 'xl' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
-                          }`}
-                          title="Extra large font size"
-                        >
-                          A++
-                        </button>
-                      </div>
-
-                      {/* Bookmark Toggle Button */}
-                      <button
-                        onClick={() => toggleBookmark(activeTopic.id)}
-                        className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
-                          isCurrentBookmarked
-                            ? 'bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100'
-                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                        }`}
-                        title={isCurrentBookmarked ? "Remove Bookmark" : "Save this note"}
-                      >
-                        {isCurrentBookmarked ? (
-                          <BookmarkCheck className="w-4 h-4 text-amber-600 fill-amber-500" />
-                        ) : (
-                          <Bookmark className="w-4 h-4 text-slate-500" />
-                        )}
-                        <span className="hidden md:inline">{isCurrentBookmarked ? 'Saved' : 'Save'}</span>
-                      </button>
-
-                      {/* Print Button */}
-                      <button
-                        onClick={handlePrint}
-                        className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 font-bold transition-all cursor-pointer text-xs"
-                        title="Print this note"
-                      >
-                        <Printer className="w-4 h-4" />
-                      </button>
-
-                      {/* Share / Copy Link */}
-                      <button
-                        onClick={copyToClipboard}
-                        className={`px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold text-xs transition-all cursor-pointer border ${
-                          copied 
-                            ? 'bg-emerald-600 text-white border-emerald-600' 
-                            : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-                        }`}
-                        title="Share note link"
-                      >
-                        {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-                        <span className="hidden sm:inline">{copied ? 'Copied' : 'Share'}</span>
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                  {/* 2. Main Article Title & Hindi Subtitle */}
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight mb-2 break-words">
-                    {activeTopic.title}
-                  </h1>
-                  
-                  {activeTopic.hindiTitle && (
-                    <p className="text-base sm:text-lg lg:text-xl font-bold text-blue-700 mb-5 break-words">
-                      {activeTopic.hindiTitle}
-                    </p>
-                  )}
-
-                  {/* 3. Article Meta Bar */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 py-3 border-y border-slate-200/90 mb-8 text-xs text-slate-600 no-print bg-slate-50/50 px-4 rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1.5 font-semibold text-slate-700">
-                        <Eye className="w-4 h-4 text-blue-600" />
-                        <span>{activeTopic.views || 1} views</span>
-                      </span>
-                      <span className="text-slate-300">•</span>
-                      <span className="flex items-center gap-1.5 font-semibold text-slate-700">
-                        <Clock className="w-4 h-4 text-emerald-600" />
-                        <span>{activeTopic.readTime || '3 min read'}</span>
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => openAssistant(currentCourse?.title || 'NIELIT Notes', `Explain "${activeTopic.title}" in simple exam-friendly terms with practical examples.`)}
-                        className="text-xs font-bold text-blue-700 hover:text-blue-900 flex items-center gap-1 cursor-pointer bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200/60"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                        <span>Explain with AI Guru</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* 4. Rich Note Body Content with Dynamic Typography */}
-                  <div 
-                    ref={contentRef}
-                    className={`notes-body font-size-${fontSize} text-slate-800 leading-relaxed space-y-6 max-w-none break-words overflow-hidden`}
-                    dangerouslySetInnerHTML={{ __html: activeTopic.content }}
-                  />
-
-                  {/* PRIME AD PLACEMENT: Topic Content End Banner */}
-                  <div className="no-print pt-8">
-                    <AdBanner slotId="notes-topic-end" format="horizontal" fallbackType="telegram" />
-                  </div>
-
-                  {/* 5. Bottom Navigation Bar (Prev / Next Lesson) */}
-                  <div className="mt-12 pt-8 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4 no-print">
-                    {prevTopic ? (
-                      <button
-                        onClick={() => handleSelectTopic(prevTopic)}
-                        className="p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-blue-300 hover:shadow-md text-left transition-all group flex items-center gap-3 cursor-pointer"
-                      >
-                        <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:border-blue-300 shadow-2xs shrink-0">
-                          <ArrowLeft className="w-5 h-5" />
-                        </div>
-                        <div className="truncate">
-                          <span className="text-[10px] uppercase font-black text-slate-400 block tracking-wider">Previous Topic</span>
-                          <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-600 truncate block">
-                            {prevTopic.title}
-                          </span>
-                        </div>
-                      </button>
-                    ) : (
-                      <div />
-                    )}
-
-                    {nextTopic ? (
-                      <button
-                        onClick={() => handleSelectTopic(nextTopic)}
-                        className="p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-blue-300 hover:shadow-md text-right transition-all group flex items-center justify-end gap-3 cursor-pointer ml-auto w-full sm:w-auto"
-                      >
-                        <div className="truncate text-right">
-                          <span className="text-[10px] uppercase font-black text-slate-400 block tracking-wider">Next Topic</span>
-                          <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-600 truncate block">
-                            {nextTopic.title}
-                          </span>
-                        </div>
-                        <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform shrink-0">
-                          <ArrowRight className="w-5 h-5" />
-                        </div>
-                      </button>
-                    ) : (
-                      <div />
-                    )}
-                  </div>
-
-                  {/* 6. Ask Doubt AI Guru Tutor Card */}
-                  <div className="mt-10 p-6 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border border-blue-200/80 flex flex-col sm:flex-row items-center justify-between gap-5 no-print shadow-xs">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                        <Sparkles className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h4 className="text-sm sm:text-base font-black text-slate-900">Have an exam doubt in this topic?</h4>
-                        <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
-                          Ask AI Guru for easy-to-remember notes, previous years' exam questions, and Hindi/English formulas.
-                        </p>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => openAssistant(currentCourse?.title || 'NIELIT Notes', activeTopic?.title ? `I have a doubt in "${activeTopic.title}". Can you explain it simply with exam examples?` : undefined)}
-                      className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black shadow-sm hover:shadow-md transition-all shrink-0 cursor-pointer"
-                    >
-                      Ask AI Guru
-                    </button>
-                  </div>
-
-                </div>
-              ) : (
-                <div className="py-20 text-center">
-                  <div className="w-16 h-16 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-xs">
-                    <BookOpen className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-black text-slate-900">
-                    {currentCourseChapters.length === 0 
-                      ? `No Chapters or Notes in ${currentCourse?.code || 'this Course'}`
-                      : 'Select a Lecture Topic to Read'}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mt-2 leading-relaxed">
-                    {currentCourseChapters.length === 0
-                      ? 'You can add new chapters and detailed lecture notes for this module in the Admin Dashboard.'
-                      : 'Choose any lecture topic from the syllabus tree on the left to start studying.'}
-                  </p>
-                  <div className="mt-6 flex items-center justify-center gap-3">
-                    <Link
-                      to="/admin"
-                      className="px-5 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all"
-                    >
-                      Open Admin Dashboard
-                    </Link>
-                    <Link
-                      to="/"
-                      className="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all"
-                    >
-                      Back to Home
-                    </Link>
-                  </div>
-                </div>
-              )}
-
-            </div>
-
-          </main>
-
-          {/* =========================================================================
-              RIGHT COLUMN: "ON THIS PAGE" TABLE OF CONTENTS (TOC) (Desktop)
-             ========================================================================= */}
-          {tocHeadings.length > 0 && !isTocCollapsed && (
-            <aside className="hidden xl:block xl:col-span-2 sticky top-28 space-y-4 no-print animate-in fade-in duration-150">
-              
-              <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-4 text-xs">
-                
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <div className="flex items-center gap-1.5 font-extrabold text-slate-900 uppercase text-[11px] tracking-wider">
-                    <Hash className="w-3.5 h-3.5 text-blue-600" />
-                    <span>On This Page</span>
-                  </div>
-                  <button
-                    onClick={() => setIsTocCollapsed(true)}
-                    className="text-slate-400 hover:text-slate-700 p-0.5 rounded"
-                    title="Hide Table of Contents"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                <nav className="mt-3 space-y-1 max-h-[60vh] overflow-y-auto">
-                  {tocHeadings.map((heading) => (
-                    <button
-                      key={heading.id}
-                      onClick={() => scrollToHeading(heading.id)}
-                      className={`w-full text-left py-1.5 px-2 rounded-lg transition-all text-xs cursor-pointer block truncate ${
-                        heading.level === 3 ? 'pl-4 text-[11px]' : 'font-bold'
-                      } ${
-                        activeHeadingId === heading.id
-                          ? 'bg-blue-50 text-blue-700 font-extrabold'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                      }`}
-                    >
-                      {heading.text}
-                    </button>
-                  ))}
-                </nav>
-
-                {/* Quick Top Scroll button */}
-                <button
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="w-full mt-4 pt-3 border-t border-slate-100 text-[11px] font-bold text-slate-500 hover:text-blue-600 flex items-center justify-center gap-1 cursor-pointer"
-                >
-                  <ChevronUp className="w-3.5 h-3.5" />
-                  <span>Back to top</span>
-                </button>
-
-              </div>
-
-              {/* TOC Column Sponsor */}
-              <AdBanner slotId="notes-toc-sponsor" format="rectangle" fallbackType="youtube" />
-
-            </aside>
-          )}
-
         </div>
-      </div>
 
-      {/* =========================================================================
-          MOBILE LECTURE TREE SLIDE-OVER DRAWER
-         ========================================================================= */}
-      {isMobileSidebarOpen && (
-        <div className="fixed inset-0 z-[90] lg:hidden flex">
+        {/* Right Side: Theme, Typography, Bookmark & Exit Button */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           
-          <div 
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-200"
-            onClick={() => setIsMobileSidebarOpen(false)}
-            aria-hidden="true"
-          />
+          {/* Theme Quick Switcher Toggle */}
+          <button
+            id="notes-theme-switcher-btn"
+            onClick={() => {
+              setReadingTheme(prev => {
+                if (prev === 'light') return 'sepia';
+                if (prev === 'sepia') return 'dark';
+                return 'light';
+              });
+            }}
+            className="p-1.5 sm:p-2 md:p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+            title="Toggle Theme"
+            aria-label="Toggle Reading Theme"
+          >
+            {readingTheme === 'dark' ? <Moon className="w-4 h-4 text-blue-400" /> : 
+             readingTheme === 'sepia' ? <Coffee className="w-4 h-4 text-amber-700" /> : 
+             <Sun className="w-4 h-4 text-amber-500" />}
+          </button>
 
-          <div className="relative w-[85%] max-w-xs sm:max-w-sm bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto z-10 animate-in slide-in-from-left duration-200">
-            
-            <div>
-              <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-                <div>
-                  <span className="text-[10px] font-black uppercase text-blue-700">Course Syllabus</span>
-                  <h4 className="text-xs font-extrabold text-slate-900 truncate max-w-[200px]">
-                    {currentChapter?.title}
-                  </h4>
-                </div>
-                <button
-                  onClick={() => setIsMobileSidebarOpen(false)}
-                  className="p-1.5 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+          {/* Typography Customization Menu (Aa) */}
+          <div className="relative">
+            <button
+              id="notes-typography-toggle-btn"
+              onClick={() => setShowTypographyMenu(!showTypographyMenu)}
+              className={`px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-700/80 text-xs font-bold transition-colors cursor-pointer ${
+                showTypographyMenu ? 'bg-blue-50 border-blue-300 text-blue-600' : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+              }`}
+              title="Reading Appearance & Font Size"
+              aria-label="Text Settings"
+            >
+              <Type className="w-4 h-4" />
+            </button>
 
-              {/* Course switch in mobile drawer */}
-              <div className="p-3 border-b border-slate-100 bg-white">
-                <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
-                  Switch Module
-                </label>
-                <select
-                  value={currentCourse?.id || 'm1-r5'}
-                  onChange={(e) => {
-                    handleSelectCourse(e.target.value);
-                    setIsMobileSidebarOpen(false);
-                  }}
-                  className="w-full text-xs font-bold p-2 rounded-xl border border-slate-200 bg-slate-50"
-                >
-                  {courses.map(c => (
-                    <option key={c.id} value={c.id}>{c.code} - {c.title}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="p-3 space-y-1 text-xs">
-                {groupedTopics.rootItems.map(topic => (
-                  <button
-                    key={topic.id}
-                    onClick={() => {
-                      handleSelectTopic(topic);
-                      setIsMobileSidebarOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl font-semibold flex items-center justify-between gap-2 cursor-pointer ${
-                      topic.id === activeTopic?.id ? 'bg-blue-600 text-white font-bold' : 'text-slate-700 hover:bg-slate-100'
-                    }`}
+            {/* Typography Popover Modal */}
+            {showTypographyMenu && (
+              <div className={`absolute right-0 top-12 w-64 p-4 rounded-2xl shadow-2xl border z-50 animate-in fade-in zoom-in-95 ${themeClasses.cardBg}`}>
+                <div className="flex items-center justify-between pb-2 border-b mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider">Appearance</span>
+                  <button 
+                    onClick={() => setShowTypographyMenu(false)}
+                    className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
                   >
-                    <div className="flex items-center gap-2 truncate">
-                      <FileText className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">{topic.title}</span>
-                    </div>
-                    {bookmarks.includes(topic.id) && (
-                      <BookmarkCheck className="w-3 h-3 text-amber-400" />
-                    )}
+                    <X className="w-4 h-4" />
                   </button>
-                ))}
+                </div>
 
-                {Object.entries(groupedTopics.folders).map(([folderName, childTopics]) => (
-                  <div key={folderName} className="space-y-1 pt-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block px-2">
-                      {folderName}
-                    </span>
-                    {childTopics.map(child => (
+                {/* Font Size Selector */}
+                <div className="mb-4">
+                  <label className="text-xs font-medium text-slate-500 block mb-1.5">Text Size</label>
+                  <div className="grid grid-cols-4 gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
+                    {(['sm', 'md', 'lg', 'xl'] as const).map((sz) => (
                       <button
-                        key={child.id}
-                        onClick={() => {
-                          handleSelectTopic(child);
-                          setIsMobileSidebarOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between gap-2 cursor-pointer ${
-                          child.id === activeTopic?.id ? 'bg-blue-600 text-white font-bold' : 'text-slate-600 hover:bg-slate-100'
+                        key={sz}
+                        onClick={() => setFontSize(sz)}
+                        className={`py-1 text-xs font-bold rounded-lg uppercase transition-all ${
+                          fontSize === sz ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
                         }`}
                       >
-                        <div className="flex items-center gap-2 truncate">
-                          <FileText className="w-3 h-3 shrink-0" />
-                          <span className="truncate">{child.title}</span>
-                        </div>
-                        {bookmarks.includes(child.id) && (
-                          <BookmarkCheck className="w-3 h-3 text-amber-400" />
-                        )}
+                        {sz}
                       </button>
                     ))}
                   </div>
-                ))}
+                </div>
+
+                {/* Font Family Selector */}
+                <div className="mb-4">
+                  <label className="text-xs font-medium text-slate-500 block mb-1.5">Font Style</label>
+                  <div className="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
+                    {(['sans', 'serif', 'mono'] as const).map((fm) => (
+                      <button
+                        key={fm}
+                        onClick={() => setFontFamily(fm)}
+                        className={`py-1 text-xs font-semibold rounded-lg capitalize transition-all ${
+                          fontFamily === fm ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                        }`}
+                      >
+                        {fm}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Theme Selector inside Aa menu */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 block mb-1.5">Theme Canvas</label>
+                  <div className="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
+                    <button
+                      onClick={() => setReadingTheme('light')}
+                      className={`flex items-center justify-center gap-1 py-1 text-xs font-semibold rounded-lg ${
+                        readingTheme === 'light' ? 'bg-white shadow-xs text-amber-600' : 'text-slate-600'
+                      }`}
+                    >
+                      <Sun className="w-3 h-3" /> Light
+                    </button>
+                    <button
+                      onClick={() => setReadingTheme('sepia')}
+                      className={`flex items-center justify-center gap-1 py-1 text-xs font-semibold rounded-lg ${
+                        readingTheme === 'sepia' ? 'bg-[#FBF7EE] shadow-xs text-[#8C461B]' : 'text-slate-600'
+                      }`}
+                    >
+                      <Coffee className="w-3 h-3" /> Sepia
+                    </button>
+                    <button
+                      onClick={() => setReadingTheme('dark')}
+                      className={`flex items-center justify-center gap-1 py-1 text-xs font-semibold rounded-lg ${
+                        readingTheme === 'dark' ? 'bg-slate-900 shadow-xs text-blue-400' : 'text-slate-600'
+                      }`}
+                    >
+                      <Moon className="w-3 h-3" /> Dark
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="p-3 border-t border-slate-200 bg-slate-50 space-y-2">
-              <Link
-                to="/o-level-result-calculator"
-                onClick={() => setIsMobileSidebarOpen(false)}
-                className="w-full py-2.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl flex items-center justify-center gap-1 border border-blue-200"
-              >
-                <Calculator className="w-3.5 h-3.5" />
-                <span>Result Calculator</span>
-              </Link>
-              <button
-                onClick={() => setIsMobileSidebarOpen(false)}
-                className="w-full py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl cursor-pointer"
-              >
-                Close Index
-              </button>
-            </div>
-
+            )}
           </div>
-        </div>
-      )}
 
-      {/* =========================================================================
-          MOBILE "ON THIS PAGE" TOC SLIDE-OVER DRAWER
-         ========================================================================= */}
-      {isMobileTocOpen && tocHeadings.length > 0 && (
-        <div className="fixed inset-0 z-[90] xl:hidden flex justify-end">
+          {/* Quick Bookmark Button */}
+          {activeTopic && (
+            <button
+              id="notes-quick-bookmark-btn"
+              onClick={(e) => toggleBookmark(activeTopic.id, e)}
+              className={`p-1.5 sm:p-2 md:p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/80 transition-colors cursor-pointer ${
+                isCurrentTopicBookmarked 
+                  ? 'text-blue-600 bg-blue-50 border-blue-300 dark:bg-blue-950/50' 
+                  : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+              }`}
+              title={isCurrentTopicBookmarked ? "Bookmarked (Click to remove)" : "Save / Bookmark Note"}
+              aria-label="Bookmark Note"
+            >
+              {isCurrentTopicBookmarked ? (
+                <BookmarkCheck className="w-4 h-4 text-blue-600 fill-blue-600" />
+              ) : (
+                <Bookmark className="w-4 h-4" />
+              )}
+            </button>
+          )}
+
+          {/* Fullscreen Toggle (Hidden on small mobile) */}
+          <button
+            id="notes-fullscreen-toggle-btn"
+            onClick={toggleBrowserFullscreen}
+            className="hidden md:flex p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+            title="Toggle Browser Fullscreen"
+            aria-label="Toggle Fullscreen"
+          >
+            {isBrowserFullscreen ? (
+              <Minimize2 className="w-4 h-4" />
+            ) : (
+              <Maximize2 className="w-4 h-4" />
+            )}
+          </button>
+
+          {/* Clean 'Exit' button (Direct immediate exit out of reader to course hub) */}
+          <button
+            id="notes-exit-reader-btn"
+            onClick={handleExitReader}
+            className={`px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold border flex items-center gap-1 sm:gap-1.5 transition-all shadow-2xs cursor-pointer ${themeClasses.exitBtn}`}
+            title="Exit Notes Reading Mode"
+            aria-label="Exit Reader"
+          >
+            <X className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+            <span className="hidden sm:inline">Exit Notes</span>
+            <span className="sm:hidden">Exit</span>
+          </button>
+
+        </div>
+      </header>
+
+      {/* ========================================================================= */}
+      {/* 2. MAIN BODY (SIDEBAR + EXPANSIVE READING CANVAS + RIGHT AD PLACEMENT) */}
+      {/* ========================================================================= */}
+      <div className="flex-1 flex overflow-hidden relative">
+
+        {/* Mobile Backdrop Overlay for Sidebar */}
+        {isMobileSidebarOpen && (
           <div 
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-200"
-            onClick={() => setIsMobileTocOpen(false)}
+            className="fixed inset-0 z-35 bg-black/50 backdrop-blur-xs md:hidden"
+            onClick={() => setIsMobileSidebarOpen(false)}
             aria-hidden="true"
           />
+        )}
 
-          <div className="relative w-[80%] max-w-xs bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto z-10 animate-in slide-in-from-right duration-200">
-            <div>
-              <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900">
-                  <Hash className="w-4 h-4 text-blue-600" />
-                  <span>On This Page</span>
+        {/* ======================================================================= */}
+        {/* LEFT NAVIGATION SIDEBAR */}
+        {/* ======================================================================= */}
+        <aside 
+          className={`
+            fixed md:relative z-40 inset-y-0 left-0 md:inset-auto h-full 
+            w-72 max-w-[85vw] md:w-72 shrink-0 border-r flex flex-col transition-transform md:transition-all duration-200 bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 shadow-2xl md:shadow-none
+            ${isSidebarOpen ? 'md:translate-x-0' : 'md:-translate-x-full md:w-0 md:border-r-0 md:overflow-hidden'}
+            ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          `}
+        >
+          
+          {/* Logo Branding */}
+          <div className="p-4 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="flex flex-col">
+                <div className="text-lg font-black tracking-tight leading-none text-slate-900 dark:text-white flex items-center">
+                  Skill<span className="text-red-500 font-extrabold">.</span>py
                 </div>
-                <button
-                  onClick={() => setIsMobileTocOpen(false)}
-                  className="p-1 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-1">
+                  NIELIT Notes Hub
+                </span>
               </div>
-
-              <nav className="p-3 space-y-1 text-xs">
-                {tocHeadings.map((heading) => (
-                  <button
-                    key={heading.id}
-                    onClick={() => scrollToHeading(heading.id)}
-                    className={`w-full text-left py-2 px-2.5 rounded-xl transition-all text-xs cursor-pointer block truncate ${
-                      heading.level === 3 ? 'pl-4 text-[11px]' : 'font-bold'
-                    } ${
-                      activeHeadingId === heading.id
-                        ? 'bg-blue-50 text-blue-700 font-bold'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    {heading.text}
-                  </button>
-                ))}
-              </nav>
             </div>
 
-            <div className="p-3 border-t border-slate-200 bg-slate-50">
+            {/* Mobile Close Button */}
+            <button
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600"
+              aria-label="Close Mobile Navigation"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Module Selector Dropdown */}
+          <div className="px-3 pt-3 shrink-0">
+            <select
+              id="notes-course-selector"
+              value={currentCourse?.id || ''}
+              onChange={(e) => {
+                const targetCourseId = e.target.value;
+                const selectedCourseChapters = chapters
+                  .filter(ch => ch.courseId === targetCourseId)
+                  .sort((a, b) => (a.chapterNumber || a.order || 0) - (b.chapterNumber || b.order || 0));
+                const firstChap = selectedCourseChapters[0];
+                const firstTopic = firstChap ? topics.find(t => t.chapterId === firstChap.id) : null;
+                
+                if (firstChap && firstTopic) {
+                  navigate(`/notes/${targetCourseId}/${firstChap.id}/${firstTopic.id}`, { replace: true });
+                } else if (firstChap) {
+                  navigate(`/notes/${targetCourseId}/${firstChap.id}`, { replace: true });
+                } else {
+                  navigate(`/notes/${targetCourseId}`, { replace: true });
+                }
+              }}
+              className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 outline-none cursor-pointer"
+            >
+              {courses.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.badge} - {c.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Segmented Control: [Contents] vs [Saved] */}
+          <div className="p-3 shrink-0 space-y-2">
+            <div className="grid grid-cols-2 gap-1.5 bg-slate-100/90 dark:bg-slate-900 p-1 rounded-xl text-xs font-semibold border border-slate-200/60 dark:border-slate-800">
               <button
-                onClick={() => setIsMobileTocOpen(false)}
-                className="w-full py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl cursor-pointer"
+                onClick={() => setActiveTab('contents')}
+                className={`py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                  activeTab === 'contents' 
+                    ? 'bg-white dark:bg-slate-800 shadow-xs text-blue-600 dark:text-blue-400 font-bold' 
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
               >
-                Close Outline
+                <BookOpen className="w-4 h-4" />
+                <span>Contents</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('saved')}
+                className={`py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                  activeTab === 'saved' 
+                    ? 'bg-white dark:bg-slate-800 shadow-xs text-blue-600 dark:text-blue-400 font-bold' 
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                <Bookmark className="w-4 h-4" />
+                <span>Saved</span>
+                {bookmarks.length > 0 && (
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">
+                    {bookmarks.length}
+                  </span>
+                )}
               </button>
             </div>
+
+            {/* Search Input: 'Search in chapter...' */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search in chapter..."
+                className="w-full pl-8 pr-7 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 outline-none transition-all focus:border-blue-500"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+
+          {/* Chapter Accordion / Saved Topics Area */}
+          <div className="flex-1 overflow-y-auto px-3 py-1 space-y-1.5">
+            
+            {/* Search Results */}
+            {searchQuery.trim() !== '' ? (
+              <div className="space-y-1">
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
+                  {`Search Results (${searchResults?.length || 0})`}
+                </div>
+                {searchResults && searchResults.length > 0 ? (
+                  searchResults.map((topic) => {
+                    const isActive = activeTopic?.id === topic.id;
+                    return (
+                      <button
+                        key={topic.id}
+                        onClick={() => {
+                          requestFullscreenSafe();
+                          if (currentCourse) {
+                            navigate(`/notes/${currentCourse.id}/${topic.chapterId}/${topic.id}`, { replace: true });
+                            setIsMobileSidebarOpen(false);
+                          }
+                        }}
+                        className={`w-full text-left p-2.5 rounded-xl text-xs transition-colors flex items-start justify-between cursor-pointer ${
+                          isActive ? 'bg-blue-600 text-white font-semibold' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
+                      >
+                        <div className="min-w-0 pr-2">
+                          <div className="truncate">{topic.title}</div>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 opacity-60 mt-0.5 shrink-0" />
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="p-4 text-center text-xs text-slate-400">
+                    {`No topics matched "${searchQuery}".`}
+                  </div>
+                )}
+              </div>
+            ) : activeTab === 'saved' ? (
+              /* Saved Notes View */
+              <div className="space-y-1">
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
+                  <span>Saved Notes</span>
+                  <span className="text-[10px] text-blue-600 font-bold">{savedTopicsList.length}</span>
+                </div>
+                {savedTopicsList.length > 0 ? (
+                  savedTopicsList.map((topic) => {
+                    const isActive = activeTopic?.id === topic.id;
+                    return (
+                      <div
+                        key={topic.id}
+                        className={`w-full rounded-xl text-xs transition-colors flex items-center justify-between p-2.5 group cursor-pointer ${
+                          isActive ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                        }`}
+                        onClick={() => {
+                          requestFullscreenSafe();
+                          navigate(`/notes/${topic.courseId}/${topic.chapterId}/${topic.id}`, { replace: true });
+                          setIsMobileSidebarOpen(false);
+                        }}
+                      >
+                        <div className="min-w-0 pr-2">
+                          <div className="truncate">{topic.title}</div>
+                        </div>
+                        <button
+                          onClick={(e) => toggleBookmark(topic.id, e)}
+                          className="p-1 text-slate-400 hover:text-red-500 rounded-md cursor-pointer"
+                          title="Remove bookmark"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="p-6 text-center text-xs text-slate-400 space-y-2">
+                    <Bookmark className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600" />
+                    <p>No saved notes yet.</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Standard Exact Chapter Accordion (No duplicates) */
+              <div className="space-y-2 pb-4">
+                {currentCourseChapters.map((chapter) => {
+                  const isExpanded = !!expandedChapters[chapter.id];
+                  const chapTopics = getTopicsForChapter(chapter);
+
+                  return (
+                    <div 
+                      key={chapter.id} 
+                      className="border-b border-slate-100 dark:border-slate-800/80 pb-1"
+                    >
+                      {/* Chapter Heading with Collapse Toggle */}
+                      <button
+                        onClick={() => {
+                          requestFullscreenSafe();
+                          setExpandedChapters(prev => ({
+                            ...prev,
+                            [chapter.id]: !prev[chapter.id]
+                          }));
+                        }}
+                        className="w-full py-2.5 px-2 text-left flex items-center justify-between gap-2 transition-colors cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl"
+                      >
+                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight truncate">
+                          {`CH ${chapter.chapterNumber}: `}
+                          {chapter.title}
+                        </span>
+                        <div className="shrink-0 text-slate-400">
+                          {isExpanded ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4" />
+                          )}
+                        </div>
+                      </button>
+
+                      {/* Topics List inside Chapter */}
+                      {isExpanded && (
+                        <div className="pl-1 pr-1 pb-2 pt-1 space-y-1">
+                          {chapTopics.length > 0 ? (
+                            chapTopics.map((topic, idx) => {
+                              const isActive = activeTopic?.id === topic.id;
+                              const isBookmarked = bookmarks.includes(topic.id);
+
+                              return (
+                                <div
+                                  key={topic.id}
+                                  onClick={() => {
+                                    requestFullscreenSafe();
+                                    if (currentCourse) {
+                                      navigate(`/notes/${currentCourse.id}/${chapter.id}/${topic.id}`, { replace: true });
+                                      setIsMobileSidebarOpen(false);
+                                    }
+                                  }}
+                                  className={`
+                                    w-full px-3 py-2 rounded-xl text-xs flex items-center justify-between gap-2 
+                                    transition-all group cursor-pointer
+                                    ${isActive 
+                                      ? 'bg-blue-600 text-white font-semibold shadow-xs' 
+                                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}
+                                  `}
+                                >
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    {/* Dot for Active Topic vs Number for Inactive */}
+                                    {isActive ? (
+                                      <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
+                                    ) : (
+                                      <span className="text-slate-400 font-medium shrink-0">
+                                        {idx + 1}.
+                                      </span>
+                                    )}
+                                    <span className="truncate">
+                                      {topic.title}
+                                    </span>
+                                  </div>
+
+                                  {/* Bookmark Icon on right */}
+                                  <button
+                                    onClick={(e) => toggleBookmark(topic.id, e)}
+                                    className={`p-1 rounded-md transition-opacity cursor-pointer ${
+                                      isActive
+                                        ? 'text-white/80 hover:text-white'
+                                        : isBookmarked 
+                                          ? 'text-blue-600 opacity-100' 
+                                          : 'text-slate-400 opacity-60 hover:opacity-100 hover:text-slate-600'
+                                    }`}
+                                    title={isBookmarked ? "Bookmarked" : "Bookmark note"}
+                                  >
+                                    <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-current' : ''}`} />
+                                  </button>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="text-[11px] text-slate-400 p-2 text-center italic">
+                              No topics added yet.
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+        </aside>
+
+        {/* ======================================================================= */}
+        {/* 3. CENTER MAIN READING CANVAS & EXPANSIVE CONTENT AREA */}
+        {/* ======================================================================= */}
+        <main 
+          ref={mainScrollContainerRef}
+          onScroll={handleContainerScroll}
+          className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-3 md:p-4 lg:p-5 flex justify-center select-none"
+        >
+          {loading ? (
+            <div className="my-auto flex flex-col items-center justify-center text-center p-8 space-y-3">
+              <div className="w-10 h-10 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm font-semibold text-slate-500">Loading chapter notes...</p>
+            </div>
+          ) : activeTopic ? (
+            <div className="w-full flex items-start justify-center gap-3.5 md:gap-4 lg:gap-5 pb-20">
+
+              {/* =============================================================== */}
+              {/* 📄 CENTER READING ARTICLE CONTAINER (Copy Protected) */}
+              {/* =============================================================== */}
+              <div className="flex-1 min-w-0 max-w-6xl 2xl:max-w-7xl w-full space-y-6">
+
+                {/* Top In-Content Banner */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="absolute top-2 right-3 text-[10px] text-slate-400 flex items-center gap-0.5">
+                    <span>Ad</span>
+                    <Info className="w-3 h-3" />
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-12 rounded-xl bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-slate-200 border border-slate-700 shadow-xs shrink-0">
+                      <Laptop className="w-7 h-7 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                        Build Your <span className="text-blue-600">Future in Tech</span>
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                        Online courses, projects, and real-world skills.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Link
+                    to="/courses"
+                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-all shadow-xs shrink-0 text-center w-full md:w-auto"
+                  >
+                    Explore Courses
+                  </Link>
+                </div>
+
+                {/* Main Reading Card with Anti-Copy Protection */}
+                <article 
+                  className={`p-6 sm:p-8 md:p-10 rounded-2xl border transition-colors select-none notes-protected-content ${themeClasses.cardBg}`}
+                  onCopy={(e) => { e.preventDefault(); return false; }}
+                  onCut={(e) => { e.preventDefault(); return false; }}
+                  onContextMenu={(e) => { e.preventDefault(); return false; }}
+                  onDragStart={(e) => { e.preventDefault(); return false; }}
+                >
+
+                  {/* Topic Title & Blue Accent Bar */}
+                  <header className="space-y-3 pb-6">
+                    <div>
+                      <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                        {activeTopic.title}
+                      </h1>
+                      {/* Clean Blue Horizontal Accent Line */}
+                      <div className="w-12 h-1 bg-blue-600 rounded-full mt-3" />
+                    </div>
+
+                    {/* Quick Tools Row (Share Button active, print and copy removed) */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+                      <div className="flex items-center gap-3 text-xs text-slate-400">
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>{activeTopic.readTime || '3 min read'}</span>
+                        </div>
+                        {activeTopic.views !== undefined && (
+                          <div className="flex items-center gap-1">
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>{`${activeTopic.views.toLocaleString()} reads`}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        {/* Share Button with feedback */}
+                        <button
+                          id="notes-action-share-btn"
+                          onClick={handleShare}
+                          className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer shadow-2xs"
+                          title="Share this note"
+                          aria-label="Share note"
+                        >
+                          <Share2 className="w-3.5 h-3.5" />
+                          <span>Share</span>
+                        </button>
+                      </div>
+                    </div>
+                  </header>
+
+                  {/* Render Protected Note HTML Content */}
+                  <div 
+                    className={`notes-body font-size-${fontSize} ${typographyStyleClass} py-4 select-none notes-protected-content`}
+                    dangerouslySetInnerHTML={{ 
+                      __html: activeTopic.content 
+                    }}
+                  />
+
+                  {/* Bottom Navigation Section (< Previous, 1 / 6, Next >) */}
+                  <footer className="mt-12 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
+                    
+                    {/* Previous Topic Button */}
+                    <button
+                      id="notes-prev-topic-btn"
+                      disabled={!prevTopic}
+                      onClick={() => {
+                        if (prevTopic && currentCourse && currentChapter) {
+                          requestFullscreenSafe();
+                          navigate(`/notes/${currentCourse.id}/${currentChapter.id}/${prevTopic.id}`, { replace: true });
+                        }
+                      }}
+                      className={`min-h-[44px] px-3.5 sm:px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
+                        prevTopic 
+                          ? 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300' 
+                          : 'opacity-40 cursor-not-allowed text-slate-400'
+                      }`}
+                    >
+                      <ChevronRight className="w-4 h-4 rotate-180" />
+                      <span>Previous</span>
+                    </button>
+
+                    {/* Pagination Step Indicator: '1 / 6' */}
+                    <div className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 select-none">
+                      {currentTopicIndex >= 0 && currentChapterTopics.length > 0
+                        ? `${currentTopicIndex + 1} / ${currentChapterTopics.length}`
+                        : '1 / 6'}
+                    </div>
+
+                    {/* Next Topic Button */}
+                    {nextTopic && currentCourse && currentChapter ? (
+                      <button
+                        id="notes-next-topic-btn"
+                        onClick={() => {
+                          requestFullscreenSafe();
+                          navigate(`/notes/${currentCourse.id}/${currentChapter.id}/${nextTopic.id}`, { replace: true });
+                        }}
+                        className="min-h-[44px] px-4 sm:px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all shadow-xs cursor-pointer"
+                      >
+                        <span>Next</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleExitReader}
+                        className="min-h-[44px] px-4 sm:px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all shadow-xs cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Done</span>
+                      </button>
+                    )}
+
+                  </footer>
+
+                </article>
+
+              </div>
+
+              {/* =============================================================== */}
+              {/* 🔵 RIGHT SIDE AD PLACEMENTS */}
+              {/* =============================================================== */}
+              <aside 
+                className="hidden xl:flex flex-col w-72 2xl:w-80 shrink-0 sticky top-2 space-y-4 select-none"
+                aria-label="Sponsored Learning & Practice Tools"
+              >
+                {/* 1. Master Web Development Card */}
+                <div className="p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative space-y-3">
+                  <div className="absolute top-3 right-3 text-[10px] text-slate-400 flex items-center gap-0.5">
+                    <span>Ad</span>
+                    <Info className="w-3 h-3" />
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-black text-indigo-900 dark:text-indigo-300 leading-tight">
+                      Master Web Development
+                    </h4>
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">
+                      From Beginner to Pro
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Learn HTML, CSS, JavaScript and build real projects.
+                  </p>
+
+                  <Link
+                    to="/courses"
+                    className="block text-center py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-xs"
+                  >
+                    Start Learning Now
+                  </Link>
+
+                  <div className="pt-2 flex items-center justify-center text-indigo-300 dark:text-indigo-500/50">
+                    <span className="text-2xl font-mono">&lt;/&gt; 🌿</span>
+                  </div>
+                </div>
+
+                {/* 2. Get 50% Off on All Courses Card */}
+                <div className="p-5 rounded-2xl border border-orange-200/80 dark:border-orange-950/60 bg-gradient-to-b from-orange-50/40 to-white dark:from-slate-900 dark:to-slate-900 shadow-2xs relative space-y-3">
+                  <div className="absolute top-3 right-3 text-[10px] text-slate-400 flex items-center gap-0.5">
+                    <span>Ad</span>
+                    <Info className="w-3 h-3" />
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-black text-orange-600 dark:text-orange-400 leading-tight">
+                      Get 50% Off on All Courses
+                    </h4>
+                  </div>
+
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Limited time offer! Upgrade your skills today.
+                  </p>
+
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <Link
+                      to="/courses"
+                      className="flex-1 text-center py-2.5 px-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs transition-colors shadow-xs"
+                    >
+                      Claim Offer Now
+                    </Link>
+
+                    <div className="text-3xl shrink-0">
+                      🎁
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Sponsored: Code Editor Pro */}
+                <div className="p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs space-y-3">
+                  <div className="text-[11px] font-semibold text-slate-400">
+                    Sponsored
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                      Code Editor Pro
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      Write better code with AI assistance.
+                    </p>
+                  </div>
+
+                  {/* Dark Code IDE Editor Window Mockup */}
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 font-mono text-[10px] space-y-1 shadow-inner">
+                    <div className="flex items-center gap-1 pb-1 mb-1 border-b border-slate-800">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    </div>
+                    <div className="text-blue-400">const app = express();</div>
+                    <div className="text-emerald-400">// AI Optimized Logic</div>
+                    <div className="text-slate-500">app.listen(3000);</div>
+                  </div>
+
+                  <Link
+                    to="/app"
+                    className="block text-center py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-colors"
+                  >
+                    Try Now
+                  </Link>
+                </div>
+
+              </aside>
+
+            </div>
+          ) : (
+            <div className="my-auto flex flex-col items-center justify-center text-center p-8 space-y-4 max-w-md">
+              <div className="w-16 h-16 rounded-3xl bg-blue-50 dark:bg-slate-800 text-blue-600 flex items-center justify-center text-2xl">
+                📑
+              </div>
+              <h2 className="text-xl font-bold">No Notes Selected</h2>
+              <p className="text-sm text-slate-500">
+                Please select a chapter and topic from the sidebar navigation to start reading.
+              </p>
+              <button
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="md:hidden px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold"
+              >
+                Open Topics List
+              </button>
+            </div>
+          )}
+        </main>
+
+      </div>
 
     </div>
   );
