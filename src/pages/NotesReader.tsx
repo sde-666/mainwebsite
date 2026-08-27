@@ -28,6 +28,7 @@ import { NoteCourse, NoteChapter, NoteTopic } from '../types/notes';
 import { notesService } from '../services/notesService';
 import { SEO } from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
+import { AdUnit } from '../components/AdUnit';
 
 export function NotesReader() {
   const { 
@@ -1199,33 +1200,13 @@ export function NotesReader() {
               {/* =============================================================== */}
               <div className="flex-1 min-w-0 max-w-6xl 2xl:max-w-7xl w-full space-y-6">
 
-                {/* Top In-Content Banner */}
-                <div className="p-4 sm:p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="absolute top-2 right-3 text-[10px] text-slate-400 flex items-center gap-0.5">
-                    <span>Ad</span>
-                    <Info className="w-3 h-3" />
+                {/* Top In-Content Responsive Banner AdUnit */}
+                <div className="p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative">
+                  <div className="text-[10px] text-slate-400 font-semibold mb-1 flex items-center justify-between">
+                    <span>Sponsored Topic</span>
+                    <Info className="w-3 h-3 text-slate-400" />
                   </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-12 rounded-xl bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-slate-200 border border-slate-700 shadow-xs shrink-0">
-                      <Laptop className="w-7 h-7 text-emerald-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-                        Build Your <span className="text-blue-600">Future in Tech</span>
-                      </h3>
-                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                        Online courses, projects, and real-world skills.
-                      </p>
-                    </div>
-                  </div>
-
-                  <Link
-                    to="/courses"
-                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-all shadow-xs shrink-0 text-center w-full md:w-auto"
-                  >
-                    Explore Courses
-                  </Link>
+                  <AdUnit format="horizontal" />
                 </div>
 
                 {/* Main Reading Card with Anti-Copy Protection */}
@@ -1346,110 +1327,29 @@ export function NotesReader() {
               </div>
 
               {/* =============================================================== */}
-              {/* 🔵 RIGHT SIDE AD PLACEMENTS */}
+              {/* 🔵 RIGHT SIDE AD PLACEMENTS (Official AdSense Slots) */}
               {/* =============================================================== */}
               <aside 
                 className="hidden xl:flex flex-col w-72 2xl:w-80 shrink-0 sticky top-2 space-y-4 select-none"
-                aria-label="Sponsored Learning & Practice Tools"
+                aria-label="Sponsored Content"
               >
-                {/* 1. Master Web Development Card */}
-                <div className="p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative space-y-3">
-                  <div className="absolute top-3 right-3 text-[10px] text-slate-400 flex items-center gap-0.5">
-                    <span>Ad</span>
-                    <Info className="w-3 h-3" />
+                {/* 1. Primary Sidebar Ad Unit */}
+                <div className="p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative">
+                  <div className="text-[10px] text-slate-400 font-semibold mb-1 flex items-center justify-between">
+                    <span>Advertisement</span>
+                    <Info className="w-3 h-3 text-slate-400" />
                   </div>
-
-                  <div>
-                    <h4 className="text-lg font-black text-indigo-900 dark:text-indigo-300 leading-tight">
-                      Master Web Development
-                    </h4>
-                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">
-                      From Beginner to Pro
-                    </p>
-                  </div>
-
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Learn HTML, CSS, JavaScript and build real projects.
-                  </p>
-
-                  <Link
-                    to="/courses"
-                    className="block text-center py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-xs"
-                  >
-                    Start Learning Now
-                  </Link>
-
-                  <div className="pt-2 flex items-center justify-center text-indigo-300 dark:text-indigo-500/50">
-                    <span className="text-2xl font-mono">&lt;/&gt; 🌿</span>
-                  </div>
+                  <AdUnit format="rectangle" />
                 </div>
 
-                {/* 2. Get 50% Off on All Courses Card */}
-                <div className="p-5 rounded-2xl border border-orange-200/80 dark:border-orange-950/60 bg-gradient-to-b from-orange-50/40 to-white dark:from-slate-900 dark:to-slate-900 shadow-2xs relative space-y-3">
-                  <div className="absolute top-3 right-3 text-[10px] text-slate-400 flex items-center gap-0.5">
-                    <span>Ad</span>
-                    <Info className="w-3 h-3" />
+                {/* 2. Secondary Vertical Ad Unit */}
+                <div className="p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative">
+                  <div className="text-[10px] text-slate-400 font-semibold mb-1 flex items-center justify-between">
+                    <span>Sponsored Link</span>
+                    <Info className="w-3 h-3 text-slate-400" />
                   </div>
-
-                  <div>
-                    <h4 className="text-lg font-black text-orange-600 dark:text-orange-400 leading-tight">
-                      Get 50% Off on All Courses
-                    </h4>
-                  </div>
-
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Limited time offer! Upgrade your skills today.
-                  </p>
-
-                  <div className="flex items-center justify-between gap-3 pt-1">
-                    <Link
-                      to="/courses"
-                      className="flex-1 text-center py-2.5 px-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs transition-colors shadow-xs"
-                    >
-                      Claim Offer Now
-                    </Link>
-
-                    <div className="text-3xl shrink-0">
-                      🎁
-                    </div>
-                  </div>
+                  <AdUnit format="vertical" />
                 </div>
-
-                {/* 3. Sponsored: Code Editor Pro */}
-                <div className="p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs space-y-3">
-                  <div className="text-[11px] font-semibold text-slate-400">
-                    Sponsored
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
-                      Code Editor Pro
-                    </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      Write better code with AI assistance.
-                    </p>
-                  </div>
-
-                  {/* Dark Code IDE Editor Window Mockup */}
-                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 font-mono text-[10px] space-y-1 shadow-inner">
-                    <div className="flex items-center gap-1 pb-1 mb-1 border-b border-slate-800">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    </div>
-                    <div className="text-blue-400">const app = express();</div>
-                    <div className="text-emerald-400">// AI Optimized Logic</div>
-                    <div className="text-slate-500">app.listen(3000);</div>
-                  </div>
-
-                  <Link
-                    to="/app"
-                    className="block text-center py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-colors"
-                  >
-                    Try Now
-                  </Link>
-                </div>
-
               </aside>
 
             </div>

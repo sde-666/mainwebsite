@@ -25,7 +25,7 @@ export function AdBanner({
   const [isStickyDismissed, setIsStickyDismissed] = useState(false);
   const [isStickyMinimized, setIsStickyMinimized] = useState(false);
 
-  const client = adClient || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_ADSENSE_CLIENT_ID) || '';
+  const client = adClient || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_ADSENSE_CLIENT_ID) || 'ca-pub-9492300885622538';
 
   useEffect(() => {
     // If real AdSense client is configured
