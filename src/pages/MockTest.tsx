@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { 
   CheckCircle2, 
   XCircle, 
@@ -21,7 +21,11 @@ import {
   Filter,
   Layers,
   GraduationCap,
-  FileText
+  FileText,
+  Monitor,
+  Code,
+  Cpu,
+  Globe
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { AdBanner } from '../components/AdBanner';
@@ -78,6 +82,7 @@ const DEFAULT_THEME = {
 
 export function MockTest() {
   const { isAdmin } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [quizzes, setQuizzes] = useState<DynamicQuizTest[]>([]);
   const [selectedQuiz, setSelectedQuiz] = useState<DynamicQuizTest | null>(null);
   const [selectedModuleFilter, setSelectedModuleFilter] = useState<string>('all');
@@ -98,6 +103,24 @@ export function MockTest() {
     });
     return unsub;
   }, []);
+
+  // Handle URL query parameters for module or direct test launch
+  useEffect(() => {
+    const modParam = searchParams.get('module');
+    if (modParam && ['all', 'm1', 'm2', 'm3', 'm4', 'ccc'].includes(modParam.toLowerCase())) {
+      setSelectedModuleFilter(modParam.toLowerCase());
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const testParam = searchParams.get('test');
+    if (testParam && quizzes.length > 0 && !selectedQuiz) {
+      const found = quizzes.find(q => q.id === testParam);
+      if (found) {
+        handleStartTest(found);
+      }
+    }
+  }, [searchParams, quizzes, selectedQuiz]);
 
   // Filter quizzes for the directory
   const filteredQuizzes = quizzes.filter(q => {
@@ -341,90 +364,263 @@ export function MockTest() {
             </div>
 
             {/* ========================================================================= */}
-            {/* MOBILE LIST VIEW (Simple Card with Red Circular Number Sticker & Start)   */}
+            {/* VIEW MODE A: "ALL PAPERS" (4-Test Card Grid with Syllabus & All Tests)     */}
             {/* ========================================================================= */}
-            <div className="block md:hidden space-y-4 pt-2">
-              {filteredQuizzes.map((quiz, idx) => {
-                const testNumber = idx + 1;
-
-                return (
+            {selectedModuleFilter === 'all' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                {[
+                  {
+                    module: 'm1',
+                    title: 'IT Tools and Network Basics',
+                    hindiTitle: 'सूचना प्रौद्योगिकी उपकरण और नेटवर्क मूल बातें',
+                    badge: 'M1-R5.1',
+                    bg: 'bg-[#e9f2fa]',
+                    border: 'border-[#cde0f2]',
+                    syllabusLink: '/syllabus',
+                    tests: [
+                      { id: 'm1-test-1', num: 1, title: 'Test 1: Fundamentals & OS', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm1-test-2', num: 2, title: 'Test 2: LibreOffice Suite', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm1-test-3', num: 3, title: 'Test 3: Internet & Banking', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm1-test-4', num: 4, title: 'Test 4: Grand Exam Simulator', sub: '100 MCQs • 90 Mins' },
+                    ]
+                  },
+                  {
+                    module: 'm2',
+                    title: 'Web Designing and Publishing',
+                    hindiTitle: 'वेब डिजाइनिंग और प्रकाशन',
+                    badge: 'M2-R5.1',
+                    bg: 'bg-[#e9f2fa]',
+                    border: 'border-[#cde0f2]',
+                    syllabusLink: '/syllabus',
+                    tests: [
+                      { id: 'm2-test-1', num: 1, title: 'Test 1: HTML5 Structure', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm2-test-2', num: 2, title: 'Test 2: CSS3 & Flexbox', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm2-test-3', num: 3, title: 'Test 3: JS & DOM Scripting', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm2-test-4', num: 4, title: 'Test 4: Grand Exam Simulator', sub: '100 MCQs • 90 Mins' },
+                    ]
+                  },
+                  {
+                    module: 'm3',
+                    title: 'Python Programming',
+                    hindiTitle: 'पायथन प्रोग्रामिंग भाषा',
+                    badge: 'M3-R5.1',
+                    bg: 'bg-[#ebf5fa]',
+                    border: 'border-[#cfe4f2]',
+                    syllabusLink: '/syllabus',
+                    tests: [
+                      { id: 'm3-test-1', num: 1, title: 'Test 1: Python Basics', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm3-test-2', num: 2, title: 'Test 2: Sequence Types', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm3-test-3', num: 3, title: 'Test 3: Functions & NumPy', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm3-test-4', num: 4, title: 'Test 4: Flagship 100 MCQs', sub: '100 MCQs • 90 Mins' },
+                    ]
+                  },
+                  {
+                    module: 'm4',
+                    title: 'Internet of Things (IOT)',
+                    hindiTitle: 'इंटरनेट ऑफ थिंग्स एवं अनुप्रयोग',
+                    badge: 'M4-R5.1',
+                    bg: 'bg-[#eaf5f2]',
+                    border: 'border-[#cce8e0]',
+                    syllabusLink: '/syllabus',
+                    tests: [
+                      { id: 'm4-test-1', num: 1, title: 'Test 1: IoT Architecture', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm4-test-2', num: 2, title: 'Test 2: Sensors & Arduino', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm4-test-3', num: 3, title: 'Test 3: Protocols & Security', sub: '50 MCQs • 45 Mins' },
+                      { id: 'm4-test-4', num: 4, title: 'Test 4: Grand Exam Simulator', sub: '100 MCQs • 90 Mins' },
+                    ]
+                  },
+                  {
+                    module: 'ccc',
+                    title: 'Course on Computer Concepts (CCC)',
+                    hindiTitle: 'ट्रिपल सी संपूर्ण ऑनलाइन परीक्षा सिमुलेटर',
+                    badge: 'CCC NIELIT',
+                    bg: 'bg-[#fef8ee]',
+                    border: 'border-[#fce3b8]',
+                    syllabusLink: '/ccc-hub',
+                    tests: [
+                      { id: 'ccc-test-1', num: 1, title: 'Test 1: Computer Fundamentals', sub: '50 MCQs • 45 Mins' },
+                      { id: 'ccc-test-2', num: 2, title: 'Test 2: LibreOffice & Web', sub: '50 MCQs • 45 Mins' },
+                      { id: 'ccc-test-3', num: 3, title: 'Test 3: Cyber Security & Banking', sub: '50 MCQs • 45 Mins' },
+                      { id: 'ccc-test-4', num: 4, title: 'Test 4: Official 100 MCQs Simulator', sub: '100 MCQs • 90 Mins' },
+                    ]
+                  }
+                ].map((paper) => (
                   <div
-                    key={quiz.id}
-                    className="relative bg-white rounded-2xl border border-slate-200 p-4 pt-4.5 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3"
+                    key={paper.module}
+                    className={`${paper.bg} border ${paper.border} rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between`}
                   >
-                    {/* Red Circular Number Sticker Overlay */}
-                    <div className="absolute -top-2.5 -left-2.5 w-7 h-7 rounded-full bg-red-600 text-white font-black text-xs flex items-center justify-center shadow-md border-2 border-white z-10">
-                      {testNumber}
+                    <div>
+                      <div className="flex items-center justify-between mb-5">
+                        <div>
+                          <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                            {paper.title}
+                          </h3>
+                          <p className="text-xs text-blue-700 font-semibold mt-0.5">
+                            {paper.hindiTitle}
+                          </p>
+                        </div>
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs shrink-0">
+                          {paper.badge}
+                        </span>
+                      </div>
+
+                      {/* 4 Tests Grid (2x2) */}
+                      <div className="grid grid-cols-2 gap-3 mb-6">
+                        {paper.tests.map((t) => {
+                          // Find matching test from state
+                          const targetTest = quizzes.find(q => q.id === t.id);
+
+                          return (
+                            <button
+                              key={t.id}
+                              onClick={() => {
+                                if (targetTest) {
+                                  handleStartTest(targetTest);
+                                } else {
+                                  // Fallback direct start
+                                  const fallback = quizzes.find(q => q.module === paper.module) || quizzes[0];
+                                  if (fallback) handleStartTest(fallback);
+                                }
+                              }}
+                              className="bg-white hover:bg-blue-50/60 active:scale-[0.98] rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                            >
+                              {/* Red circular number sticker */}
+                              <div className="w-7 h-7 rounded-full bg-red-600 text-white font-black text-xs flex items-center justify-center shadow-xs mb-1.5 group-hover:scale-110 transition-transform">
+                                {t.num}
+                              </div>
+                              <span className="text-xs font-bold text-slate-900 group-hover:text-blue-600 line-clamp-1">
+                                Test {t.num}
+                              </span>
+                              <span className="text-[10px] text-slate-500 font-medium mt-0.5 line-clamp-1">
+                                {t.sub}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
-                    {/* Test Name */}
-                    <div className="min-w-0 flex-1 pl-1.5">
-                      <h3 className="font-extrabold text-sm text-slate-900 leading-snug">
-                        {quiz.title}
-                      </h3>
-                      {quiz.hindiTitle && (
-                        <p className="text-xs font-semibold text-blue-700 mt-0.5">
-                          {quiz.hindiTitle}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Simple Start Button */}
-                    <button
-                      onClick={() => handleStartTest(quiz)}
-                      className="shrink-0 inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold px-4 py-2 rounded-xl text-xs shadow-xs transition-all"
-                    >
-                      <span>Start</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* ========================================================================= */}
-            {/* DESKTOP GRID VIEW (Simple Card with Red Circular Number Sticker & Start)  */}
-            {/* ========================================================================= */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 pt-2">
-              {filteredQuizzes.map((quiz, idx) => {
-                const testNumber = idx + 1;
-
-                return (
-                  <div
-                    key={quiz.id}
-                    className="relative bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between group"
-                  >
-                    {/* Red Circular Number Sticker Overlay */}
-                    <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-red-600 text-white font-black text-sm flex items-center justify-center shadow-md border-2 border-white z-10">
-                      {testNumber}
-                    </div>
-
-                    {/* Test Name */}
-                    <div className="my-2 min-h-[56px] flex flex-col justify-center">
-                      <h3 className="font-extrabold text-base text-slate-900 leading-snug group-hover:text-blue-600 transition-colors">
-                        {quiz.title}
-                      </h3>
-                      {quiz.hindiTitle && (
-                        <p className="text-xs font-bold text-blue-700 mt-1">
-                          {quiz.hindiTitle}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Simple Start Button */}
-                    <div className="pt-3 mt-2 border-t border-slate-100">
-                      <button
-                        onClick={() => handleStartTest(quiz)}
-                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-extrabold rounded-xl text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 group-hover:bg-blue-700"
+                    <div className="flex items-center justify-between gap-3 pt-2">
+                      <Link
+                        to={paper.syllabusLink}
+                        className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
                       >
-                        <span>Start Test</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        View Syllabus
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setSelectedModuleFilter(paper.module);
+                          setSearchParams({ module: paper.module });
+                        }}
+                        className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                      >
+                        All Tests
                       </button>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
+
+            {/* ========================================================================= */}
+            {/* VIEW MODE B: FILTERED MODULE TESTS VIEW (Detailed List / Grid)            */}
+            {/* ========================================================================= */}
+            {selectedModuleFilter !== 'all' && (
+              <div className="space-y-4 pt-2">
+                
+                {/* Back to All Papers Action */}
+                <div className="flex items-center justify-between bg-white rounded-xl p-3 sm:p-4 border border-slate-200 shadow-2xs">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setSelectedModuleFilter('all');
+                        setSearchParams({});
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>सभी पेपर्स देखें (Back to All Papers)</span>
+                    </button>
+                    <span className="text-xs font-bold text-slate-500 hidden sm:inline">•</span>
+                    <span className="text-xs font-bold text-blue-700 hidden sm:inline">
+                      {filteredQuizzes.length} ऑनलाइन CBT टेस्ट उपलब्ध
+                    </span>
+                  </div>
+
+                  <Link
+                    to="/syllabus"
+                    className="text-xs font-bold text-blue-600 hover:text-blue-800 underline underline-offset-2"
+                  >
+                    पाठ्यक्रम (Syllabus) देखें
+                  </Link>
+                </div>
+
+                {/* Tests Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredQuizzes.map((quiz, idx) => {
+                    const testNumber = idx + 1;
+
+                    return (
+                      <div
+                        key={quiz.id}
+                        className="relative bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between group"
+                      >
+                        {/* Red Circular Number Sticker Overlay */}
+                        <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-red-600 text-white font-black text-sm flex items-center justify-center shadow-md border-2 border-white z-10">
+                          {testNumber}
+                        </div>
+
+                        {/* Test Name & Details */}
+                        <div className="my-2 space-y-1.5 pl-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                              {quiz.moduleLabel || quiz.module.toUpperCase()}
+                            </span>
+                            <span className="text-xs text-slate-500 font-semibold flex items-center gap-1">
+                              <Timer className="w-3.5 h-3.5 text-slate-400" />
+                              <span>{quiz.durationMinutes || 45} मिनट</span>
+                            </span>
+                          </div>
+
+                          <h3 className="font-extrabold text-base text-slate-900 leading-snug group-hover:text-blue-600 transition-colors">
+                            {quiz.title}
+                          </h3>
+
+                          {quiz.hindiTitle && (
+                            <p className="text-xs font-bold text-blue-700">
+                              {quiz.hindiTitle}
+                            </p>
+                          )}
+
+                          {quiz.description && (
+                            <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed pt-1">
+                              {quiz.description}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Test Info Pills & Start Button */}
+                        <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                          <div className="text-[11px] text-slate-600 font-medium">
+                            <span>{quiz.questions?.length || 50} MCQs</span>
+                            <span className="mx-1.5 text-slate-300">•</span>
+                            <span>पूर्णांक: {quiz.totalMarks || 50}</span>
+                          </div>
+
+                          <button
+                            onClick={() => handleStartTest(quiz)}
+                            className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold px-4 py-2 rounded-xl text-xs shadow-xs transition-all"
+                          >
+                            <span>Start Test</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Empty State */}
             {filteredQuizzes.length === 0 && (
@@ -433,7 +629,10 @@ export function MockTest() {
                 <h4 className="text-base font-bold text-slate-900">कोई टेस्ट नहीं मिला (No Tests Found)</h4>
                 <p className="text-xs text-slate-500">इस विषय में नए टेस्ट जल्द ही जोड़े जाएंगे। अन्य विषयों का चयन करें।</p>
                 <button
-                  onClick={() => setSelectedModuleFilter('all')}
+                  onClick={() => {
+                    setSelectedModuleFilter('all');
+                    setSearchParams({});
+                  }}
                   className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-xs"
                 >
                   सभी टेस्ट देखें (View All Tests)

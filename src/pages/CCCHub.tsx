@@ -19,7 +19,15 @@ import {
   Presentation,
   Filter,
   X,
-  Star
+  Star,
+  Monitor,
+  Settings,
+  Globe,
+  Mail,
+  CreditCard,
+  ShieldCheck,
+  ArrowRight,
+  Share2
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { NielitLogo } from '../components/NielitLogo';
@@ -83,6 +91,21 @@ export function CCCHub() {
     setTimeout(() => {
       setCopiedShortcut(null);
     }, 2000);
+  };
+
+  const getCccChapterIcon = (num: number) => {
+    switch (num) {
+      case 1: return <Monitor className="w-6 h-6 text-blue-600" />;
+      case 2: return <Settings className="w-6 h-6 text-slate-700" />;
+      case 3: return <FileText className="w-6 h-6 text-sky-600" />;
+      case 4: return <FileSpreadsheet className="w-6 h-6 text-emerald-600" />;
+      case 5: return <Presentation className="w-6 h-6 text-amber-600" />;
+      case 6: return <Globe className="w-6 h-6 text-indigo-600" />;
+      case 7: return <Mail className="w-6 h-6 text-rose-600" />;
+      case 8: return <CreditCard className="w-6 h-6 text-teal-600" />;
+      case 9: return <ShieldCheck className="w-6 h-6 text-purple-600" />;
+      default: return <BookOpen className="w-6 h-6 text-blue-600" />;
+    }
   };
 
   const cccSchema = [
@@ -165,142 +188,309 @@ export function CCCHub() {
       {/* Main Content Area */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10 sm:space-y-12">
         
-        {/* Quick Action Cards */}
+        {/* Quick Anchor Navigation Strip */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3.5 shadow-xs flex items-center justify-between gap-2 overflow-x-auto scrollbar-none">
+          <a
+            href="#study-notes"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 hover:bg-blue-50 transition-all shrink-0"
+          >
+            <BookOpen className="w-4 h-4 text-blue-600" />
+            <span>1. Study Notes</span>
+          </a>
+          <a
+            href="#chapter-mcqs"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 transition-all shrink-0"
+          >
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>2. Chapter MCQs</span>
+          </a>
+          <Link
+            to="/syllabus"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-amber-700 hover:bg-amber-50 transition-all shrink-0"
+          >
+            <FileText className="w-4 h-4 text-amber-600" />
+            <span>3. View Syllabus</span>
+          </Link>
+          <a
+            href="#shortcuts-section"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-purple-700 hover:bg-purple-50 transition-all shrink-0"
+          >
+            <Keyboard className="w-4 h-4 text-purple-600" />
+            <span>4. LibreOffice Shortcuts</span>
+          </a>
+          <Link
+            to="/mock-test"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition-all shrink-0 shadow-2xs"
+          >
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>5. 100 CBT Mock Test</span>
+          </Link>
+        </div>
+
+        {/* 4 Feature Gateway Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-2xs space-y-2.5 flex flex-col justify-between">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-2xs space-y-2.5 flex flex-col justify-between hover:border-blue-300 transition-all group">
             <div className="space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                <FileText className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
+                <BookOpen className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-sm sm:text-base text-gray-900">CCC Chapter Notes</h3>
+              <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-blue-600 transition-colors">CCC Chapter Notes</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Read all 9 chapter notes online with key formulas, shortcut keys & exam tips.
+                9 विस्तृत चैप्टर्स के थ्योरी नोट्स, डेफिनिशन, सिंटैक्स एवं LibreOffice उदाहरण।
               </p>
             </div>
-            <Link to="/notes" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline pt-2">
-              Read Online Notes →
+            <Link to="/chapter-wise-notes/ccc" className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline pt-2">
+              All 9 Chapters Notes →
             </Link>
           </div>
 
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-2xs space-y-2.5 flex flex-col justify-between">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-2xs space-y-2.5 flex flex-col justify-between hover:border-emerald-300 transition-all group">
             <div className="space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-sm sm:text-base text-gray-900">CCC Online Mock Test</h3>
+              <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-emerald-600 transition-colors">Chapter-Wise MCQs</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Practice real 100-question computer-based mock tests with live scoring & countdown.
+                प्रत्येक चैप्टर के महत्वपूर्ण बहुविकल्पीय प्रश्न, तुरंत उत्तर जाँच व द्विभाषी व्याख्या।
               </p>
             </div>
-            <Link to="/mock-test" className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 hover:underline pt-2">
-              Start Free CBT Test →
+            <Link to="/chapter-wise-mcq/ccc" className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 hover:underline pt-2">
+              Practice 1-by-1 MCQs →
             </Link>
           </div>
 
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-2xs space-y-2.5 flex flex-col justify-between">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-2xs space-y-2.5 flex flex-col justify-between hover:border-amber-300 transition-all group">
             <div className="space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
                 <FileText className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-sm sm:text-base text-gray-900">Official Syllabus PDF</h3>
+              <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-amber-600 transition-colors">Official Syllabus & PDF</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Download the official NIELIT 80-hour course outline with chapter distributions.
+                80 घंटे का आधिकारिक पाठ्यक्रम, 100 अंक मार्किंग स्कीम और ग्रेडिंग क्राइटेरिया।
               </p>
             </div>
-            <a
-              href="/downloads/ccc-syllabus.pdf"
-              download="NIELIT-CCC-Official-Syllabus.pdf"
-              className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 hover:underline pt-2"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Download Syllabus PDF →</span>
-            </a>
+            <div className="flex items-center justify-between pt-2">
+              <Link to="/syllabus" className="text-xs font-bold text-amber-600 hover:underline">
+                View Syllabus →
+              </Link>
+              <a
+                href="/downloads/ccc-syllabus.pdf"
+                download="NIELIT-CCC-Official-Syllabus.pdf"
+                className="text-xs font-bold text-slate-700 hover:text-slate-900 inline-flex items-center gap-1"
+                title="Download PDF"
+              >
+                <Download className="w-3 h-3" /> PDF
+              </a>
+            </div>
           </div>
 
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-2xs space-y-2.5 flex flex-col justify-between">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-2xs space-y-2.5 flex flex-col justify-between hover:border-purple-300 transition-all group">
             <div className="space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
-                <Smartphone className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
+                <Sparkles className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-sm sm:text-base text-gray-900">Skilldotpy CCC Batch</h3>
+              <h3 className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-purple-600 transition-colors">100 MCQ CBT Mock Test</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Complete crash course with 500+ repeated questions, PDF notes and video lessons.
+                90 मिनट का वास्तविक NIELIT CBT परीक्षा सिम्युलेटर, लाइव टाइमर और स्कोरकार्ड।
               </p>
             </div>
-            <Link to="/app" className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 hover:underline pt-2">
-              Enroll via App →
+            <Link to="/mock-test" className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 hover:underline pt-2">
+              Start CBT Mock Test →
             </Link>
           </div>
         </div>
 
-        {/* 9 CHAPTERS SYLLABUS LIST */}
-        <div id="syllabus" className="bg-white rounded-2xl sm:rounded-3xl border border-gray-200 p-5 sm:p-8 shadow-xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* =========================================================================
+            1. FEATURED CHAPTER-WISE STUDY NOTES SECTION (LIKE O-LEVEL)
+           ========================================================================= */}
+        <section id="study-notes" className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-4">
             <div className="space-y-1">
-              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full inline-block">
-                Full 80-Hour Syllabus Breakdown
-              </span>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">
-                NIELIT CCC All 9 Chapters in Detail
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 text-xs font-black px-3.5 py-1 rounded-full shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                <span>NIELIT CCC 80-Hour Official Lecture & Study Notes</span>
+              </div>
+              <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                CCC चैप्टरवाइज़ स्टडी नोट्स (Theory & LibreOffice)
               </h2>
-              <p className="text-xs text-gray-500">
-                Official chapter-wise topic breakdown covering computer basics, LibreOffice suite, internet & digital finance.
+              <p className="text-xs sm:text-sm text-slate-600">
+                प्रत्येक चैप्टर के संपूर्ण थ्योरी नोट्स, डेफिनिशन, शॉर्टकट कीज एवं द्विभाषी व्याख्या। 1-क्लिक में अध्ययन प्रारंभ करें।
               </p>
             </div>
-            
-            <a
-              href="/downloads/ccc-syllabus.pdf"
-              download="NIELIT-CCC-Official-Syllabus.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-all shadow-2xs shrink-0 self-start sm:self-auto cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Download Syllabus PDF</span>
-            </a>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {cccChapters.map((chap) => (
-              <div
-                key={chap.number}
-                className="p-5 rounded-2xl bg-slate-50/80 border border-gray-200/90 flex flex-col justify-between hover:border-blue-300 hover:bg-white transition-all shadow-2xs group"
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to="/syllabus"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-950 bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] shadow-2xs transition-colors"
               >
-                <div>
-                  <div className="flex items-center gap-2.5 mb-2">
-                    <span className="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-2xs">
-                      {chap.number}
-                    </span>
-                    <h3 className="font-bold text-xs sm:text-sm text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{chap.title}</h3>
-                  </div>
-                  <p className="text-[11px] font-semibold text-amber-700 mb-2.5 pl-0.5">{chap.hindiTitle}</p>
-                  
-                  <ul className="text-xs text-gray-600 space-y-1.5 pl-4 list-disc marker:text-amber-500">
-                    {chap.topics.slice(0, 4).map((top, i) => (
-                      <li key={i} className="line-clamp-1">{top}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-between text-xs">
-                  <Link
-                    to="/notes/ccc"
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800"
-                  >
-                    <FileText className="w-3 h-3" />
-                    <span>Read Notes →</span>
-                  </Link>
-                  <Link
-                    to="/mock-test"
-                    className="text-[11px] font-bold text-slate-500 hover:text-slate-900"
-                  >
-                    MCQ Test →
-                  </Link>
-                </div>
-              </div>
-            ))}
+                View Syllabus
+              </Link>
+              <Link
+                to="/chapter-wise-notes/ccc"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] shadow-2xs transition-colors"
+              >
+                All 9 Chapters Notes
+              </Link>
+            </div>
           </div>
-        </div>
+
+          {/* 9-Chapter Graphic Card (Matching O-Level Style) */}
+          <div className="bg-[#fef8ee] border border-[#f5debe] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <h3 className="text-lg sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Course on Computer Concepts (CCC)
+                  </h3>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    9 Chapters: Computer Basics, OS, Writer, Calc, Impress, Internet, E-mail, Digital Banking & Security
+                  </p>
+                </div>
+                <span className="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-white border border-amber-200 text-amber-900 shadow-2xs">
+                  CCC 80-HRS
+                </span>
+              </div>
+
+              {/* 9 Chapters Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+                {cccChapters.map((ch) => (
+                  <Link
+                    key={ch.number}
+                    to={`/notes/ccc/ccc-ch${ch.number}`}
+                    className="bg-white hover:bg-amber-50/70 rounded-xl p-3.5 sm:p-4 border border-amber-200/80 shadow-2xs hover:shadow-xs hover:border-amber-400 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                    title={ch.title}
+                  >
+                    <div className="h-9 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+                      {getCccChapterIcon(ch.number)}
+                    </div>
+                    <span className="text-xs sm:text-[13px] font-bold text-slate-800 group-hover:text-amber-700">
+                      Chapter {ch.number}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-medium truncate max-w-full mt-0.5">
+                      {ch.title}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-amber-200/60">
+              <span className="text-xs font-semibold text-amber-900">
+                💡 Tip: Click any chapter above to open online notes with code syntax & LibreOffice shortcuts.
+              </span>
+              <div className="flex items-center gap-2 justify-end">
+                <Link
+                  to="/syllabus"
+                  className="px-4 py-2 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] text-slate-950 font-bold text-xs shadow-2xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/chapter-wise-notes/ccc"
+                  className="px-4 py-2 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold text-xs shadow-2xs transition-colors"
+                >
+                  Explore All Notes →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            2. FEATURED CHAPTER-WISE MCQS SECTION (LIKE O-LEVEL)
+           ========================================================================= */}
+        <section id="chapter-mcqs" className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 text-xs font-black px-3.5 py-1 rounded-full shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <span>NIELIT CCC Chapter-Wise Practice MCQ Bank</span>
+              </div>
+              <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                चैप्टरवाइज़ MCQs ऑनलाइन प्रैक्टिस (1-by-1 Questions)
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600">
+                प्रत्येक चैप्टर के 50+ महत्वपूर्ण बहुविकल्पीय प्रश्न हल करें। तुरंत सही/गलत उत्तर जाँच, स्कोर ट्रैकिंग और हिंदी व्याख्या।
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to="/syllabus"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-950 bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] shadow-2xs transition-colors"
+              >
+                View Syllabus
+              </Link>
+              <Link
+                to="/chapter-wise-mcq/ccc"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 shadow-2xs transition-colors"
+              >
+                All 9 Chapters MCQs
+              </Link>
+            </div>
+          </div>
+
+          {/* 9-Chapter MCQ Graphic Card */}
+          <div className="bg-[#f0f9f6] border border-[#cdeee1] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <h3 className="text-lg sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    CCC 9-Chapter Instant MCQ Tests
+                  </h3>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Select a chapter to begin targeted MCQ practice with instant result verification:
+                  </p>
+                </div>
+                <span className="text-xs font-extrabold px-3 py-1.5 rounded-lg bg-white border border-emerald-200 text-emerald-900 shadow-2xs">
+                  1000+ MCQs
+                </span>
+              </div>
+
+              {/* 9 Chapters MCQ Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+                {cccChapters.map((ch) => (
+                  <Link
+                    key={ch.number}
+                    to={`/chapter-wise-mcq/ccc/${ch.number}`}
+                    className="bg-white hover:bg-emerald-50/70 rounded-xl p-3.5 sm:p-4 border border-emerald-200/80 shadow-2xs hover:shadow-xs hover:border-emerald-400 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                    title={`Practice Chapter ${ch.number} MCQs: ${ch.title}`}
+                  >
+                    <div className="h-9 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+                      {getCccChapterIcon(ch.number)}
+                    </div>
+                    <span className="text-xs sm:text-[13px] font-bold text-slate-800 group-hover:text-emerald-700">
+                      Chapter {ch.number}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-medium truncate max-w-full mt-0.5">
+                      {ch.title}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-emerald-200/60">
+              <span className="text-xs font-semibold text-emerald-900">
+                🎯 Instant Score Tracker + Bilingual Hindi/English explanations enabled.
+              </span>
+              <div className="flex items-center gap-2 justify-end">
+                <Link
+                  to="/syllabus"
+                  className="px-4 py-2 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] text-slate-950 font-bold text-xs shadow-2xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/chapter-wise-mcq/ccc"
+                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs transition-colors"
+                >
+                  All 9 Chapters MCQs →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* SEARCHABLE & RESPONSIVE LIBREOFFICE SHORTCUT KEYS HUB */}
         <div id="shortcuts-section" className="bg-white rounded-2xl sm:rounded-3xl border border-gray-200 p-4 sm:p-6 lg:p-8 shadow-xs space-y-5 sm:space-y-6">

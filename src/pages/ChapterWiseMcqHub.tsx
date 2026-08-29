@@ -422,15 +422,15 @@ export function ChapterWiseMcqHub() {
 
               <div className="flex items-center justify-between gap-3 pt-2">
                 <Link
-                  to="/ccc"
-                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
                 >
-                  View CCC Course
+                  View Syllabus
                 </Link>
 
                 <Link
                   to="/chapter-wise-mcq/ccc"
-                  className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
                 >
                   All 9 Chapters
                 </Link>

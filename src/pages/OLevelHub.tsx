@@ -10,7 +10,23 @@ import {
   Search, 
   GraduationCap,
   Calculator,
-  BookOpen
+  BookOpen,
+  Monitor,
+  Settings,
+  FileSpreadsheet,
+  Presentation,
+  Globe,
+  Layout,
+  Code,
+  Cpu,
+  GitBranch,
+  Cloud,
+  Wifi,
+  Activity,
+  Users,
+  ShieldCheck,
+  ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { oLevelModules, OLevelModule } from '../data/oLevelData';
@@ -61,6 +77,57 @@ export function OLevelHub() {
     (ch.hindiTitle && ch.hindiTitle.includes(chapterSearch)) ||
     ch.topics.some(t => t.toLowerCase().includes(chapterSearch.toLowerCase()))
   );
+
+  const getChapterIcon = (modId: string, chapNum: number) => {
+    if (modId.includes('m1')) {
+      switch (chapNum) {
+        case 1: return <Monitor className="w-6 h-6 text-blue-600" />;
+        case 2: return <Settings className="w-6 h-6 text-slate-700" />;
+        case 3: return <FileText className="w-6 h-6 text-sky-600" />;
+        case 4: return <FileSpreadsheet className="w-6 h-6 text-emerald-600" />;
+        case 5: return <Presentation className="w-6 h-6 text-amber-600" />;
+        case 6: return <Globe className="w-6 h-6 text-indigo-600" />;
+        case 7: return <Users className="w-6 h-6 text-purple-600" />;
+        case 8: return <Activity className="w-6 h-6 text-rose-600" />;
+        case 9: return <ShieldCheck className="w-6 h-6 text-teal-600" />;
+        default: return <BookOpen className="w-6 h-6 text-blue-600" />;
+      }
+    } else if (modId.includes('m2')) {
+      switch (chapNum) {
+        case 1: return <Layout className="w-6 h-6 text-sky-600" />;
+        case 2: return <Code className="w-6 h-6 text-amber-700" />;
+        case 3: return <div className="w-6 h-6 rounded bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">5</div>;
+        case 4: return <div className="w-6 h-6 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">3</div>;
+        case 5: return <Smartphone className="w-6 h-6 text-rose-500" />;
+        case 6: return <div className="w-6 h-6 rounded bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center shadow-2xs">JS</div>;
+        case 7: return <Sparkles className="w-6 h-6 text-purple-600" />;
+        case 8: return <Globe className="w-6 h-6 text-teal-600" />;
+        default: return <BookOpen className="w-6 h-6 text-indigo-600" />;
+      }
+    } else if (modId.includes('m3')) {
+      switch (chapNum) {
+        case 1: return <Cpu className="w-6 h-6 text-emerald-600" />;
+        case 2: return <GitBranch className="w-6 h-6 text-amber-600" />;
+        case 3: return <div className="w-6 h-6 rounded bg-gradient-to-tr from-blue-600 to-amber-400 text-white font-black text-xs flex items-center justify-center shadow-2xs">Py</div>;
+        case 4: return <Calculator className="w-6 h-6 text-rose-600" />;
+        case 5: return <Layers className="w-6 h-6 text-blue-600" />;
+        case 6: return <Code className="w-6 h-6 text-purple-600" />;
+        case 7: return <FileText className="w-6 h-6 text-teal-600" />;
+        case 8: return <Layout className="w-6 h-6 text-indigo-600" />;
+        default: return <BookOpen className="w-6 h-6 text-emerald-600" />;
+      }
+    } else {
+      switch (chapNum) {
+        case 1: return <Cloud className="w-6 h-6 text-teal-600" />;
+        case 2: return <Wifi className="w-6 h-6 text-sky-600" />;
+        case 3: return <Activity className="w-6 h-6 text-emerald-600" />;
+        case 4: return <div className="w-6 h-6 rounded bg-teal-700 text-white font-black text-xs flex items-center justify-center shadow-2xs">∞</div>;
+        case 5: return <ShieldCheck className="w-6 h-6 text-amber-600" />;
+        case 6: return <Users className="w-6 h-6 text-indigo-600" />;
+        default: return <BookOpen className="w-6 h-6 text-purple-600" />;
+      }
+    }
+  };
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -277,73 +344,124 @@ export function OLevelHub() {
         )}
 
         {/* =========================================================================
-            DIV 2: CHAPTER-WISE NOTES
+            DIV 2: CHAPTER-WISE NOTES (RICH CARD STYLE)
            ========================================================================= */}
         {activeTab !== 'practicals' && activeTab !== 'projects' && (
-          <section id="notes" className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-7 shadow-xs space-y-5">
+          <section id="notes" className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-5 sm:p-7 shadow-xs space-y-6">
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
-                    Chapter Notes
+                  <span className="text-xs font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md">
+                    {currentModule.code} Notes Hub
                   </span>
-                  <h3 className="text-lg sm:text-xl font-extrabold text-slate-900">
-                    Chapter-Wise Study Notes ({currentModule.chapters.length} Chapters)
-                  </h3>
+                  <span className="text-xs font-bold text-slate-500">
+                    {currentModule.chapters.length} Official Chapters
+                  </span>
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Select any chapter to read structured lecture notes, key definitions, and bilingual explanations.
+                <h3 className="text-lg sm:text-2xl font-extrabold text-slate-900 mt-1 tracking-tight">
+                  {currentModule.title} — Chapter-Wise Study Notes
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                  Select any chapter below to read structured lecture notes, key definitions, Hindi & English explanations, or practice MCQs.
                 </p>
               </div>
 
               {/* Search Chapters */}
-              <div className="relative w-full sm:w-72">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <div className="relative w-full sm:w-72 shrink-0">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search chapter title or topics..."
                   value={chapterSearch}
                   onChange={(e) => setChapterSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
                 />
               </div>
             </div>
 
-            {/* Chapter Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Quick 6-Chapter Matrix Grid (Signature Card Style) */}
+            <div className="bg-[#eef5fa] border border-[#d2e5f2] rounded-2xl p-5 sm:p-6 shadow-2xs">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-sm sm:text-base font-bold text-slate-900">
+                    1-Tap Chapter Quick Access Grid
+                  </h4>
+                </div>
+                <span className="text-xs font-extrabold px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 shadow-2xs">
+                  {currentModule.code}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                {currentModule.chapters.map((ch) => {
+                  const chapterSlug = `${currentModule.id.replace('-r5', '')}-ch${ch.number}`;
+                  return (
+                    <Link
+                      key={ch.number}
+                      to={`/notes/${currentModule.id}/${chapterSlug}`}
+                      className="bg-white hover:bg-blue-50/70 rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {getChapterIcon(currentModule.id, ch.number)}
+                      </div>
+                      <span className="text-xs font-bold text-slate-800 group-hover:text-blue-600 line-clamp-1">
+                        Ch {ch.number}
+                      </span>
+                      <span className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">
+                        {ch.title.split(' ')[0]} {ch.title.split(' ')[1] || ''}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Detailed Chapter Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               {filteredChapters.map((chap) => {
                 const chapterSlug = `${currentModule.id.replace('-r5', '')}-ch${chap.number}`;
                 const notesUrl = `/notes/${currentModule.id}/${chapterSlug}`;
+                const mcqUrl = `/chapter-wise-mcq/${currentModule.id}/${chap.number}`;
 
                 return (
                   <div
                     key={chap.number}
-                    className="bg-slate-50/70 hover:bg-white rounded-xl border border-slate-200/90 p-4 transition-all hover:shadow-md hover:border-blue-300 flex flex-col justify-between group"
+                    className="bg-[#f8fafc] hover:bg-white rounded-2xl border border-slate-200 hover:border-blue-300 p-5 transition-all shadow-2xs hover:shadow-md flex flex-col justify-between group"
                   >
                     <div>
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className="text-[11px] font-black bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md">
-                          Chapter {chap.number}
-                        </span>
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-xl bg-white border border-slate-200/80 shadow-2xs flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                            {getChapterIcon(currentModule.id, chap.number)}
+                          </div>
+                          <div>
+                            <span className="text-[11px] font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">
+                              Chapter {chap.number}
+                            </span>
+                            <h4 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-blue-700 transition-colors mt-0.5">
+                              {chap.title}
+                            </h4>
+                          </div>
+                        </div>
+
                         {chap.marksWeightage && (
-                          <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60">
+                          <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60 shrink-0">
                             {chap.marksWeightage}
                           </span>
                         )}
                       </div>
 
-                      <h4 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-blue-700 transition-colors">
-                        {chap.title}
-                      </h4>
                       {chap.hindiTitle && (
-                        <p className="text-xs text-slate-500 font-medium mt-0.5">
+                        <p className="text-xs text-slate-500 font-medium ml-14 mb-2">
                           {chap.hindiTitle}
                         </p>
                       )}
 
                       {/* Topic Highlights */}
-                      <div className="mt-3 pt-3 border-t border-slate-200/60 space-y-1">
+                      <div className="mt-3 pt-3 border-t border-slate-200/60 space-y-1.5">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                           Key Topics Covered:
                         </span>
@@ -355,7 +473,7 @@ export function OLevelHub() {
                             </li>
                           ))}
                           {chap.topics.length > 3 && (
-                            <li className="text-[11px] text-slate-400 font-medium">
+                            <li className="text-[11px] text-slate-400 font-medium pl-3">
                               +{chap.topics.length - 3} more topics in reader
                             </li>
                           )}
@@ -363,18 +481,28 @@ export function OLevelHub() {
                       </div>
                     </div>
 
-                    {/* Action Button */}
-                    <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-between">
+                    {/* Action Buttons */}
+                    <div className="mt-4 pt-3.5 border-t border-slate-200/60 flex items-center justify-between gap-2">
                       <span className="text-[11px] text-slate-500 font-medium">
                         {chap.theoryHours}h Theory • {chap.practicalHours}h Lab
                       </span>
-                      <Link
-                        to={notesUrl}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors"
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>Read Chapter Notes →</span>
-                      </Link>
+                      
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={mcqUrl}
+                          className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-blue-700 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg shadow-2xs transition-colors"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                          <span>MCQs</span>
+                        </Link>
+                        <Link
+                          to={notesUrl}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-950 bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Read Notes →</span>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 );
@@ -386,6 +514,253 @@ export function OLevelHub() {
                 No chapters found matching "{chapterSearch}".
               </div>
             )}
+
+          </section>
+        )}
+
+        {/* =========================================================================
+            FEATURED: ALL 4 O-LEVEL PAPERS CHAPTER NOTES COMPLETE OVERVIEW (CARD STYLE)
+           ========================================================================= */}
+        {activeTab !== 'practicals' && activeTab !== 'projects' && (
+          <section className="bg-slate-100/80 rounded-2xl sm:rounded-3xl border border-slate-200 p-5 sm:p-8 shadow-xs space-y-6">
+            
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 text-xs font-black px-3.5 py-1.5 rounded-full mb-2.5 shadow-2xs">
+                <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+                <span>Complete NIELIT R5.1 Theory Papers Notes</span>
+              </div>
+              <h3 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                All 4 O-Level Papers Chapter-Wise Notes
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl mx-auto">
+                Explore chapter notes, formulas, diagrams, and bilingual explanations across all 4 mandatory modules.
+              </p>
+            </div>
+
+            {/* 4 O-Level Paper Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              
+              {/* Card 1: M1-R5.1 */}
+              <div className="bg-[#e9f2fa] border border-[#cde0f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <h4 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                      IT Tools and Network Basics
+                    </h4>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                      M1-R5.1
+                    </span>
+                  </div>
+
+                  {/* 6 Chapter Grid */}
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                    {[
+                      { num: 1, icon: <Monitor className="w-7 h-7 text-blue-600" />, title: 'Introduction to Computer' },
+                      { num: 2, icon: <Settings className="w-7 h-7 text-slate-700" />, title: 'Operating System' },
+                      { num: 3, icon: <FileText className="w-7 h-7 text-sky-600" />, title: 'Word Processing' },
+                      { num: 4, icon: <FileSpreadsheet className="w-7 h-7 text-emerald-600" />, title: 'Spreadsheet' },
+                      { num: 5, icon: <Presentation className="w-7 h-7 text-amber-600" />, title: 'Presentation' },
+                      { num: 6, icon: <Globe className="w-7 h-7 text-indigo-600" />, title: 'Internet & WWW' },
+                    ].map((ch) => (
+                      <Link
+                        key={ch.num}
+                        to={`/notes/m1-r5/m1-ch${ch.num}`}
+                        className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                        title={ch.title}
+                      >
+                        <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                          {ch.icon}
+                        </div>
+                        <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600">
+                          Chapter {ch.num}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <Link
+                    to="/o-level/m1-r5"
+                    className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  >
+                    View Syllabus
+                  </Link>
+                  <Link
+                    to="/notes/m1-r5"
+                    className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  >
+                    Read All Notes
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 2: M2-R5.1 */}
+              <div className="bg-[#e9f2fa] border border-[#cde0f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <h4 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                      Web Designing and Publishing
+                    </h4>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                      M2-R5.1
+                    </span>
+                  </div>
+
+                  {/* 6 Chapter Grid */}
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                    {[
+                      { num: 1, icon: <Layout className="w-7 h-7 text-sky-600" />, title: 'Intro to Web Design' },
+                      { num: 2, icon: <Code className="w-7 h-7 text-amber-700" />, title: 'HTML Editors' },
+                      { num: 3, icon: <div className="w-7 h-7 rounded bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">5</div>, title: 'HTML5 Elements' },
+                      { num: 4, icon: <div className="w-7 h-7 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">3</div>, title: 'CSS3' },
+                      { num: 5, icon: <Smartphone className="w-7 h-7 text-rose-500" />, title: 'Responsive CSS' },
+                      { num: 6, icon: <div className="w-7 h-7 rounded bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center shadow-2xs">JS</div>, title: 'JavaScript' },
+                    ].map((ch) => (
+                      <Link
+                        key={ch.num}
+                        to={`/notes/m2-r5/m2-ch${ch.num}`}
+                        className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                        title={ch.title}
+                      >
+                        <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                          {ch.icon}
+                        </div>
+                        <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600">
+                          Chapter {ch.num}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <Link
+                    to="/o-level/m2-r5"
+                    className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  >
+                    View Syllabus
+                  </Link>
+                  <Link
+                    to="/notes/m2-r5"
+                    className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  >
+                    Read All Notes
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 3: M3-R5.1 */}
+              <div className="bg-[#ebf5fa] border border-[#cfe4f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <h4 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                      Python Programming
+                    </h4>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                      M3-R5.1
+                    </span>
+                  </div>
+
+                  {/* 6 Chapter Grid */}
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                    {[
+                      { num: 1, icon: <Cpu className="w-7 h-7 text-emerald-600" />, title: 'Intro to Programming' },
+                      { num: 2, icon: <GitBranch className="w-7 h-7 text-amber-600" />, title: 'Flowcharts' },
+                      { num: 3, icon: <div className="w-7 h-7 rounded bg-gradient-to-tr from-blue-600 to-amber-400 text-white font-black text-xs flex items-center justify-center shadow-2xs">Py</div>, title: 'Python Syntax' },
+                      { num: 4, icon: <Calculator className="w-7 h-7 text-rose-600" />, title: 'Operators' },
+                      { num: 5, icon: <Layers className="w-7 h-7 text-blue-600" />, title: 'Data Types' },
+                      { num: 6, icon: <Code className="w-7 h-7 text-purple-600" />, title: 'Functions' },
+                    ].map((ch) => (
+                      <Link
+                        key={ch.num}
+                        to={`/notes/m3-r5/m3-ch${ch.num}`}
+                        className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                        title={ch.title}
+                      >
+                        <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                          {ch.icon}
+                        </div>
+                        <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600">
+                          Chapter {ch.num}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <Link
+                    to="/o-level/m3-r5"
+                    className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  >
+                    View Syllabus
+                  </Link>
+                  <Link
+                    to="/notes/m3-r5"
+                    className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  >
+                    Read All Notes
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 4: M4-R5.1 */}
+              <div className="bg-[#eaf5f2] border border-[#cce8e0] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <h4 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                      Internet of Things (IOT)
+                    </h4>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                      M4-R5.1
+                    </span>
+                  </div>
+
+                  {/* 6 Chapter Grid */}
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                    {[
+                      { num: 1, icon: <Cloud className="w-7 h-7 text-teal-600" />, title: 'Introduction to IoT' },
+                      { num: 2, icon: <Wifi className="w-7 h-7 text-sky-600" />, title: 'Things & Connections' },
+                      { num: 3, icon: <Activity className="w-7 h-7 text-emerald-600" />, title: 'Sensors & Actuators' },
+                      { num: 4, icon: <div className="w-7 h-7 rounded bg-teal-700 text-white font-black text-xs flex items-center justify-center shadow-2xs">∞</div>, title: 'Arduino' },
+                      { num: 5, icon: <ShieldCheck className="w-7 h-7 text-amber-600" />, title: 'Security' },
+                      { num: 6, icon: <Users className="w-7 h-7 text-indigo-600" />, title: 'Soft Skills' },
+                    ].map((ch) => (
+                      <Link
+                        key={ch.num}
+                        to={`/notes/m4-r5/m4-ch${ch.num}`}
+                        className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                        title={ch.title}
+                      >
+                        <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                          {ch.icon}
+                        </div>
+                        <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600">
+                          Chapter {ch.num}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <Link
+                    to="/o-level/m4-r5"
+                    className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  >
+                    View Syllabus
+                  </Link>
+                  <Link
+                    to="/notes/m4-r5"
+                    className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                  >
+                    Read All Notes
+                  </Link>
+                </div>
+              </div>
+
+            </div>
 
           </section>
         )}

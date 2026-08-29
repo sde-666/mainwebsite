@@ -13,6 +13,9 @@ import { McqLanding } from './pages/McqLanding';
 import { ChapterWiseMcqHub } from './pages/ChapterWiseMcqHub';
 import { PaperChaptersList } from './pages/PaperChaptersList';
 import { ChapterMcqPractice } from './pages/ChapterMcqPractice';
+import { ChapterWiseNotesHub } from './pages/ChapterWiseNotesHub';
+import { PaperNotesChaptersList } from './pages/PaperNotesChaptersList';
+import { SyllabusPage } from './pages/SyllabusPage';
 import { PracticalHub } from './pages/PracticalHub';
 import { PracticalExamWorkspace } from './pages/PracticalExamWorkspace';
 import { Resources } from './pages/Resources';
@@ -55,8 +58,12 @@ export default function App() {
                 <Route index element={<Home />} />
                 
                 {/* NIELIT Core Hubs */}
-                <Route path="o-level" element={<OLevelHub />} />
-                <Route path="o-level/:moduleId" element={<OLevelHub />} />
+                <Route path="o-level" element={<ChapterWiseNotesHub />} />
+                <Route path="o-level/:moduleId" element={<PaperNotesChaptersList />} />
+                <Route path="chapter-wise-notes" element={<ChapterWiseNotesHub />} />
+                <Route path="chapter-wise-notes/:moduleId" element={<PaperNotesChaptersList />} />
+                <Route path="syllabus" element={<SyllabusPage />} />
+                <Route path="o-level-syllabus" element={<SyllabusPage />} />
                 <Route path="o-level-result-calculator" element={<OLevelResultCalculator />} />
                 <Route path="result-calculator" element={<OLevelResultCalculator />} />
                 <Route path="ccc" element={<CCCHub />} />

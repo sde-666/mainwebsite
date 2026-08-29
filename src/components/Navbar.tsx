@@ -87,63 +87,67 @@ export function Navbar() {
     }, 150);
   };
 
-  // 4 O Level Papers
-  const oLevelPapers = [
+  // O Level Dropdown Items
+  const oLevelDropdownItems = [
     {
-      code: 'M1-R5.1',
-      title: 'IT Tools & Network Basics',
-      href: '/o-level/m1-r5',
-      icon: Layers,
+      title: 'Chapter-wise Notes',
+      desc: 'All 4 Modules (M1, M2, M3, M4) structured study notes & theory',
+      href: '/chapter-wise-notes',
+      icon: BookOpen,
+      badge: 'Popular',
       color: 'text-blue-600 bg-blue-50 border-blue-100',
     },
     {
-      code: 'M2-R5.1',
-      title: 'Web Designing & Publishing',
-      href: '/o-level/m2-r5',
-      icon: Globe,
-      color: 'text-indigo-600 bg-indigo-50 border-indigo-100',
-    },
-    {
-      code: 'M3-R5.1',
-      title: 'Programming through Python',
-      href: '/o-level/m3-r5',
-      icon: Terminal,
+      title: 'Syllabus',
+      desc: 'Official NIELIT R5.1 curriculum & 4 papers PDF downloads',
+      href: '/syllabus',
+      icon: FileText,
+      badge: 'PDF',
       color: 'text-emerald-600 bg-emerald-50 border-emerald-100',
     },
     {
-      code: 'M4-R5.1',
-      title: 'Internet of Things (IoT)',
-      href: '/o-level/m4-r5',
-      icon: Cpu,
-      color: 'text-purple-600 bg-purple-50 border-purple-100',
+      title: 'Result Calculator',
+      desc: 'Calculate 60:40 Theory & Practical marks, grades & passing status',
+      href: '/o-level-result-calculator',
+      icon: Calculator,
+      badge: '60:40',
+      color: 'text-amber-600 bg-amber-50 border-amber-100',
     },
   ];
 
   // CCC Dropdown Items
   const cccItems = [
     {
-      title: 'Syllabus & Marks Weightage',
-      desc: '9 Chapters • 100 Marks CBT Exam Pattern',
-      href: '/ccc#syllabus',
-      icon: FileText,
-    },
-    {
       title: 'Chapter-Wise Notes',
-      desc: 'LibreOffice, OS & Digital Financial Tools',
-      href: '/notes/ccc',
-      icon: Layers,
+      desc: 'All 9 Chapters theory, LibreOffice shortcuts & definitions',
+      href: '/chapter-wise-notes/ccc',
+      icon: BookOpen,
+      badge: '9 Chapters',
+      color: 'text-blue-600 bg-blue-50 border-blue-100',
     },
     {
-      title: '100 MCQ Practice Test',
-      desc: 'Timed 90-minute real exam simulator',
-      href: '/mock-test',
+      title: 'Chapter-Wise MCQs',
+      desc: 'Practice 1000+ chapter-by-chapter questions & solutions',
+      href: '/chapter-wise-mcq/ccc',
       icon: CheckCircle2,
+      badge: 'MCQs',
+      color: 'text-emerald-600 bg-emerald-50 border-emerald-100',
     },
     {
-      title: 'Study PDFs & Resources',
-      desc: 'Free official syllabus & quick notes PDF',
-      href: '/resources/ccc',
-      icon: Download,
+      title: 'Syllabus & Curriculum',
+      desc: 'Official 80-hour NIELIT CCC course outline & PDF',
+      href: '/syllabus',
+      icon: FileText,
+      badge: 'PDF',
+      color: 'text-amber-600 bg-amber-50 border-amber-100',
+    },
+    {
+      title: '100 MCQ Mock Test',
+      desc: 'Timed 90-minute real online CBT exam simulator',
+      href: '/mock-test',
+      icon: Layers,
+      badge: 'CBT Exam',
+      color: 'text-purple-600 bg-purple-50 border-purple-100',
     },
   ];
 
@@ -241,16 +245,19 @@ export function Navbar() {
               HOME
             </Link>
 
-            {/* Tab 2: O LEVEL (Dropdown with 4 Papers) */}
+            {/* Tab 2: O LEVEL (Dropdown with Chapter-wise Notes, Syllabus, Result Calculator) */}
             <div 
               className="relative"
               onMouseEnter={() => handleMouseEnter('olevel')}
               onMouseLeave={handleMouseLeave}
             >
               <Link
-                to="/o-level"
+                to="/chapter-wise-notes"
                 className={`px-3 py-1.5 rounded-lg text-[13px] font-bold transition-all flex items-center gap-1 ${
-                  location.pathname.startsWith('/o-level') || location.pathname.startsWith('/notes/m')
+                  location.pathname.startsWith('/chapter-wise-notes') || 
+                  location.pathname.startsWith('/o-level') || 
+                  location.pathname.startsWith('/syllabus') || 
+                  location.pathname.startsWith('/o-level-result-calculator')
                     ? 'text-blue-700 bg-blue-50' 
                     : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
                 }`}
@@ -259,50 +266,36 @@ export function Navbar() {
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'olevel' ? 'rotate-180 text-blue-600' : 'text-slate-400'}`} />
               </Link>
 
-              {/* 4 Papers Dropdown */}
+              {/* O Level Dropdown */}
               {activeDropdown === 'olevel' && (
-                <div className="absolute left-0 top-full pt-1.5 w-76 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="absolute left-0 top-full pt-1.5 w-80 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                   <div className="bg-white rounded-xl border border-slate-200 shadow-xl p-2 space-y-1">
                     <div className="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 flex items-center justify-between">
-                      <span>Select O Level Paper</span>
-                      <Link to="/o-level" className="text-blue-600 hover:underline">All Papers →</Link>
+                      <span>NIELIT O Level Portal</span>
+                      <Link to="/chapter-wise-notes" className="text-blue-600 hover:underline">Notes Hub →</Link>
                     </div>
 
-                    {oLevelPapers.map((paper) => {
-                      const Icon = paper.icon;
+                    {oLevelDropdownItems.map((item) => {
+                      const Icon = item.icon;
                       return (
                         <Link
-                          key={paper.code}
-                          to={paper.href}
+                          key={item.title}
+                          to={item.href}
                           className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 transition-colors group"
                         >
-                          <div className={`p-1.5 rounded-md border ${paper.color} shrink-0`}>
+                          <div className={`p-1.5 rounded-md border ${item.color} shrink-0`}>
                             <Icon className="w-4 h-4" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
-                              <span className="text-[11px] font-black text-slate-900 group-hover:text-blue-600">{paper.code}</span>
+                              <span className="text-[12px] font-bold text-slate-900 group-hover:text-blue-600">{item.title}</span>
+                              <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-700">{item.badge}</span>
                             </div>
-                            <p className="text-[12px] font-semibold text-slate-600 truncate">{paper.title}</p>
+                            <p className="text-[11px] text-slate-500 truncate mt-0.5">{item.desc}</p>
                           </div>
                         </Link>
                       );
                     })}
-
-                    <div className="pt-1 mt-1 border-t border-slate-100">
-                      <Link
-                        to="/o-level-result-calculator"
-                        className="flex items-center gap-2 p-2 rounded-lg bg-blue-50/70 hover:bg-blue-100/80 text-blue-800 transition-colors group"
-                      >
-                        <div className="p-1.5 rounded-md bg-blue-600 text-white shrink-0 shadow-2xs">
-                          <Calculator className="w-3.5 h-3.5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[11px] font-black block">Result Calculator (60:40)</span>
-                          <p className="text-[10px] text-blue-600 font-medium truncate">Check marks & grade status</p>
-                        </div>
-                      </Link>
-                    </div>
                   </div>
                 </div>
               )}
@@ -328,11 +321,11 @@ export function Navbar() {
 
               {/* CCC Dropdown */}
               {activeDropdown === 'ccc' && (
-                <div className="absolute left-0 top-full pt-1.5 w-72 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="absolute left-0 top-full pt-1.5 w-80 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                   <div className="bg-white rounded-xl border border-slate-200 shadow-xl p-2 space-y-1">
                     <div className="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 flex items-center justify-between">
-                      <span>CCC (80 Hours)</span>
-                      <Link to="/ccc" className="text-blue-600 hover:underline">Overview →</Link>
+                      <span>NIELIT CCC Portal</span>
+                      <Link to="/ccc" className="text-blue-600 hover:underline">CCC Overview →</Link>
                     </div>
 
                     {cccItems.map((item) => {
@@ -343,12 +336,15 @@ export function Navbar() {
                           to={item.href}
                           className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 transition-colors group"
                         >
-                          <div className="p-1.5 rounded-md bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
+                          <div className={`p-1.5 rounded-md border ${item.color} shrink-0`}>
                             <Icon className="w-4 h-4" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className="text-[12px] font-bold text-slate-800 group-hover:text-amber-600 block">{item.title}</span>
-                            <p className="text-[10px] text-slate-500 truncate">{item.desc}</p>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[12px] font-bold text-slate-900 group-hover:text-blue-600">{item.title}</span>
+                              <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 group-hover:bg-amber-50 group-hover:text-amber-800">{item.badge}</span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 truncate mt-0.5">{item.desc}</p>
                           </div>
                         </Link>
                       );
@@ -542,16 +538,16 @@ export function Navbar() {
                       <span>Home</span>
                     </Link>
 
-                    {/* 2. O Level (Accordion with 4 Papers) */}
+                    {/* 2. O Level (Accordion with Chapter-wise Notes, Syllabus, Result Calculator) */}
                     <div className="border-y border-slate-100 py-1 my-1">
                       <div className="flex items-center justify-between">
                         <Link
-                          to="/o-level"
+                          to="/chapter-wise-notes"
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="flex items-center gap-2.5 flex-1 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-800 hover:text-blue-600"
                         >
                           <BookOpen className="w-4 h-4 text-blue-600" />
-                          <span>O Level (4 Papers)</span>
+                          <span>O Level Portal</span>
                         </Link>
                         <button
                           type="button"
@@ -565,38 +561,28 @@ export function Navbar() {
 
                       {mobileExpanded === 'olevel' && (
                         <div className="pl-2.5 pr-2 py-1.5 space-y-1 bg-slate-50/90 rounded-xl mt-1 border border-slate-100">
-                          {oLevelPapers.map((p) => {
-                            const Icon = p.icon;
+                          {oLevelDropdownItems.map((item) => {
+                            const Icon = item.icon;
                             return (
                               <Link
-                                key={p.code}
-                                to={p.href}
+                                key={item.title}
+                                to={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white hover:text-blue-600 transition-colors shadow-2xs"
+                                className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white hover:text-blue-600 transition-colors shadow-2xs"
                               >
-                                <Icon className="w-4 h-4 text-blue-600 shrink-0" />
-                                <div className="min-w-0">
-                                  <span className="font-extrabold text-[11px] block text-slate-900">{p.code}</span>
-                                  <span className="text-[10px] text-slate-600 truncate block">{p.title}</span>
+                                <div className={`p-1 rounded-md border ${item.color} shrink-0`}>
+                                  <Icon className="w-3.5 h-3.5" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-bold text-[11px] block text-slate-900">{item.title}</span>
+                                    <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600">{item.badge}</span>
+                                  </div>
+                                  <span className="text-[10px] text-slate-500 truncate block mt-0.5">{item.desc}</span>
                                 </div>
                               </Link>
                             );
                           })}
-                          <Link
-                            to="/o-level-result-calculator"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-blue-100/60 text-blue-800 text-xs font-bold hover:bg-blue-200/80 transition-colors"
-                          >
-                            <Calculator className="w-3.5 h-3.5 text-blue-600" />
-                            <span>Result Calculator (60:40)</span>
-                          </Link>
-                          <Link
-                            to="/o-level"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="block px-2.5 py-1 text-[11px] font-bold text-blue-600 hover:underline"
-                          >
-                            All O Level Syllabus & Details →
-                          </Link>
                         </div>
                       )}
                     </div>
@@ -624,17 +610,28 @@ export function Navbar() {
 
                       {mobileExpanded === 'ccc' && (
                         <div className="pl-2.5 pr-2 py-1.5 space-y-1 bg-slate-50/90 rounded-xl mt-1 border border-slate-100">
-                          {cccItems.map((item) => (
-                            <Link
-                              key={item.title}
-                              to={item.href}
-                              onClick={() => setIsMobileMenuOpen(false)}
-                              className="block px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white hover:text-amber-600 transition-colors shadow-2xs"
-                            >
-                              <span className="font-bold block text-slate-800 text-[11px]">{item.title}</span>
-                              <span className="text-[10px] text-slate-500">{item.desc}</span>
-                            </Link>
-                          ))}
+                          {cccItems.map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <Link
+                                key={item.title}
+                                to={item.href}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white hover:text-amber-600 transition-colors shadow-2xs"
+                              >
+                                <div className={`p-1 rounded-md border ${item.color} shrink-0`}>
+                                  <Icon className="w-3.5 h-3.5" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-bold text-[11px] block text-slate-900">{item.title}</span>
+                                    <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600">{item.badge}</span>
+                                  </div>
+                                  <span className="text-[10px] text-slate-500 truncate block mt-0.5">{item.desc}</span>
+                                </div>
+                              </Link>
+                            );
+                          })}
                         </div>
                       )}
                     </div>

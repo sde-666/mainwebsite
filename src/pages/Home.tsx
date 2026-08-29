@@ -1,77 +1,48 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
   Smartphone, 
-  Youtube, 
   Download, 
   Award, 
-  Code, 
-  Laptop, 
-  Cpu, 
-  FileCode2, 
   CheckCircle2, 
   ArrowRight, 
   Sparkles, 
   HelpCircle, 
   FileText, 
   Check, 
-  Layers, 
-  Flame, 
-  ExternalLink,
   ShieldCheck,
-  Star,
+  Zap,
+  Calculator,
+  Laptop,
+  FileCode2,
+  Monitor,
+  Settings,
+  FileSpreadsheet,
+  Presentation,
+  Globe,
+  Layout,
+  Code,
+  Cpu,
+  GitBranch,
+  Layers,
+  Cloud,
+  Wifi,
+  Activity,
   Users,
-  GraduationCap
+  Video,
+  BarChart3,
+  Star,
+  Timer
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
-import { BrandLogo } from '../components/BrandLogo';
 import { NielitLogo } from '../components/NielitLogo';
 import { siteConfig } from '../data/config';
 import { AppPhoneMockup } from '../components/AppPhoneMockup';
 import { ComputerCourseHeroPoster } from '../components/ComputerCourseHeroPoster';
-import { oLevelModules, oLevelExamInfo } from '../data/oLevelData';
-import { cccExamInfo, libreOfficeShortcutCheatSheet } from '../data/cccData';
 import { courses } from '../data/courses';
-import { resources } from '../data/resources';
-import { quizQuestions } from '../data/quizData';
 import { faqs } from '../data/faqs';
-import { AdBanner } from '../components/AdBanner';
 
 export function Home() {
-  const [selectedModuleId, setSelectedModuleId] = useState('m1-r5');
-  const [activeQuizIndex, setActiveQuizIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [quizScore, setQuizScore] = useState(0);
-
-  const selectedModule = oLevelModules.find(m => m.id === selectedModuleId) || oLevelModules[0];
-  const quickQuiz = quizQuestions.slice(0, 5);
-
-  const handleOptionSelect = (optionIndex: number) => {
-    if (selectedOption !== null) return;
-    setSelectedOption(optionIndex);
-    setShowExplanation(true);
-    if (optionIndex === quickQuiz[activeQuizIndex].correctIndex) {
-      setQuizScore(prev => prev + 1);
-    }
-  };
-
-  const handleNextQuiz = () => {
-    if (activeQuizIndex < quickQuiz.length - 1) {
-      setActiveQuizIndex(prev => prev + 1);
-      setSelectedOption(null);
-      setShowExplanation(false);
-    }
-  };
-
-  const resetQuiz = () => {
-    setActiveQuizIndex(0);
-    setSelectedOption(null);
-    setShowExplanation(false);
-    setQuizScore(0);
-  };
-
   // Structured Data Schema for Home (Courses, FAQPage, and Knowledge Graph)
   const homeSchemas = [
     {
@@ -142,327 +113,1255 @@ export function Home() {
         breadcrumbs={[{ name: 'Home', url: '/' }]}
       />
 
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-blue-950 text-white pt-10 pb-20 lg:pt-16 lg:pb-24">
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px]"></div>
-        
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Left Column: Heading & Value Proposition */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              {/* Dual Brand & NIELIT Alignment Header */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                <div className="bg-white/95 px-3 py-1.5 rounded-xl inline-flex items-center gap-2 shadow-xs border border-white/20">
-                  <img src="/skilldotpy-logo.svg" alt="Skilldotpy" className="h-6 w-6 object-contain" />
-                  <span className="text-xs font-black text-slate-900 tracking-tight">Skill<span className="text-blue-500">.</span><span className="text-rose-500 font-serif">py</span></span>
-                </div>
 
-                <div className="bg-white px-3.5 py-1.5 rounded-xl inline-flex items-center gap-2.5 shadow-xs border border-white/30">
-                  <NielitLogo variant="full" size="xs" className="h-5" />
-                  <span className="text-xs font-black text-[#003366] tracking-tight border-l border-slate-200 pl-2">NIELIT R5.1 Aligned</span>
-                </div>
+
+      {/* HERO SECTION - MODERN, CLEAN, MOBILE-FIRST (Inspired by reference design) */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#eef4fe] via-[#f7faff] to-[#ffffff] text-slate-900 pt-7 pb-12 sm:pt-10 sm:pb-16 lg:pt-14 lg:pb-20 border-b border-slate-200/60">
+        
+        {/* Soft Background Ambient Glows & Vector Waves */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] sm:w-[900px] sm:h-[450px] bg-gradient-to-tr from-blue-300/25 via-indigo-300/20 to-purple-300/20 rounded-full blur-3xl pointer-events-none -z-0"></div>
+        <div className="absolute -bottom-10 left-0 right-0 h-28 sm:h-36 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-0"></div>
+        
+        {/* Subtle decorative dot grids on left and right for desktop */}
+        <div className="hidden sm:block absolute top-12 left-4 lg:left-12 opacity-30 pointer-events-none">
+          <div className="grid grid-cols-4 gap-2">
+            {[...Array(16)].map((_, i) => (
+              <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-500/60"></div>
+            ))}
+          </div>
+        </div>
+        <div className="hidden sm:block absolute top-12 right-4 lg:right-12 opacity-30 pointer-events-none">
+          <div className="grid grid-cols-4 gap-2">
+            {[...Array(16)].map((_, i) => (
+              <div key={i} className="w-1.5 h-1.5 rounded-full bg-indigo-500/60"></div>
+            ))}
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-5xl">
+          
+          <div className="flex flex-col items-center text-center space-y-4 sm:space-y-6">
+
+            {/* 1. TOP BRAND / ACCREDITATION PILL */}
+            <div className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-md px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-xs border border-slate-200/90 hover:border-blue-300 transition-colors">
+              <div className="flex items-center gap-1.5 pr-2 sm:pr-3 border-r border-slate-200">
+                <img src="/skilldotpy-logo.svg" alt="Skilldotpy" className="h-5 w-5 object-contain" />
+                <span className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
+                  Skill<span className="text-blue-600">.</span><span className="text-rose-500 font-serif">py</span>
+                </span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white">
-                Crack NIELIT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-amber-300">O Level & CCC</span> with 100% Confidence
+              <div className="flex items-center gap-1.5 px-1 sm:px-2 border-r border-slate-200">
+                <NielitLogo variant="full" size="xs" className="h-4 sm:h-4.5" />
+              </div>
+
+              <div className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-blue-700">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span>Accredited</span>
+              </div>
+            </div>
+
+            {/* 2. EYEBROW TAG */}
+            <div className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-blue-50/90 border border-blue-200/90 text-blue-800 text-[11px] sm:text-xs font-extrabold shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              <span>NIELIT O Level & CCC की तैयारी अब और आसान</span>
+            </div>
+
+            {/* 3. MAIN HERO HEADLINE */}
+            <div className="space-y-1 sm:space-y-2 max-w-4xl mx-auto">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-slate-950 tracking-tight leading-[1.15]">
+                <span className="block text-slate-900">O Level और CCC में</span>
+                <span className="block mt-1 sm:mt-2">
+                  पाएं पहली बार में{' '}
+                  <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+                    100% सफलता
+                    {/* Artistic gradient underline curve matching reference */}
+                    <svg
+                      className="absolute -bottom-2 sm:-bottom-3 left-0 w-full overflow-visible"
+                      height="8"
+                      viewBox="0 0 200 8"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M2 6C60 1.5 140 1.5 198 6"
+                        stroke="url(#hero-curve-gradient)"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                      />
+                      <defs>
+                        <linearGradient id="hero-curve-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#2563eb" />
+                          <stop offset="50%" stopColor="#4f46e5" />
+                          <stop offset="100%" stopColor="#9333ea" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </span>
+                </span>
               </h1>
+            </div>
 
-              <p className="text-xs sm:text-base md:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Learn directly from your trusted computer teacher. Get comprehensive chapter-wise free PDF notes, syllabus breakdowns, solved previous papers, practical lab programs, and full video classes for <strong className="text-white">M1-R5, M2-R5, M3-R5 (Python) & M4-R5 (IoT)</strong>.
-              </p>
+            {/* 4. SUBHEADING */}
+            <p className="text-xs sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal px-2">
+              फ्री PDF नोट्स, वीडियो लेक्चर, लाइव प्रैक्टिस, ऑनलाइन टेस्ट और बेहतरीन स्टडी मटीरियल के साथ करें अपनी तैयारी को स्मार्ट।
+            </p>
 
-              {/* Action Buttons (Compact & thumb-friendly on mobile) */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2.5 sm:gap-4 pt-1 sm:pt-2">
+            {/* 5. 4 CORE PILLARS / RESOURCE CARDS ROW (Responsive 4 items / 2x2 on mobile) */}
+            <div className="w-full max-w-3xl pt-2 sm:pt-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 bg-white/80 backdrop-blur-md p-2.5 sm:p-3.5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs">
+                
+                {/* 1. Free PDF Notes */}
                 <Link
-                  to="/app"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold px-4 sm:px-7 py-2.5 sm:py-3.5 rounded-xl shadow-lg shadow-blue-500/25 transition-all text-xs sm:text-sm group"
+                  to="/chapter-wise-notes"
+                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 hover:bg-blue-50/70 active:bg-blue-100 border border-slate-100 hover:border-blue-200 transition-all flex flex-col items-center text-center group"
                 >
-                  <Smartphone className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
-                  <span>Download Skilldotpy App (APK)</span>
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-2 shadow-2xs group-hover:scale-105 transition-transform">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-blue-700 transition-colors">
+                    फ्री PDF नोट्स
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
+                    सभी विषय (M1-M4 & CCC)
+                  </span>
                 </Link>
 
-                <Link
-                  to="/resources"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl transition-colors text-xs sm:text-sm"
-                >
-                  <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
-                  <span>Free Notes & Syllabus PDF</span>
-                </Link>
-
+                {/* 2. Video Lectures */}
                 <a
                   href={siteConfig.links.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 font-semibold px-4 sm:px-5 py-2.5 sm:py-3.5 rounded-xl transition-colors text-xs sm:text-sm"
+                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 hover:bg-purple-50/70 active:bg-purple-100 border border-slate-100 hover:border-purple-200 transition-all flex flex-col items-center text-center group"
                 >
-                  <Youtube className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400" />
-                  <span>YouTube Classes</span>
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-2 shadow-2xs group-hover:scale-105 transition-transform">
+                    <Video className="w-5 h-5" />
+                  </div>
+                  <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-purple-700 transition-colors">
+                    वीडियो लेक्चर
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
+                    आसान भाषा में
+                  </span>
                 </a>
-              </div>
 
-              {/* Trust Badges */}
-              <div className="pt-3 sm:pt-4 border-t border-slate-800/80 grid grid-cols-3 gap-2 sm:gap-4 text-center sm:text-left">
-                <div>
-                  <span className="block text-lg sm:text-2xl font-bold text-white">50,000+</span>
-                  <span className="text-[10px] sm:text-xs text-slate-400">Students Taught</span>
-                </div>
-                <div>
-                  <span className="block text-lg sm:text-2xl font-bold text-amber-400">Grade S & A</span>
-                  <span className="text-[10px] sm:text-xs text-slate-400">High Success Rate</span>
-                </div>
-                <div>
-                  <span className="block text-lg sm:text-2xl font-bold text-emerald-400">100% Free</span>
-                  <span className="text-[10px] sm:text-xs text-slate-400">Basic Study Notes</span>
-                </div>
+                {/* 3. Online Test */}
+                <Link
+                  to="/mock-test"
+                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 hover:bg-emerald-50/70 active:bg-emerald-100 border border-slate-100 hover:border-emerald-200 transition-all flex flex-col items-center text-center group"
+                >
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 shadow-2xs group-hover:scale-105 transition-transform">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-700 transition-colors">
+                    ऑनलाइन टेस्ट
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
+                    100+ MCQs & CBT
+                  </span>
+                </Link>
+
+                {/* 4. Practice Set */}
+                <Link
+                  to="/chapter-wise-mcq"
+                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 hover:bg-amber-50/70 active:bg-amber-100 border border-slate-100 hover:border-amber-200 transition-all flex flex-col items-center text-center group"
+                >
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-2 shadow-2xs group-hover:scale-105 transition-transform">
+                    <BarChart3 className="w-5 h-5" />
+                  </div>
+                  <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-amber-700 transition-colors">
+                    प्रैक्टिस सेट
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
+                    टॉपिक वाइज़
+                  </span>
+                </Link>
+
               </div>
             </div>
 
-            {/* Right Column: Graphic Computer / Laptop Poster Showcase */}
-            <div className="lg:col-span-5 flex items-center justify-center">
-              <ComputerCourseHeroPoster />
+            {/* 6. CALL TO ACTION BUTTONS */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto pt-2">
+              <Link
+                to="/resources"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl font-extrabold text-white text-xs sm:text-sm bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:bg-indigo-800 shadow-md shadow-indigo-500/25 transition-all cursor-pointer group"
+              >
+                <Download className="w-4 h-4 sm:w-4.5 sm:h-4.5 group-hover:translate-y-0.5 transition-transform" />
+                <span>फ्री स्टडी मटीरियल डाउनलोड करें</span>
+              </Link>
+
+              <Link
+                to="/o-level"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-2xl font-bold text-slate-800 hover:text-blue-700 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-300/80 shadow-2xs transition-all text-xs sm:text-sm cursor-pointer"
+              >
+                <BookOpen className="w-4 h-4 text-blue-600" />
+                <span>O Level नोट्स & सिलेबस देखें</span>
+              </Link>
+            </div>
+
+            {/* 7. BOTTOM TRUST PROOF STRIP (Floating Glass Bar) */}
+            <div className="w-full max-w-4xl bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-5 mt-6 sm:mt-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 md:divide-x divide-slate-100">
+                
+                <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-1 sm:pt-0">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">NIELIT द्वारा प्रमाणित</span>
+                    <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">नवीनतम R5.1 पैटर्न</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-2 sm:pt-0 md:pl-4">
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <Award className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">विशेषज्ञों द्वारा तैयार</span>
+                    <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">अनुभवी कंप्यूटर शिक्षक</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-2 sm:pt-0 md:pl-4">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">50,000+</span>
+                    <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">सफल छात्र</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-2 sm:pt-0 md:pl-4">
+                  <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
+                    <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">पहली बार में सफलता</span>
+                    <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">हमारा वादा</span>
+                  </div>
+                </div>
+
+              </div>
             </div>
 
           </div>
+
         </div>
       </section>
 
-      {/* OFFICIAL EXAM PREPARATION & ACCREDITATION STRIP */}
-      <section className="bg-slate-100 border-b border-slate-200 py-6">
+      {/* =========================================================================
+          1. FEATURED CHAPTER-WISE STUDY NOTES SECTION
+         ========================================================================= */}
+      <section className="py-12 sm:py-16 bg-[#f8fafc] border-b border-slate-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-white p-1 border border-slate-200 shadow-xs flex items-center justify-center shrink-0">
-                <img src="/skilldotpy-logo.svg" alt="Skilldotpy Official Logo" className="w-full h-full object-contain" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                  <span>Skilldotpy Educational Platform</span>
-                  <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Official</span>
-                </h4>
-                <p className="text-xs text-slate-500">"Just learn skills..." — Structured computer science education & practical coding</p>
-              </div>
+          
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 text-xs font-black px-3.5 py-1.5 rounded-full mb-3 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              <span>NIELIT R5.1 Official Chapter-Wise Lecture & Study Notes</span>
             </div>
-
-            <div className="h-8 w-px bg-slate-200 hidden md:block"></div>
-
-            <div className="flex items-center gap-4">
-              <div className="bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 shrink-0">
-                <NielitLogo size="sm" className="h-7" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-blue-900">NIELIT (R5.1) Exam Syllabus</h4>
-                <p className="text-xs text-slate-500">M1-R5, M2-R5, M3-R5 (Python), M4-R5 (IoT) & CCC certified preparation</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* STRATEGIC SPONSOR PLACEMENT 1 */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <AdBanner slotId="home-top-leaderboard" format="horizontal" fallbackType="app" />
-      </div>
-
-      {/* QUICK COURSE & STUDY GATEWAY (LearnNIELIT 5-Module Fast Hub) */}
-      <section className="py-10 sm:py-14 bg-white border-b border-slate-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
-            <span className="text-xs font-black uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full">
-              Quick Learning Portal
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
-              Select Your NIELIT Paper to Start Studying
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              चैप्टरवाइज़ स्टडी नोट्स (Theory & Code)
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1.5">
-              Instant access to bilingual chapter notes, online CBT mock exams, practical lab compilers, and syllabus downloads.
+            <p className="text-xs sm:text-base text-slate-600 mt-2 max-w-2xl mx-auto leading-relaxed">
+              प्रत्येक मॉड्यूल और चैप्टर के विस्तृत थ्योरी नोट्स, डेफिनिशन, सिंटैक्स, कोड उदाहरण और द्विभाषी (Hindi & English) व्याख्या। 1-क्लिक में अध्ययन शुरू करें।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {/* 4 O-Level Paper Cards Grid for Study Notes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
             
-            {/* 1. M1-R5 */}
-            <div className="bg-gradient-to-b from-white to-blue-50/40 rounded-2xl border border-blue-100 p-4 shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            {/* Notes Card 1: M1-R5.1 */}
+            <div className="bg-[#e9f2fa] border border-[#cde0f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md">M1-R5</span>
-                  <span className="text-[10px] font-bold text-slate-500">Paper 1</span>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                    IT Tools and Network Basics
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M1-R5.1
+                  </span>
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900">IT Tools & Network Basics</h3>
-                <p className="text-[11px] text-slate-500 mt-1 leading-snug">LibreOffice Writer, Calc, Impress, OS & Digital Finance.</p>
+
+                {/* 6 Chapter Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { num: 1, icon: <Monitor className="w-7 h-7 text-blue-600" />, title: 'Introduction to Computer' },
+                    { num: 2, icon: <Settings className="w-7 h-7 text-slate-700" />, title: 'Introduction to OS' },
+                    { num: 3, icon: <FileText className="w-7 h-7 text-sky-600" />, title: 'Word Processing (Writer)' },
+                    { num: 4, icon: <FileSpreadsheet className="w-7 h-7 text-emerald-600" />, title: 'Spreadsheet (Calc)' },
+                    { num: 5, icon: <Presentation className="w-7 h-7 text-amber-600" />, title: 'Presentation (Impress)' },
+                    { num: 6, icon: <Globe className="w-7 h-7 text-indigo-600" />, title: 'Internet & WWW' },
+                  ].map((ch) => (
+                    <Link
+                      key={ch.num}
+                      to={`/notes/m1-r5/m1-ch${ch.num}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {ch.icon}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600 line-clamp-1">
+                        Chapter {ch.num}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-blue-100/80 space-y-1.5">
+              <div className="flex items-center justify-between gap-3 pt-2">
                 <Link
-                  to="/notes/m1-r5"
-                  className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-2xs transition-colors"
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
                 >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Chapter Notes</span>
+                  View Syllabus
                 </Link>
-                <div className="grid grid-cols-2 gap-1">
-                  <Link
-                    to="/mock-test"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-blue-700 bg-blue-100/70 hover:bg-blue-200/80 rounded-md transition-colors"
-                  >
-                    <span>CBT Test</span>
-                  </Link>
-                  <Link
-                    to="/resources/m1-r5"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
-                  >
-                    <span>PDFs</span>
-                  </Link>
-                </div>
+                <Link
+                  to="/chapter-wise-notes/m1-r5"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Chapters
+                </Link>
               </div>
             </div>
 
-            {/* 2. M2-R5 */}
-            <div className="bg-gradient-to-b from-white to-indigo-50/40 rounded-2xl border border-indigo-100 p-4 shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            {/* Notes Card 2: M2-R5.1 */}
+            <div className="bg-[#e9f2fa] border border-[#cde0f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-black text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-md">M2-R5</span>
-                  <span className="text-[10px] font-bold text-slate-500">Paper 2</span>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                    Web Designing and Publishing
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M2-R5.1
+                  </span>
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900">Web Design & Publishing</h3>
-                <p className="text-[11px] text-slate-500 mt-1 leading-snug">HTML5, CSS3, JavaScript, W3.CSS & Photoshop.</p>
+
+                {/* 6 Chapter Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { num: 1, icon: <Layout className="w-7 h-7 text-sky-600" />, title: 'Intro to Web Design' },
+                    { num: 2, icon: <Code className="w-7 h-7 text-amber-700" />, title: 'HTML & Text Editors' },
+                    { num: 3, icon: <div className="w-7 h-7 rounded bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">5</div>, title: 'HTML5 Elements' },
+                    { num: 4, icon: <div className="w-7 h-7 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">3</div>, title: 'CSS3 Selectors' },
+                    { num: 5, icon: <Smartphone className="w-7 h-7 text-rose-500" />, title: 'Responsive Frameworks' },
+                    { num: 6, icon: <div className="w-7 h-7 rounded bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center shadow-2xs">JS</div>, title: 'JavaScript & Angular' },
+                  ].map((ch) => (
+                    <Link
+                      key={ch.num}
+                      to={`/notes/m2-r5/m2-ch${ch.num}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {ch.icon}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600 line-clamp-1">
+                        Chapter {ch.num}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-indigo-100/80 space-y-1.5">
+              <div className="flex items-center justify-between gap-3 pt-2">
                 <Link
-                  to="/notes/m2-r5"
-                  className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition-colors"
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
                 >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Chapter Notes</span>
+                  View Syllabus
                 </Link>
-                <div className="grid grid-cols-2 gap-1">
-                  <Link
-                    to="/practical-practice/pr2-web-1"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-indigo-700 bg-indigo-100/70 hover:bg-indigo-200/80 rounded-md transition-colors"
-                  >
-                    <span>Web IDE</span>
-                  </Link>
-                  <Link
-                    to="/mock-test"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
-                  >
-                    <span>CBT Test</span>
-                  </Link>
-                </div>
+                <Link
+                  to="/chapter-wise-notes/m2-r5"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Chapters
+                </Link>
               </div>
             </div>
 
-            {/* 3. M3-R5 */}
-            <div className="bg-gradient-to-b from-white to-emerald-50/40 rounded-2xl border border-emerald-100 p-4 shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            {/* Notes Card 3: M3-R5.1 */}
+            <div className="bg-[#ebf5fa] border border-[#cfe4f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">M3-R5</span>
-                  <span className="text-[10px] font-bold text-slate-500">Paper 3</span>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                    Python Programming
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M3-R5.1
+                  </span>
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900">Python Programming</h3>
-                <p className="text-[11px] text-slate-500 mt-1 leading-snug">Algorithms, Flowcharts, Loops, Functions & NumPy.</p>
+
+                {/* 6 Chapter Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { num: 1, icon: <Cpu className="w-7 h-7 text-emerald-600" />, title: 'Intro to Programming' },
+                    { num: 2, icon: <GitBranch className="w-7 h-7 text-amber-600" />, title: 'Algorithms & Flowcharts' },
+                    { num: 3, icon: <div className="w-7 h-7 rounded bg-gradient-to-tr from-blue-600 to-amber-400 text-white font-black text-xs flex items-center justify-center shadow-2xs">Py</div>, title: 'Python Syntax & Basics' },
+                    { num: 4, icon: <Calculator className="w-7 h-7 text-rose-600" />, title: 'Operators & Expressions' },
+                    { num: 5, icon: <Layers className="w-7 h-7 text-blue-600" />, title: 'Sequence Data Types' },
+                    { num: 6, icon: <Code className="w-7 h-7 text-purple-600" />, title: 'Functions & Scope' },
+                  ].map((ch) => (
+                    <Link
+                      key={ch.num}
+                      to={`/notes/m3-r5/m3-ch${ch.num}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {ch.icon}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600 line-clamp-1">
+                        Chapter {ch.num}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-emerald-100/80 space-y-1.5">
+              <div className="flex items-center justify-between gap-3 pt-2">
                 <Link
-                  to="/notes/m3-r5"
-                  className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs transition-colors"
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
                 >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Chapter Notes</span>
+                  View Syllabus
                 </Link>
-                <div className="grid grid-cols-2 gap-1">
-                  <Link
-                    to="/practical-practice/pr3-python-1"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-emerald-700 bg-emerald-100/70 hover:bg-emerald-200/80 rounded-md transition-colors"
-                  >
-                    <span>Python IDE</span>
-                  </Link>
-                  <Link
-                    to="/mock-test"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
-                  >
-                    <span>CBT Test</span>
-                  </Link>
-                </div>
+                <Link
+                  to="/chapter-wise-notes/m3-r5"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Chapters
+                </Link>
               </div>
             </div>
 
-            {/* 4. M4-R5 */}
-            <div className="bg-gradient-to-b from-white to-purple-50/40 rounded-2xl border border-purple-100 p-4 shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            {/* Notes Card 4: M4-R5.1 */}
+            <div className="bg-[#eaf5f2] border border-[#cce8e0] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-black text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md">M4-R5</span>
-                  <span className="text-[10px] font-bold text-slate-500">Paper 4</span>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                    Internet of Things (IOT)
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M4-R5.1
+                  </span>
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900">Internet of Things (IoT)</h3>
-                <p className="text-[11px] text-slate-500 mt-1 leading-snug">Sensors, Actuators, Arduino, Protocols & Security.</p>
+
+                {/* 6 Chapter Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { num: 1, icon: <Cloud className="w-7 h-7 text-teal-600" />, title: 'Introduction to IoT' },
+                    { num: 2, icon: <Wifi className="w-7 h-7 text-sky-600" />, title: 'Things & Connections' },
+                    { num: 3, icon: <Activity className="w-7 h-7 text-emerald-600" />, title: 'Sensors & Actuators' },
+                    { num: 4, icon: <div className="w-7 h-7 rounded bg-teal-700 text-white font-black text-xs flex items-center justify-center shadow-2xs">∞</div>, title: 'Arduino Programming' },
+                    { num: 5, icon: <ShieldCheck className="w-7 h-7 text-amber-600" />, title: 'Security & Cyber Attacks' },
+                    { num: 6, icon: <Users className="w-7 h-7 text-indigo-600" />, title: 'Soft Skills & Personality' },
+                  ].map((ch) => (
+                    <Link
+                      key={ch.num}
+                      to={`/notes/m4-r5/m4-ch${ch.num}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {ch.icon}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600 line-clamp-1">
+                        Chapter {ch.num}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-purple-100/80 space-y-1.5">
+              <div className="flex items-center justify-between gap-3 pt-2">
                 <Link
-                  to="/notes/m4-r5"
-                  className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-2xs transition-colors"
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
                 >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Chapter Notes</span>
+                  View Syllabus
                 </Link>
-                <div className="grid grid-cols-2 gap-1">
-                  <Link
-                    to="/mock-test"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-purple-700 bg-purple-100/70 hover:bg-purple-200/80 rounded-md transition-colors"
-                  >
-                    <span>CBT Test</span>
-                  </Link>
-                  <Link
-                    to="/resources/m4-r5"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
-                  >
-                    <span>PDFs</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* 5. CCC */}
-            <div className="bg-gradient-to-b from-white to-amber-50/40 rounded-2xl border border-amber-100 p-4 shadow-xs hover:shadow-md transition-all flex flex-col justify-between sm:col-span-2 lg:col-span-1">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">CCC</span>
-                  <span className="text-[10px] font-bold text-slate-500">80 Hours</span>
-                </div>
-                <h3 className="font-extrabold text-sm text-slate-900">Course on Computer Concepts</h3>
-                <p className="text-[11px] text-slate-500 mt-1 leading-snug">Computer Basics, Writer, Calc, Impress & Banking.</p>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-amber-100/80 space-y-1.5">
                 <Link
-                  to="/ccc"
-                  className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-2xs transition-colors"
+                  to="/chapter-wise-notes/m4-r5"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
                 >
-                  <Award className="w-3.5 h-3.5" />
-                  <span>CCC Portal</span>
+                  All Chapters
                 </Link>
-                <div className="grid grid-cols-2 gap-1">
-                  <Link
-                    to="/mock-test"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-amber-700 bg-amber-100/70 hover:bg-amber-200/80 rounded-md transition-colors"
-                  >
-                    <span>100 MCQs</span>
-                  </Link>
-                  <Link
-                    to="/resources/ccc"
-                    className="flex items-center justify-center gap-1 py-1 text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
-                  >
-                    <span>PDFs</span>
-                  </Link>
-                </div>
               </div>
             </div>
 
           </div>
+
+          {/* Bottom Explore Hub CTA */}
+          <div className="mt-10 text-center">
+            <Link
+              to="/chapter-wise-notes"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm shadow-md shadow-slate-900/20 transition-all group"
+            >
+              <span>Explore All Chapter-Wise Study Notes Hub</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-amber-400" />
+            </Link>
+          </div>
+
+        </div>
+      </section>
+
+      {/* =========================================================================
+          2. FEATURED CHAPTER-WISE MCQS HUB SECTION
+         ========================================================================= */}
+      <section className="py-12 sm:py-16 bg-slate-100/70 border-b border-slate-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 text-xs font-black px-3.5 py-1.5 rounded-full mb-3 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              <span>NIELIT R5.1 Official Chapter-Wise MCQ Bank</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              चैप्टरवाइज़ MCQs ऑनलाइन प्रैक्टिस
+            </h2>
+            <p className="text-xs sm:text-base text-slate-600 mt-2 max-w-2xl mx-auto leading-relaxed">
+              प्रत्येक चैप्टर के महत्वपूर्ण बहुविकल्पीय प्रश्न हल करें। तुरंत सही/गलत उत्तर जाँच, व्याख्या एवं स्कोर ट्रैकिंग की सुविधा।
+            </p>
+          </div>
+
+          {/* 4 O-Level Paper Cards + CCC */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            
+            {/* Card 1: M1-R5.1 */}
+            <div className="bg-[#e9f2fa] border border-[#cde0f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                    IT Tools and Network Basics
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M1-R5.1
+                  </span>
+                </div>
+
+                {/* 6 Chapter Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { num: 1, icon: <Monitor className="w-7 h-7 text-blue-600" />, title: 'Introduction to Computer' },
+                    { num: 2, icon: <Settings className="w-7 h-7 text-slate-700" />, title: 'Operating System' },
+                    { num: 3, icon: <FileText className="w-7 h-7 text-sky-600" />, title: 'Word Processing' },
+                    { num: 4, icon: <FileSpreadsheet className="w-7 h-7 text-emerald-600" />, title: 'Spreadsheet' },
+                    { num: 5, icon: <Presentation className="w-7 h-7 text-amber-600" />, title: 'Presentation' },
+                    { num: 6, icon: <Globe className="w-7 h-7 text-indigo-600" />, title: 'Internet & WWW' },
+                  ].map((ch) => (
+                    <Link
+                      key={ch.num}
+                      to={`/chapter-wise-mcq/m1-r5/${ch.num}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {ch.icon}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600">
+                        Chapter {ch.num}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <Link
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/chapter-wise-mcq/m1-r5"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Chapters
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 2: M2-R5.1 */}
+            <div className="bg-[#e9f2fa] border border-[#cde0f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                    Web Designing and Publishing
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M2-R5.1
+                  </span>
+                </div>
+
+                {/* 6 Chapter Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { num: 1, icon: <Layout className="w-7 h-7 text-sky-600" />, title: 'Intro to Web Design' },
+                    { num: 2, icon: <Code className="w-7 h-7 text-amber-700" />, title: 'HTML Editors' },
+                    { num: 3, icon: <div className="w-7 h-7 rounded bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">5</div>, title: 'HTML5 Elements' },
+                    { num: 4, icon: <div className="w-7 h-7 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">3</div>, title: 'CSS3' },
+                    { num: 5, icon: <Smartphone className="w-7 h-7 text-rose-500" />, title: 'Responsive CSS' },
+                    { num: 6, icon: <div className="w-7 h-7 rounded bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center shadow-2xs">JS</div>, title: 'JavaScript' },
+                  ].map((ch) => (
+                    <Link
+                      key={ch.num}
+                      to={`/chapter-wise-mcq/m2-r5/${ch.num}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {ch.icon}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600">
+                        Chapter {ch.num}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <Link
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/chapter-wise-mcq/m2-r5"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Chapters
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 3: M3-R5.1 */}
+            <div className="bg-[#ebf5fa] border border-[#cfe4f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                    Python Programming
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M3-R5.1
+                  </span>
+                </div>
+
+                {/* 6 Chapter Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { num: 1, icon: <Cpu className="w-7 h-7 text-emerald-600" />, title: 'Intro to Programming' },
+                    { num: 2, icon: <GitBranch className="w-7 h-7 text-amber-600" />, title: 'Flowcharts' },
+                    { num: 3, icon: <div className="w-7 h-7 rounded bg-gradient-to-tr from-blue-600 to-amber-400 text-white font-black text-xs flex items-center justify-center shadow-2xs">Py</div>, title: 'Python Syntax' },
+                    { num: 4, icon: <Calculator className="w-7 h-7 text-rose-600" />, title: 'Operators' },
+                    { num: 5, icon: <Layers className="w-7 h-7 text-blue-600" />, title: 'Data Types' },
+                    { num: 6, icon: <Code className="w-7 h-7 text-purple-600" />, title: 'Functions' },
+                  ].map((ch) => (
+                    <Link
+                      key={ch.num}
+                      to={`/chapter-wise-mcq/m3-r5/${ch.num}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {ch.icon}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600">
+                        Chapter {ch.num}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <Link
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/chapter-wise-mcq/m3-r5"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Chapters
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 4: M4-R5.1 */}
+            <div className="bg-[#eaf5f2] border border-[#cce8e0] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                    Internet of Things (IOT)
+                  </h3>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M4-R5.1
+                  </span>
+                </div>
+
+                {/* 6 Chapter Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { num: 1, icon: <Cloud className="w-7 h-7 text-teal-600" />, title: 'Introduction to IoT' },
+                    { num: 2, icon: <Wifi className="w-7 h-7 text-sky-600" />, title: 'Things & Connections' },
+                    { num: 3, icon: <Activity className="w-7 h-7 text-emerald-600" />, title: 'Sensors & Actuators' },
+                    { num: 4, icon: <div className="w-7 h-7 rounded bg-teal-700 text-white font-black text-xs flex items-center justify-center shadow-2xs">∞</div>, title: 'Arduino' },
+                    { num: 5, icon: <ShieldCheck className="w-7 h-7 text-amber-600" />, title: 'Security' },
+                    { num: 6, icon: <Users className="w-7 h-7 text-indigo-600" />, title: 'Soft Skills' },
+                  ].map((ch) => (
+                    <Link
+                      key={ch.num}
+                      to={`/chapter-wise-mcq/m4-r5/${ch.num}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                      title={ch.title}
+                    >
+                      <div className="h-9 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                        {ch.icon}
+                      </div>
+                      <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600">
+                        Chapter {ch.num}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <Link
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/chapter-wise-mcq/m4-r5"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Chapters
+                </Link>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom Explore Hub CTA */}
+          <div className="mt-10 text-center">
+            <Link
+              to="/chapter-wise-mcq"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-sm shadow-md shadow-blue-500/20 transition-all group"
+            >
+              <span>Explore All 41 Chapters & CCC MCQs Hub</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+        </div>
+      </section>
+
+      {/* =========================================================================
+          3. FEATURED CBT ONLINE MOCK TEST SERIES SECTION (Full Test Mode)
+         ========================================================================= */}
+      <section className="py-12 sm:py-16 bg-[#f8fafc] border-b border-slate-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 text-xs font-black px-3.5 py-1.5 rounded-full mb-3 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>NIELIT R5.1 Official Full CBT Online Mock Test Series</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              ऑनलाइन CBT मॉक टेस्ट (Full Test Mode)
+            </h2>
+            <p className="text-xs sm:text-base text-slate-600 mt-2 max-w-2xl mx-auto leading-relaxed">
+              वास्तविक NIELIT परीक्षा पैटर्न पर आधारित 100 प्रश्नों के ऑनलाइन टेस्ट। टाइमर, तुरंत रिजल्ट, ग्रेडिंग (S/A/B/C/D) एवं विस्तृत हिंदी व्याख्या के साथ 1-क्लिक में शुरू करें।
+            </p>
+          </div>
+
+          {/* 4 O-Level Paper Cards Grid for CBT Mock Tests */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            
+            {/* CBT Card 1: M1-R5.1 */}
+            <div className="bg-[#e9f2fa] border border-[#cde0f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                      IT Tools and Network Basics
+                    </h3>
+                    <p className="text-xs text-blue-700 font-semibold mt-0.5">4 ऑनलाइन सीबीटी टेस्ट उपलब्ध</p>
+                  </div>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M1-R5.1
+                  </span>
+                </div>
+
+                {/* 4 Tests Grid (2x2) */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {[
+                    { id: 'm1-test-1', num: 1, title: 'Test 1: Fundamentals & OS', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm1-test-2', num: 2, title: 'Test 2: LibreOffice Suite', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm1-test-3', num: 3, title: 'Test 3: Internet & Banking', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm1-test-4', num: 4, title: 'Test 4: Grand Exam Simulator', sub: '100 MCQs • 90 Mins' },
+                  ].map((t) => (
+                    <Link
+                      key={t.id}
+                      to={`/mock-test?test=${t.id}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer relative"
+                    >
+                      {/* Red circular number sticker */}
+                      <div className="w-7 h-7 rounded-full bg-red-600 text-white font-black text-xs flex items-center justify-center shadow-xs mb-1.5 group-hover:scale-110 transition-transform">
+                        {t.num}
+                      </div>
+                      <span className="text-xs font-bold text-slate-900 group-hover:text-blue-600 line-clamp-1">
+                        Test {t.num}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-medium mt-0.5 line-clamp-1">
+                        {t.sub}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <Link
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/mock-test?module=m1"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Tests
+                </Link>
+              </div>
+            </div>
+
+            {/* CBT Card 2: M2-R5.1 */}
+            <div className="bg-[#e9f2fa] border border-[#cde0f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                      Web Designing and Publishing
+                    </h3>
+                    <p className="text-xs text-blue-700 font-semibold mt-0.5">4 ऑनलाइन सीबीटी टेस्ट उपलब्ध</p>
+                  </div>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M2-R5.1
+                  </span>
+                </div>
+
+                {/* 4 Tests Grid (2x2) */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {[
+                    { id: 'm2-test-1', num: 1, title: 'Test 1: HTML5 Structure', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm2-test-2', num: 2, title: 'Test 2: CSS3 & Flexbox', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm2-test-3', num: 3, title: 'Test 3: JS & DOM Scripting', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm2-test-4', num: 4, title: 'Test 4: Grand Exam Simulator', sub: '100 MCQs • 90 Mins' },
+                  ].map((t) => (
+                    <Link
+                      key={t.id}
+                      to={`/mock-test?test=${t.id}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer relative"
+                    >
+                      {/* Red circular number sticker */}
+                      <div className="w-7 h-7 rounded-full bg-red-600 text-white font-black text-xs flex items-center justify-center shadow-xs mb-1.5 group-hover:scale-110 transition-transform">
+                        {t.num}
+                      </div>
+                      <span className="text-xs font-bold text-slate-900 group-hover:text-blue-600 line-clamp-1">
+                        Test {t.num}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-medium mt-0.5 line-clamp-1">
+                        {t.sub}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <Link
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/mock-test?module=m2"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Tests
+                </Link>
+              </div>
+            </div>
+
+            {/* CBT Card 3: M3-R5.1 */}
+            <div className="bg-[#ebf5fa] border border-[#cfe4f2] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                      Python Programming
+                    </h3>
+                    <p className="text-xs text-blue-700 font-semibold mt-0.5">4 ऑनलाइन सीबीटी टेस्ट उपलब्ध</p>
+                  </div>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M3-R5.1
+                  </span>
+                </div>
+
+                {/* 4 Tests Grid (2x2) */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {[
+                    { id: 'm3-test-1', num: 1, title: 'Test 1: Python Basics', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm3-test-2', num: 2, title: 'Test 2: Sequence Types', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm3-test-3', num: 3, title: 'Test 3: Functions & NumPy', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm3-test-4', num: 4, title: 'Test 4: Flagship 100 MCQs', sub: '100 MCQs • 90 Mins' },
+                  ].map((t) => (
+                    <Link
+                      key={t.id}
+                      to={`/mock-test?test=${t.id}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer relative"
+                    >
+                      {/* Red circular number sticker */}
+                      <div className="w-7 h-7 rounded-full bg-red-600 text-white font-black text-xs flex items-center justify-center shadow-xs mb-1.5 group-hover:scale-110 transition-transform">
+                        {t.num}
+                      </div>
+                      <span className="text-xs font-bold text-slate-900 group-hover:text-blue-600 line-clamp-1">
+                        Test {t.num}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-medium mt-0.5 line-clamp-1">
+                        {t.sub}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <Link
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/mock-test?module=m3"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Tests
+                </Link>
+              </div>
+            </div>
+
+            {/* CBT Card 4: M4-R5.1 */}
+            <div className="bg-[#eaf5f2] border border-[#cce8e0] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                      Internet of Things (IOT)
+                    </h3>
+                    <p className="text-xs text-teal-700 font-semibold mt-0.5">4 ऑनलाइन सीबीटी टेस्ट उपलब्ध</p>
+                  </div>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/80 border border-slate-200 text-slate-700 shadow-2xs">
+                    M4-R5.1
+                  </span>
+                </div>
+
+                {/* 4 Tests Grid (2x2) */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {[
+                    { id: 'm4-test-1', num: 1, title: 'Test 1: IoT Architecture', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm4-test-2', num: 2, title: 'Test 2: Sensors & Arduino', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm4-test-3', num: 3, title: 'Test 3: Protocols & Security', sub: '50 MCQs • 45 Mins' },
+                    { id: 'm4-test-4', num: 4, title: 'Test 4: Grand Exam Simulator', sub: '100 MCQs • 90 Mins' },
+                  ].map((t) => (
+                    <Link
+                      key={t.id}
+                      to={`/mock-test?test=${t.id}`}
+                      className="bg-white hover:bg-blue-50/60 rounded-xl p-3 border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-blue-300 transition-all flex flex-col items-center justify-center text-center group cursor-pointer relative"
+                    >
+                      {/* Red circular number sticker */}
+                      <div className="w-7 h-7 rounded-full bg-red-600 text-white font-black text-xs flex items-center justify-center shadow-xs mb-1.5 group-hover:scale-110 transition-transform">
+                        {t.num}
+                      </div>
+                      <span className="text-xs font-bold text-slate-900 group-hover:text-blue-600 line-clamp-1">
+                        Test {t.num}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-medium mt-0.5 line-clamp-1">
+                        {t.sub}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2">
+                <Link
+                  to="/syllabus"
+                  className="px-5 py-2.5 rounded-lg bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#a16207] text-slate-950 font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  View Syllabus
+                </Link>
+                <Link
+                  to="/mock-test?module=m4"
+                  className="px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-bold text-xs sm:text-sm shadow-xs transition-colors"
+                >
+                  All Tests
+                </Link>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom Explore Hub CTA */}
+          <div className="mt-10 text-center">
+            <Link
+              to="/mock-test"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-sm shadow-md shadow-emerald-500/20 transition-all group"
+            >
+              <span>Explore All NIELIT O Level & CCC Online CBT Tests Portal</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+        </div>
+      </section>
+
+      {/* QUICK ACCESS 8-GRID (ExamJila-Inspired Instant 1-Tap Portal Grid) */}
+      <section className="bg-white border-b border-slate-200 py-6 sm:py-8 shadow-xs">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-amber-500" />
+                <span>त्वरित अध्ययन पोर्टल (Quick Study Gateway)</span>
+              </h2>
+              <p className="text-xs text-slate-500">
+                अपनी आवश्यकतानुसार सीधे अध्ययन सामग्री, ऑनलाइन टेस्ट या कैलकुलेटर खोलें:
+              </p>
+            </div>
+            <span className="hidden sm:inline-block text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">
+              8 मुख्य पोर्टल्स
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-3.5">
+            
+            {/* 1. O Level Hub */}
+            <Link
+              to="/o-level"
+              className="bg-slate-50 hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-black text-slate-900 group-hover:text-blue-700 leading-tight">
+                O Level हब
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5">M1 से M4 नोट्स</span>
+            </Link>
+
+            {/* 2. CCC Portal */}
+            <Link
+              to="/ccc"
+              className="bg-slate-50 hover:bg-amber-50/80 border border-slate-200 hover:border-amber-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <Award className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-black text-slate-900 group-hover:text-amber-700 leading-tight">
+                CCC पोर्टल
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5">80 घंटे पाठ्यक्रम</span>
+            </Link>
+
+            {/* 3. Chapter-Wise MCQs */}
+            <Link
+              to="/chapter-wise-mcq"
+              className="bg-slate-50 hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-black text-slate-900 group-hover:text-blue-700 leading-tight">
+                चैप्टर MCQs
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5">32+ चैप्टर टेस्ट</span>
+            </Link>
+
+            {/* 4. CBT Mock Test */}
+            <Link
+              to="/mock-test"
+              className="bg-slate-50 hover:bg-emerald-50/80 border border-slate-200 hover:border-emerald-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-black text-slate-900 group-hover:text-emerald-700 leading-tight">
+                ऑनलाइन टेस्ट
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5">100 MCQs CBT</span>
+            </Link>
+
+            {/* 5. Result Calculator */}
+            <Link
+              to="/o-level-result-calculator"
+              className="bg-slate-50 hover:bg-indigo-50/80 border border-slate-200 hover:border-indigo-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <Calculator className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-black text-slate-900 group-hover:text-indigo-700 leading-tight">
+                रिजल्ट कैलकुलेटर
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5">60:40 फॉर्मूला</span>
+            </Link>
+
+            {/* 6. Practical Lab */}
+            <Link
+              to="/practical-practice"
+              className="bg-slate-50 hover:bg-rose-50/80 border border-slate-200 hover:border-rose-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <Laptop className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-black text-slate-900 group-hover:text-rose-700 leading-tight">
+                प्रैक्टिकल लैब
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5">Python व Web IDE</span>
+            </Link>
+
+            {/* 7. Free PDFs & Resources */}
+            <Link
+              to="/resources"
+              className="bg-slate-50 hover:bg-purple-50/80 border border-slate-200 hover:border-purple-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <Download className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-black text-slate-900 group-hover:text-purple-700 leading-tight">
+                फ्री PDF नोट्स
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5">सिलेबस व पेपर्स</span>
+            </Link>
+
+            {/* 8. Android App */}
+            <Link
+              to="/app"
+              className="bg-slate-50 hover:bg-sky-50/80 border border-slate-200 hover:border-sky-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-black text-slate-900 group-hover:text-sky-700 leading-tight">
+                मोबाइल ऐप
+              </span>
+              <span className="text-[10px] text-slate-500 mt-0.5">ऑफलाइन वीडियो</span>
+            </Link>
+
+          </div>
+        </div>
+      </section>
+
+      {/* NIELIT R5.1 PASSING CRITERIA & 60:40 EXPLAINER (ExamJila Inspired) */}
+      <section className="py-10 sm:py-12 bg-slate-100/80 border-b border-slate-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              
+              <div className="lg:col-span-7 space-y-3.5">
+                <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-black px-3 py-1 rounded-full">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>NIELIT R5.1 आधिकारिक परीक्षा पैटर्न व पासिंग नियम</span>
+                </div>
+                
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug">
+                  O Level में पास होने के लिए 60:40 का नया नियम समझें
+                </h3>
+                
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  NIELIT R5.1 नियम के अनुसार, प्रत्येक पेपर (M1 से M4) में <strong>थ्योरी (100 MCQs)</strong> और <strong>प्रैक्टिकल (100 Marks Lab)</strong> दोनों में अलग-अलग न्यूनतम <strong>33% (33 अंक)</strong> लाना अनिवार्य है, तथा दोनों का कुल भारित औसत न्यूनतम <strong>50%</strong> होना आवश्यक है।
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <span className="text-[10px] font-black uppercase text-blue-700 block">थ्योरी परीक्षा</span>
+                    <p className="text-xs font-bold text-slate-900 mt-0.5">100 MCQs CBT (60% वेटेज)</p>
+                    <span className="text-[11px] text-slate-500">न्यूनतम 33 अंक अनिवार्य</span>
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <span className="text-[10px] font-black uppercase text-indigo-700 block">प्रैक्टिकल लैब</span>
+                    <p className="text-xs font-bold text-slate-900 mt-0.5">100 Marks Lab (40% वेटेज)</p>
+                    <span className="text-[11px] text-slate-500">न्यूनतम 33 अंक अनिवार्य</span>
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <span className="text-[10px] font-black uppercase text-emerald-700 block">फाइनल पासिंग ग्रेड</span>
+                    <p className="text-xs font-bold text-slate-900 mt-0.5">कुल 50% या अधिक</p>
+                    <span className="text-[11px] text-slate-500">ग्रेड S, A, B, C, D</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Link
+                    to="/o-level-result-calculator"
+                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-colors"
+                  >
+                    <Calculator className="w-4 h-4" />
+                    <span>अपना फाइनल स्कोर व ग्रेड कैलकुलेट करें →</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right: Grade Table */}
+              <div className="lg:col-span-5 bg-slate-900 text-white rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-md">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <span className="text-xs font-black text-amber-400">NIELIT ग्रेडिंग स्केल (Official Scale)</span>
+                  <span className="text-[10px] text-slate-400">R5.1 Scheme</span>
+                </div>
+
+                <div className="mt-3 space-y-2 text-xs">
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span className="text-slate-200 font-bold">85% या अधिक</span>
+                    <span className="font-black text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800">ग्रेड 'S' (सर्वश्रेष्ठ)</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span className="text-slate-200 font-bold">75% से 84%</span>
+                    <span className="font-black text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">ग्रेड 'A' (उत्कृष्ट)</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span className="text-slate-200 font-bold">65% से 74%</span>
+                    <span className="font-black text-blue-400 bg-blue-950/60 px-2 py-0.5 rounded border border-blue-800">ग्रेड 'B' (अच्छा)</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span className="text-slate-200 font-bold">55% से 64%</span>
+                    <span className="font-black text-indigo-400 bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-800">ग्रेड 'C' (संतोषजनक)</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span className="text-slate-200 font-bold">50% से 54%</span>
+                    <span className="font-black text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">ग्रेड 'D' (पास)</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -499,356 +1398,6 @@ export function Home() {
               <span>Launch Practical Lab</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* QUICK LEARNING JOURNEY: YOUTUBE -> WEBSITE -> APP */}
-      <section className="py-12 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-10">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-              Your Exam Success Blueprint
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
-              How to Study with Skilldotpy
-            </h2>
-            <p className="text-sm text-gray-600 mt-2">
-              From free YouTube video lectures to downloadable notes on this website and full interactive mock tests in our Android app.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Step 1: YouTube */}
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:shadow-md transition-shadow relative">
-              <div className="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center mb-4">
-                <Youtube className="w-6 h-6" />
-              </div>
-              <span className="text-xs font-bold text-red-600 uppercase tracking-wider">Step 1 • Free Lectures</span>
-              <h3 className="text-lg font-bold text-gray-900 mt-1">Watch YouTube Videos</h3>
-              <p className="text-xs text-gray-600 mt-2 leading-relaxed">
-                Watch our detailed conceptual classes, marathon revision sessions, and paper-solving videos on the Skilldotpy YouTube channel.
-              </p>
-              <a
-                href={siteConfig.links.youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 mt-4"
-              >
-                Go to YouTube Channel <ArrowRight className="w-3 h-3" />
-              </a>
-            </div>
-
-            {/* Step 2: Website */}
-            <div className="p-6 rounded-2xl bg-blue-50/50 border border-blue-200/80 hover:shadow-md transition-shadow relative">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
-                <BookOpen className="w-6 h-6" />
-              </div>
-              <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Step 2 • Official Website</span>
-              <h3 className="text-lg font-bold text-gray-900 mt-1">Download Free Notes & Syllabus</h3>
-              <p className="text-xs text-gray-600 mt-2 leading-relaxed">
-                Access official NIELIT R5.1 syllabus PDFs, chapter-wise revision notes, LibreOffice shortcut charts, and sample practical codes completely free.
-              </p>
-              <Link
-                to="/resources"
-                className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 mt-4"
-              >
-                Browse Free Study Materials <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-
-            {/* Step 3: App */}
-            <div className="p-6 rounded-2xl bg-slate-900 text-white border border-slate-800 hover:shadow-xl transition-shadow relative">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center mb-4">
-                <Smartphone className="w-6 h-6" />
-              </div>
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Step 3 • Complete Masterclass</span>
-              <h3 className="text-lg font-bold text-white mt-1">Skilldotpy Android App</h3>
-              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-                Take timed CBT mock tests with negative marking analytics, offline HD video courses, solved practical codes, and 1-on-1 teacher doubt clearing.
-              </p>
-              <Link
-                to="/app"
-                className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 mt-4"
-              >
-                Download Skilldotpy APK <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FLAGSHIP SECTION: NIELIT O LEVEL PAPERS (MAIN HIGHLIGHT) */}
-      <section className="py-16 bg-slate-100/70 border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full mb-2">
-                <Award className="w-3.5 h-3.5" /> NIELIT O Level (Level-5 IT) Flagship Hub
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-                Explore All 4 O Level Papers (M1, M2, M3, M4)
-              </h2>
-              <p className="text-sm text-gray-600 mt-1 max-w-xl">
-                Detailed syllabus breakdown, chapter list, practical lab requirements, and study materials for the revised R5.1 scheme.
-              </p>
-            </div>
-
-            <Link
-              to="/o-level"
-              className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-xs"
-            >
-              Full O Level Hub & Practical Guide <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          {/* Module Selector Tabs */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-            {oLevelModules.map((module) => {
-              const isSelected = module.id === selectedModuleId;
-              return (
-                <button
-                  key={module.id}
-                  onClick={() => setSelectedModuleId(module.id)}
-                  className={`p-4 rounded-xl text-left border transition-all flex flex-col justify-between ${
-                    isSelected
-                      ? 'bg-white border-blue-600 ring-2 ring-blue-500/20 shadow-md'
-                      : 'bg-white/80 hover:bg-white border-gray-200 text-gray-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                      isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'
-                    }`}>
-                      {module.code}
-                    </span>
-                    <span className="text-[11px] font-semibold text-gray-500">{module.weightage.split(' ')[0]}</span>
-                  </div>
-                  <h3 className="font-bold text-sm text-gray-900 leading-tight">
-                    {module.shortName}
-                  </h3>
-                  <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">
-                    {module.hindiTitle}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Selected Module Deep-Dive Card */}
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 lg:p-8 shadow-sm">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
-              {/* Left Details */}
-              <div className="lg:col-span-7 space-y-6">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded">
-                      Module Code: {selectedModule.code}
-                    </span>
-                    <span className="text-xs font-medium text-gray-500">
-                      Exam Code: {selectedModule.examCode}
-                    </span>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900">
-                    {selectedModule.title}
-                  </h3>
-                  <p className="text-sm font-medium text-blue-600">
-                    {selectedModule.hindiTitle}
-                  </p>
-                  <p className="text-sm text-gray-600 pt-2 leading-relaxed">
-                    {selectedModule.description}
-                  </p>
-                </div>
-
-                {/* Chapters list preview */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-blue-600" /> Official R5.1 Syllabus Chapters ({selectedModule.chapters.length} Chapters):
-                    </h4>
-                    <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md">
-                      {selectedModule.totalTheoryHours}h Theory • {selectedModule.totalPracticalHours}h Practical
-                    </span>
-                  </div>
-
-                  <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
-                    {selectedModule.chapters.map((chap) => (
-                      <div key={chap.number} className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs flex items-start gap-2.5 hover:bg-blue-50/40 transition-colors">
-                        <span className="w-5 h-5 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center shrink-0 text-[10px] mt-0.5">
-                          {chap.number}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold text-gray-900">{chap.title}</span>
-                            <span className="text-[10px] text-slate-500 font-medium shrink-0">
-                              {chap.theoryHours + chap.practicalHours} hrs
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">{chap.topics.join(', ')}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Practical Exam Focus */}
-                <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200/80">
-                  <h4 className="text-xs font-bold text-amber-900 flex items-center gap-1.5 mb-1.5">
-                    <Flame className="w-4 h-4 text-amber-600" /> Practical Lab Exam Requirements (100 Marks):
-                  </h4>
-                  <ul className="text-xs text-amber-950 space-y-1 pl-4 list-disc">
-                    {selectedModule.practicalTopics.map((pt, i) => (
-                      <li key={i}>{pt}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Right Side: Sample Question & Action Buttons */}
-              <div className="lg:col-span-5 space-y-6">
-                
-                {/* Sample Question Box */}
-                <div className="p-5 rounded-xl bg-slate-900 text-white border border-slate-800">
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                    <span className="font-semibold text-amber-400">Sample MCQ (R5.1 Pattern)</span>
-                    <span>1 Mark • No Negative</span>
-                  </div>
-                  <p className="text-sm font-semibold text-white mb-4">
-                    {selectedModule.sampleQuestions[0].question}
-                  </p>
-                  <div className="space-y-2 mb-3">
-                    {selectedModule.sampleQuestions[0].options.map((opt, i) => (
-                      <div
-                        key={i}
-                        className={`p-2.5 rounded-lg text-xs font-medium border ${
-                          i === selectedModule.sampleQuestions[0].correct
-                            ? 'bg-emerald-950/80 border-emerald-500/80 text-emerald-300'
-                            : 'bg-slate-800/60 border-slate-700 text-slate-300'
-                        }`}
-                      >
-                        <span className="font-bold mr-2">{String.fromCharCode(65 + i)}.</span>
-                        {opt} {i === selectedModule.sampleQuestions[0].correct && '✓ (Correct)'}
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-[11px] text-slate-400 leading-tight">
-                    💡 <strong className="text-slate-200">Explanation:</strong> {selectedModule.sampleQuestions[0].explanation}
-                  </p>
-                </div>
-
-                {/* Resource CTAs */}
-                <div className="p-5 rounded-xl bg-blue-50 border border-blue-200 space-y-3">
-                  <h4 className="text-xs font-bold text-blue-950 uppercase tracking-wider">
-                    Study Materials for {selectedModule.shortName}
-                  </h4>
-                  
-                  <Link
-                    to="/resources"
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-white border border-blue-200 text-xs font-bold text-gray-900 hover:border-blue-500 transition-colors shadow-2xs"
-                  >
-                    <span className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-blue-600" /> Download {selectedModule.shortName} Notes PDF
-                    </span>
-                    <Download className="w-3.5 h-3.5 text-gray-400" />
-                  </Link>
-
-                  <Link
-                    to="/mock-test"
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-white border border-blue-200 text-xs font-bold text-gray-900 hover:border-blue-500 transition-colors shadow-2xs"
-                  >
-                    <span className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Practice {selectedModule.code} Online Mock Test
-                    </span>
-                    <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
-                  </Link>
-
-                  <Link
-                    to="/app"
-                    className="w-full flex items-center justify-center gap-2 p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white transition-colors shadow-sm"
-                  >
-                    <Smartphone className="w-4 h-4" /> Full Video Course & Test Series in App
-                  </Link>
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* NIELIT CCC PREPARATION HUB PREVIEW */}
-      <section className="py-16 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
-            <div className="lg:col-span-6 space-y-5">
-              <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">
-                <Award className="w-3.5 h-3.5" /> NIELIT CCC (Course on Computer Concepts)
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-                Crack CCC in 15 Days with Grade S Guarantee
-              </h2>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Mandatory certification for government jobs (UPSSSC, RO/ARO, VDO, Police, Banking). Our structured CCC crash course covers all 9 chapters with special focus on LibreOffice Calc formulas, Writer shortcuts, and digital financial banking tools.
-              </p>
-
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="p-3 rounded-lg bg-slate-50 border border-gray-200">
-                  <span className="font-bold text-gray-900 block">100 Questions CBT Exam</span>
-                  <span className="text-gray-500">90 Mins • No Negative Marking</span>
-                </div>
-                <div className="p-3 rounded-lg bg-slate-50 border border-gray-200">
-                  <span className="font-bold text-gray-900 block">50% Minimum Passing</span>
-                  <span className="text-gray-500">Grade S: 85%+ Marks</span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Link
-                  to="/ccc"
-                  className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-sm transition-colors"
-                >
-                  Explore Complete CCC Hub <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  to="/resources"
-                  className="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold px-4 py-3 rounded-xl transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5 text-gray-600" /> Free CCC Notes PDF
-                </Link>
-              </div>
-            </div>
-
-            {/* Right: LibreOffice Shortcut Cheat Sheet Teaser */}
-            <div className="lg:col-span-6 bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-lg">
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
-                <div>
-                  <h3 className="text-sm font-bold text-white">LibreOffice High-Yield Shortcuts</h3>
-                  <p className="text-[11px] text-slate-400">Most repeated questions in CCC & O Level M1</p>
-                </div>
-                <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded">Cheat Sheet</span>
-              </div>
-
-              <div className="space-y-2">
-                {libreOfficeShortcutCheatSheet.slice(0, 5).map((sc, i) => (
-                  <div key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs">
-                    <span className="text-slate-300">{sc.description}</span>
-                    <kbd className="px-2 py-1 rounded bg-slate-950 text-amber-400 font-mono font-bold text-[11px] border border-slate-800">
-                      {sc.shortcut}
-                    </kbd>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-slate-800 text-center">
-                <Link to="/ccc" className="text-xs font-bold text-blue-400 hover:underline">
-                  View All 50+ LibreOffice Shortcuts & Cheat Sheets →
-                </Link>
-              </div>
-            </div>
-
           </div>
         </div>
       </section>
@@ -943,126 +1492,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* INTERACTIVE LIVE QUICK TEST (ONLINE CBT PRACTICE ENGINE) */}
-      <section className="py-16 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-10">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
-              Live Interactive Test
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-2">
-              Test Your NIELIT Knowledge Right Now
-            </h2>
-            <p className="text-sm text-gray-600 mt-2">
-              Try this quick 5-question mock test to assess your preparation level for M1, M2, M3, M4, and CCC.
-            </p>
-          </div>
-
-          <div className="max-w-2xl mx-auto bg-slate-900 text-white rounded-2xl p-6 sm:p-8 border border-slate-800 shadow-xl">
-            {/* Header / Progress */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800 text-xs">
-              <span className="font-semibold text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-md border border-amber-800/60">
-                {quickQuiz[activeQuizIndex].moduleLabel}
-              </span>
-              <span className="text-slate-400">
-                Question <strong className="text-white">{activeQuizIndex + 1}</strong> of {quickQuiz.length}
-              </span>
-              <span className="font-bold text-emerald-400">
-                Score: {quizScore} / {quickQuiz.length}
-              </span>
-            </div>
-
-            {/* Question Body */}
-            <div className="mt-6">
-              <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
-                {quickQuiz[activeQuizIndex].question}
-              </h3>
-              {quickQuiz[activeQuizIndex].hindiQuestion && (
-                <p className="text-xs sm:text-sm text-blue-300 mt-1 font-medium">
-                  {quickQuiz[activeQuizIndex].hindiQuestion}
-                </p>
-              )}
-
-              {/* Options */}
-              <div className="mt-6 space-y-3">
-                {quickQuiz[activeQuizIndex].options.map((option, idx) => {
-                  let btnStyle = 'bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-200';
-                  if (selectedOption !== null) {
-                    if (idx === quickQuiz[activeQuizIndex].correctIndex) {
-                      btnStyle = 'bg-emerald-950 border-emerald-500 text-emerald-300 ring-2 ring-emerald-500/30';
-                    } else if (idx === selectedOption) {
-                      btnStyle = 'bg-rose-950 border-rose-500 text-rose-300 ring-2 ring-rose-500/30';
-                    } else {
-                      btnStyle = 'bg-slate-800/40 border-slate-800 text-slate-500 opacity-50';
-                    }
-                  }
-
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleOptionSelect(idx)}
-                      disabled={selectedOption !== null}
-                      className={`w-full p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between ${btnStyle}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded-md bg-slate-950 flex items-center justify-center font-bold text-xs shrink-0 text-slate-400">
-                          {String.fromCharCode(65 + idx)}
-                        </span>
-                        <span>{option}</span>
-                      </div>
-                      {selectedOption !== null && idx === quickQuiz[activeQuizIndex].correctIndex && (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Explanation & Next */}
-              {showExplanation && (
-                <div className="mt-6 p-4 rounded-xl bg-slate-800 border border-slate-700 text-xs text-slate-300 space-y-2">
-                  <div className="font-bold text-amber-300 flex items-center gap-1.5">
-                    💡 Explanation:
-                  </div>
-                  <p>{quickQuiz[activeQuizIndex].explanation}</p>
-                  
-                  <div className="pt-3 flex justify-end">
-                    {activeQuizIndex < quickQuiz.length - 1 ? (
-                      <button
-                        onClick={handleNextQuiz}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs"
-                      >
-                        Next Question <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    ) : (
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={resetQuiz}
-                          className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg text-xs"
-                        >
-                          Retake Quiz
-                        </button>
-                        <Link
-                          to="/mock-test"
-                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs"
-                        >
-                          Take Full Online CBT Mock Test →
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* PRIME AD PLACEMENT 2: Below Quick Quiz */}
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-          <AdBanner slotId="home-quiz-bottom" format="horizontal" fallbackType="mock-test" />
-        </div>
-      </section>
-
       {/* DEDICATED APP DOWNLOAD PROMO CARD */}
       <section className="py-16 bg-gradient-to-b from-blue-900 via-slate-900 to-slate-950 text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -1117,60 +1546,6 @@ export function Home() {
               {/* Right: Phone Visual Mockup Showcase */}
               <div className="md:col-span-5 flex items-center justify-center py-2">
                 <AppPhoneMockup showBadges={true} />
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* TEACHER / MENTOR CREDIBILITY SECTION */}
-      <section className="py-16 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto bg-slate-50 border border-gray-200 rounded-3xl p-8 sm:p-10 shadow-xs">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-              
-              <div className="md:col-span-4 text-center">
-                <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 text-white font-extrabold text-3xl mx-auto flex items-center justify-center shadow-lg mb-3">
-                  AP
-                </div>
-                <h3 className="font-extrabold text-lg text-gray-900">{siteConfig.teacher.name}</h3>
-                <p className="text-xs font-semibold text-blue-600">{siteConfig.teacher.role}</p>
-                <span className="text-[11px] text-gray-500 block mt-1">{siteConfig.teacher.experience}</span>
-              </div>
-
-              <div className="md:col-span-8 space-y-4">
-                <h3 className="text-xl font-bold text-gray-900">
-                  Dedicated to Making Computer Science & NIELIT Accessible to Everyone
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                  {siteConfig.teacher.bio}
-                </p>
-
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {siteConfig.teacher.specialties.map((spec, i) => (
-                    <span key={i} className="text-[11px] font-semibold bg-white border border-gray-200 text-gray-700 px-2.5 py-1 rounded-md">
-                      ✓ {spec}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="pt-2 flex items-center gap-4">
-                  <a
-                    href={siteConfig.links.youtube}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-red-600 hover:underline flex items-center gap-1"
-                  >
-                    <Youtube className="w-4 h-4" /> Watch Free Classes on YouTube
-                  </a>
-                  <a
-                    href={`mailto:${siteConfig.links.email}`}
-                    className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
-                  >
-                    Email Mentorship Query →
-                  </a>
-                </div>
               </div>
 
             </div>
