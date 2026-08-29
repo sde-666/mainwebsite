@@ -62,6 +62,18 @@ export function ChapterMcqPractice() {
     setCurrentIndex(0);
     setUserAnswers({});
     setIsCompletedModalOpen(false);
+
+    // Subscribe to real-time changes from Firestore
+    const unsub = chapterMcqService.subscribe(() => {
+      const updatedMcqs = chapterMcqService.getByChapter(moduleId, chapterNum);
+      setQuestions(updatedMcqs);
+      const updatedCMeta = chapterMcqService.getChapterMeta(moduleId, chapterNum);
+      setChapterMeta(updatedCMeta);
+      const updatedPMeta = chapterMcqService.getPaperMeta(moduleId);
+      setPaper(updatedPMeta);
+    });
+
+    return () => unsub();
   }, [moduleId, chapterNum]);
 
   // Current question item

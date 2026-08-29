@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Edit, 
@@ -12,7 +12,11 @@ import {
   FileSpreadsheet, 
   HelpCircle,
   X,
-  RotateCcw
+  RotateCcw,
+  Cloud,
+  RefreshCw,
+  Eye,
+  Check
 } from 'lucide-react';
 import { chapterMcqService } from '../../services/chapterMcqService';
 import { ChapterMcqItem, ChapterMeta, PaperMeta } from '../../types/chapterMcq';
@@ -26,6 +30,8 @@ export function AdminChapterMcqPanel() {
   const [allPapers, setAllPapers] = useState<PaperMeta[]>([]);
   const [chapterList, setChapterList] = useState<ChapterMeta[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSyncingCloud, setIsSyncingCloud] = useState(false);
   
   // Modals
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
@@ -37,7 +43,7 @@ export function AdminChapterMcqPanel() {
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type });
-    setTimeout(() => setToast(null), 3500);
+    setTimeout(() => setToast(null), 4000);
   };
 
   useEffect(() => {
@@ -50,6 +56,8 @@ export function AdminChapterMcqPanel() {
     const unsub = chapterMcqService.subscribe(() => {
       const items = chapterMcqService.getByChapter(selectedModule, selectedChapter);
       setMcqList(items);
+      setChapterList(chapterMcqService.getModuleChapters(selectedModule));
+      setAllPapers(chapterMcqService.getAllPapers());
     });
 
     return () => unsub();
@@ -85,8 +93,8 @@ export function AdminChapterMcqPanel() {
     setIsEditorModalOpen(true);
   };
 
-  // Save Item
-  const handleSaveItem = (e: React.FormEvent) => {
+  // Save Item (Single Add/Edit to Cloud Firestore & LocalStorage)
+  const handleSaveItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem || !editingItem.question?.trim()) {
       showToast('Question text is required', 'error');
@@ -98,40 +106,73 @@ export function AdminChapterMcqPanel() {
       return;
     }
 
-    if (editingItem.id) {
-      chapterMcqService.update(editingItem.id, editingItem);
-      showToast('Question updated successfully!');
-    } else {
-      chapterMcqService.add({
-        moduleId: selectedModule,
-        chapterNumber: selectedChapter,
-        question: editingItem.question!,
-        hindiQuestion: editingItem.hindiQuestion,
-        options: editingItem.options,
-        hindiOptions: editingItem.hindiOptions,
-        correctIndex: editingItem.correctIndex || 0,
-        explanation: editingItem.explanation,
-        hindiExplanation: editingItem.hindiExplanation
-      });
-      showToast('New Chapter MCQ created!');
+    setIsSaving(true);
+    try {
+      if (editingItem.id) {
+        await chapterMcqService.update(editingItem.id, editingItem);
+        showToast('Question updated and saved to Cloud Firestore!');
+      } else {
+        await chapterMcqService.add({
+          moduleId: selectedModule,
+          chapterNumber: selectedChapter,
+          question: editingItem.question!,
+          hindiQuestion: editingItem.hindiQuestion,
+          options: editingItem.options,
+          hindiOptions: editingItem.hindiOptions,
+          correctIndex: editingItem.correctIndex || 0,
+          explanation: editingItem.explanation,
+          hindiExplanation: editingItem.hindiExplanation
+        });
+        showToast('New Chapter MCQ created and saved to Cloud Firestore!');
+      }
+      setIsEditorModalOpen(false);
+      setEditingItem(null);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save MCQ', 'error');
+    } finally {
+      setIsSaving(false);
     }
-
-    setIsEditorModalOpen(false);
-    setEditingItem(null);
   };
 
   // Delete Item
-  const handleDeleteItem = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this MCQ?')) {
-      chapterMcqService.delete(id);
-      showToast('Question deleted');
+  const handleDeleteItem = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this MCQ? It will be removed from all devices.')) {
+      setIsSaving(true);
+      try {
+        await chapterMcqService.delete(id);
+        showToast('Question deleted from Cloud Firestore');
+      } catch (err: any) {
+        showToast(err.message || 'Failed to delete MCQ', 'error');
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
   // Handle CSV Import
   const handleImportQuestions = async (newQuestions: ChapterMcqItem[], replaceExisting: boolean) => {
-    chapterMcqService.bulkImport(newQuestions, replaceExisting, selectedModule, selectedChapter);
-    showToast(`Successfully imported ${newQuestions.length} MCQs!`);
+    setIsSaving(true);
+    try {
+      const count = await chapterMcqService.bulkImport(newQuestions, replaceExisting, selectedModule, selectedChapter);
+      showToast(`Successfully uploaded ${count} MCQs directly to Cloud Firestore! Ready on all devices.`);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to import CSV questions', 'error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Sync all local / seed questions to Cloud Firestore
+  const handleSyncAllToCloud = async () => {
+    setIsSyncingCloud(true);
+    try {
+      const res = await chapterMcqService.syncAllToCloud();
+      showToast(`Cloud Sync Complete! ${res.uploaded} MCQs synchronized to Firebase Firestore across all devices.`);
+    } catch (err: any) {
+      showToast(err.message || 'Cloud sync failed', 'error');
+    } finally {
+      setIsSyncingCloud(false);
+    }
   };
 
   // Download Sample Template
@@ -174,18 +215,34 @@ export function AdminChapterMcqPanel() {
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
-              Chapter-Wise MCQ Management Portal
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                Chapter-Wise MCQ Management Portal
+              </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <Cloud className="w-3 h-3" />
+                <span>Cloud Synced (Multi-Device Active)</span>
+              </span>
+            </div>
             <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
               NIELIT O Level & CCC Chapter MCQs
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              Manage instant feedback questions, bilingual options, and batch upload via CSV for each individual chapter.
+              Questions uploaded via Single Question or CSV are stored directly in Firebase Firestore and instantly accessible on mobile phones, tablets, and all student devices.
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={handleSyncAllToCloud}
+              disabled={isSyncingCloud || isSaving}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+              title="Ensure all local and uploaded questions are synced to Firebase Cloud Firestore"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingCloud ? 'animate-spin' : ''}`} />
+              <span>{isSyncingCloud ? 'Syncing to Cloud...' : 'Sync All MCQs to Cloud'}</span>
+            </button>
+
             <button
               onClick={handleDownloadSample}
               className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer"
@@ -219,53 +276,30 @@ export function AdminChapterMcqPanel() {
             { id: 'm2-r5', label: 'M2-R5: Web Design', count: 6 },
             { id: 'm3-r5', label: 'M3-R5: Python', count: 6 },
             { id: 'm4-r5', label: 'M4-R5: IoT', count: 6 },
-            { id: 'ccc', label: 'CCC: 9 Chapters', count: 9 },
-          ].map((mod) => (
-            <button
-              key={mod.id}
-              onClick={() => handleModuleChange(mod.id as any)}
-              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                selectedModule === mod.id
-                  ? 'bg-blue-600 text-white border-blue-500 shadow-md ring-2 ring-blue-400/20'
-                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-850 hover:text-white'
-              }`}
-            >
-              <div className="text-xs font-bold truncate">{mod.label}</div>
-              <div className="text-[11px] opacity-75 mt-0.5">{mod.count} Chapters</div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Chapter Carousel / Pills */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-            Select Chapter to Manage:
-          </span>
-          <span className="text-xs text-blue-400 font-semibold">
-            {curChapterMeta?.title || `Chapter ${selectedChapter}`}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {chapterList.map((ch) => {
-            const isSel = ch.chapterNumber === selectedChapter;
-            const count = chapterMcqService.getByChapter(selectedModule, ch.chapterNumber).length;
+            { id: 'ccc', label: 'CCC Course', count: 8 },
+          ].map((item) => {
+            const isSelected = selectedModule === item.id;
+            const paper = allPapers.find(p => p.id === item.id);
+            const totalCount = paper?.totalMcqsCount || 0;
 
             return (
               <button
-                key={ch.chapterNumber}
-                onClick={() => setSelectedChapter(ch.chapterNumber)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer flex items-center gap-1.5 ${
-                  isSel
-                    ? 'bg-blue-500 text-white border-blue-400 shadow-sm'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-white'
+                key={item.id}
+                onClick={() => handleModuleChange(item.id as any)}
+                className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                  isSelected 
+                    ? 'bg-blue-600 border-blue-500 text-white shadow-lg' 
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
                 }`}
               >
-                <span>Ch {ch.chapterNumber}: {ch.title.split(' ')[0]}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSel ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400'}`}>
-                  {count}
+                <span className="text-[10px] uppercase font-bold tracking-wider block opacity-80">
+                  Paper
+                </span>
+                <span className="text-xs font-black block truncate mt-0.5">
+                  {item.label}
+                </span>
+                <span className="text-[10px] mt-1 block opacity-75 font-mono">
+                  {totalCount} Total MCQs
                 </span>
               </button>
             );
@@ -273,125 +307,231 @@ export function AdminChapterMcqPanel() {
         </div>
       </div>
 
-      {/* Search & Actions Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search questions in this chapter..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+      {/* Chapters & Questions Split Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left Column: Chapters Navigation List */}
+        <div className="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 className="text-sm font-bold text-white">Syllabus Chapters</h3>
+              <span className="text-[11px] text-slate-400">Select chapter to manage questions</span>
+            </div>
+            <a
+              href={`/chapter-wise-mcq/${selectedModule}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1"
+            >
+              <span>Student View</span>
+              <Eye className="w-3 h-3" />
+            </a>
+          </div>
+
+          <div className="space-y-1.5 max-h-[600px] overflow-y-auto pr-1">
+            {chapterList.map((ch) => {
+              const isSelected = selectedChapter === ch.chapterNumber;
+              const count = chapterMcqService.getByChapter(selectedModule, ch.chapterNumber).length;
+
+              return (
+                <button
+                  key={ch.chapterNumber}
+                  onClick={() => setSelectedChapter(ch.chapterNumber)}
+                  className={`w-full p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                    isSelected
+                      ? 'bg-blue-600/20 border-blue-500 text-white font-bold'
+                      : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:bg-slate-800/60'
+                  }`}
+                >
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-blue-400 font-bold">
+                        Ch {ch.chapterNumber}
+                      </span>
+                    </div>
+                    <span className="text-xs font-semibold block truncate">
+                      {ch.title}
+                    </span>
+                    <span className="text-[10px] text-slate-400 block truncate">
+                      {ch.hindiTitle}
+                    </span>
+                  </div>
+
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 font-bold ${
+                    count > 0 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
+                  }`}>
+                    {count} MCQs
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="text-xs font-semibold text-slate-400">
-          Showing <strong className="text-white">{filteredMcqs.length}</strong> of {mcqList.length} MCQs for Chapter {selectedChapter}
-        </div>
-      </div>
+        {/* Right Column: MCQs List for Selected Chapter */}
+        <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          
+          {/* Chapter Header & Stats */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono bg-blue-900 text-blue-300 px-2 py-0.5 rounded-md font-bold">
+                  Chapter {selectedChapter}
+                </span>
+                <span className="text-xs text-slate-400">
+                  {selectedModule.toUpperCase()}
+                </span>
+              </div>
+              <h3 className="text-base font-bold text-white mt-1">
+                {curChapterMeta?.title}
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {curChapterMeta?.hindiTitle}
+              </p>
+            </div>
 
-      {/* Questions List */}
-      <div className="space-y-3">
-        {filteredMcqs.length === 0 ? (
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center">
-            <HelpCircle className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-white mb-1">No MCQs Found for This Chapter</h3>
-            <p className="text-xs text-slate-400 mb-6 max-w-sm mx-auto">
-              Upload a CSV file or add individual questions to make this chapter live for students.
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <button
-                onClick={() => setIsCsvModalOpen(true)}
-                className="px-4 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs hover:bg-amber-600 transition-colors"
+            <div className="flex items-center gap-2">
+              <a
+                href={`/chapter-wise-mcq/${selectedModule}/${selectedChapter}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
               >
-                Upload CSV File
-              </button>
-              <button
-                onClick={handleOpenCreate}
-                className="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-500 transition-colors"
-              >
-                Add First MCQ
-              </button>
+                <Eye className="w-3.5 h-3.5" />
+                <span>Test Practice Screen</span>
+              </a>
             </div>
           </div>
-        ) : (
-          filteredMcqs.map((q, idx) => (
-            <div
-              key={q.id}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 hover:border-slate-700 transition-colors"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1.5 flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-800 text-blue-400">
-                      Q{idx + 1}
-                    </span>
-                    <span className="text-xs font-semibold text-slate-400">
-                      Correct: <strong className="text-emerald-400">{String.fromCharCode(65 + q.correctIndex)}</strong> ({q.options[q.correctIndex]})
-                    </span>
-                  </div>
 
-                  <h4 className="text-sm font-bold text-white">
-                    {q.question}
-                  </h4>
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search questions in this chapter..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            />
+          </div>
 
-                  {q.hindiQuestion && (
-                    <p className="text-xs text-blue-300 font-medium">
-                      {q.hindiQuestion}
-                    </p>
-                  )}
-
-                  {/* Options Mini Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 text-xs">
-                    {q.options.map((opt, i) => (
-                      <div
-                        key={i}
-                        className={`p-2 rounded-lg border flex items-center gap-2 ${
-                          i === q.correctIndex
-                            ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300 font-semibold'
-                            : 'bg-slate-950 border-slate-800 text-slate-400'
-                        }`}
-                      >
-                        <span className="w-5 h-5 rounded bg-slate-800 text-[11px] flex items-center justify-center shrink-0">
-                          {String.fromCharCode(65 + i)}
-                        </span>
-                        <span className="truncate">{opt}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Explanation */}
-                  {(q.explanation || q.hindiExplanation) && (
-                    <div className="text-[11px] text-slate-400 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 mt-2 space-y-1">
-                      {q.explanation && <div>💡 <strong>Explanation:</strong> {q.explanation}</div>}
-                      {q.hindiExplanation && <div>🇮🇳 <strong>व्याख्या:</strong> {q.hindiExplanation}</div>}
+          {/* Questions List */}
+          <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+            {filteredMcqs.map((q, idx) => (
+              <div
+                key={q.id || idx}
+                className="p-4 bg-slate-950 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all space-y-3 group"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-blue-400 font-bold px-1.5 py-0.5 rounded bg-blue-950/60 border border-blue-800/40">
+                        Q{idx + 1}
+                      </span>
+                      <span className="text-xs font-bold text-white">
+                        {q.question}
+                      </span>
                     </div>
-                  )}
+
+                    {q.hindiQuestion && (
+                      <p className="text-[11px] text-slate-400 font-medium pl-6">
+                        {q.hindiQuestion}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => handleOpenEdit(q)}
+                      disabled={isSaving}
+                      className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                      title="Edit Question"
+                    >
+                      <Edit className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteItem(q.id)}
+                      disabled={isSaving}
+                      className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-400 border border-rose-900/30 transition-colors cursor-pointer"
+                      title="Delete Question"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    onClick={() => handleOpenEdit(q)}
-                    className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                    title="Edit MCQ"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
+                {/* 4 Options Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                  {q.options.map((opt, optIdx) => {
+                    const isCorrect = optIdx === q.correctIndex;
+                    const hindiOpt = q.hindiOptions?.[optIdx];
 
+                    return (
+                      <div
+                        key={optIdx}
+                        className={`p-2.5 rounded-xl border flex items-center gap-2.5 ${
+                          isCorrect 
+                            ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200' 
+                            : 'bg-slate-900/60 border-slate-800 text-slate-300'
+                        }`}
+                      >
+                        <span className={`w-5 h-5 rounded-lg font-mono font-bold text-[10px] flex items-center justify-center shrink-0 ${
+                          isCorrect ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'
+                        }`}>
+                          {String.fromCharCode(65 + optIdx)}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <span className="block truncate font-medium">{opt}</span>
+                          {hindiOpt && (
+                            <span className="block truncate text-[10px] text-slate-400">{hindiOpt}</span>
+                          )}
+                        </div>
+                        {isCorrect && (
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Explanation */}
+                {(q.explanation || q.hindiExplanation) && (
+                  <div className="p-2.5 bg-slate-900/40 rounded-xl border border-slate-800/80 text-[11px] text-slate-400 space-y-1">
+                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                      Explanation:
+                    </span>
+                    {q.explanation && <p>{q.explanation}</p>}
+                    {q.hindiExplanation && <p className="text-slate-300">{q.hindiExplanation}</p>}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {filteredMcqs.length === 0 && (
+              <div className="text-center py-12 bg-slate-950/40 rounded-2xl border border-slate-800/50 space-y-3">
+                <FileSpreadsheet className="w-10 h-10 text-slate-600 mx-auto" />
+                <p className="text-xs text-slate-400 font-medium">
+                  No MCQs found for this chapter yet.
+                </p>
+                <div className="flex items-center justify-center gap-2">
                   <button
-                    onClick={() => handleDeleteItem(q.id)}
-                    className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
-                    title="Delete MCQ"
+                    onClick={() => setIsCsvModalOpen(true)}
+                    className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    Upload CSV for Ch {selectedChapter}
+                  </button>
+                  <button
+                    onClick={handleOpenCreate}
+                    className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs"
+                  >
+                    Add First Question
                   </button>
                 </div>
               </div>
-            </div>
-          ))
-        )}
+            )}
+          </div>
+        </div>
+
       </div>
 
       {/* CSV Upload Modal */}
@@ -403,16 +543,20 @@ export function AdminChapterMcqPanel() {
         onImportQuestions={handleImportQuestions}
       />
 
-      {/* Single MCQ Editor Modal */}
+      {/* Add / Edit Single Question Modal */}
       {isEditorModalOpen && editingItem && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            
-            <div className="px-6 py-4 bg-slate-850 border-b border-slate-800 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white">
-                {editingItem.id ? 'Edit Chapter MCQ' : 'Create New Chapter MCQ'}
-              </h3>
-              <button
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div>
+                <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">
+                  {selectedModule.toUpperCase()} • Chapter {selectedChapter}
+                </span>
+                <h3 className="text-base font-bold text-white">
+                  {editingItem.id ? 'Edit MCQ Question' : 'Add New Chapter MCQ (Cloud Synced)'}
+                </h3>
+              </div>
+              <button 
                 onClick={() => setIsEditorModalOpen(false)}
                 className="text-slate-400 hover:text-white"
               >
@@ -420,30 +564,30 @@ export function AdminChapterMcqPanel() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveItem} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+            <form onSubmit={handleSaveItem} className="space-y-4 text-xs">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Question (English) *
                 </label>
                 <textarea
                   rows={2}
                   required
+                  placeholder="e.g. Which shortcut key is used to save a document in LibreOffice Writer?"
                   value={editingItem.question || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, question: e.target.value })}
-                  placeholder="e.g. Which layer of the OSI model handles end-to-end communication?"
                   className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">
-                  Question (Hindi - optional)
+                <label className="block font-semibold text-slate-300 mb-1">
+                  Question (Hindi - Optional)
                 </label>
                 <textarea
                   rows={2}
+                  placeholder="e.g. लिब्रे ऑफिस राइटर में डॉक्यूमेंट को सेव करने के लिए किस शॉर्टकट कुंजी का उपयोग किया जाता है?"
                   value={editingItem.hindiQuestion || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, hindiQuestion: e.target.value })}
-                  placeholder="उदा. OSI मॉडल की कौन सी लेयर एंड-टू-एंड संचार को संभालती है?"
                   className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -451,7 +595,7 @@ export function AdminChapterMcqPanel() {
               {/* 4 Options */}
               <div className="space-y-3 pt-2">
                 <label className="block text-xs font-bold text-slate-300">
-                  4 Options & Correct Answer *
+                  4 Options & Correct Answer * (Click the button letter to mark correct)
                 </label>
 
                 {[0, 1, 2, 3].map((optIdx) => (
@@ -459,9 +603,9 @@ export function AdminChapterMcqPanel() {
                     <button
                       type="button"
                       onClick={() => setEditingItem({ ...editingItem, correctIndex: optIdx })}
-                      className={`w-9 h-9 rounded-xl border font-black text-xs flex items-center justify-center shrink-0 cursor-pointer ${
+                      className={`w-9 h-9 rounded-xl border font-black text-xs flex items-center justify-center shrink-0 cursor-pointer transition-all ${
                         editingItem.correctIndex === optIdx
-                          ? 'bg-emerald-600 border-emerald-500 text-white shadow-xs'
+                          ? 'bg-emerald-600 border-emerald-500 text-white shadow-xs scale-105'
                           : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
                       }`}
                       title="Click to mark as correct answer"
@@ -537,9 +681,17 @@ export function AdminChapterMcqPanel() {
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-md transition-colors"
+                  disabled={isSaving}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center gap-2 cursor-pointer"
                 >
-                  Save Question
+                  {isSaving ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving to Cloud...</span>
+                    </>
+                  ) : (
+                    <span>Save to Cloud Firestore</span>
+                  )}
                 </button>
               </div>
             </form>

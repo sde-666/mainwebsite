@@ -328,7 +328,7 @@ export function Home() {
                     <Users className="w-4 h-4" />
                   </div>
                   <div className="text-left">
-                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">50,000+</span>
+                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">600+</span>
                     <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">सफल छात्र</span>
                   </div>
                 </div>

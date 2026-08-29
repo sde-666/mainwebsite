@@ -32,6 +32,8 @@ export function PaperChaptersList() {
         counts[item.chapterNumber] = (counts[item.chapterNumber] || 0) + 1;
       });
       setChapterCounts(counts);
+      setChapters(chapterMcqService.getModuleChapters(moduleId));
+      setPaper(chapterMcqService.getPaperMeta(moduleId));
     });
 
     return () => unsub();
