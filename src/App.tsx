@@ -9,6 +9,10 @@ import { Home } from './pages/Home';
 import { OLevelHub } from './pages/OLevelHub';
 import { CCCHub } from './pages/CCCHub';
 import { MockTest } from './pages/MockTest';
+import { McqLanding } from './pages/McqLanding';
+import { ChapterWiseMcqHub } from './pages/ChapterWiseMcqHub';
+import { PaperChaptersList } from './pages/PaperChaptersList';
+import { ChapterMcqPractice } from './pages/ChapterMcqPractice';
 import { PracticalHub } from './pages/PracticalHub';
 import { PracticalExamWorkspace } from './pages/PracticalExamWorkspace';
 import { Resources } from './pages/Resources';
@@ -57,7 +61,13 @@ export default function App() {
                 <Route path="result-calculator" element={<OLevelResultCalculator />} />
                 <Route path="ccc" element={<CCCHub />} />
                 <Route path="practical-practice" element={<PracticalHub />} />
+                
+                {/* MCQ Systems: Mode Selection, CBT Mock Tests, & Chapter Wise Practice */}
+                <Route path="mcqs" element={<McqLanding />} />
                 <Route path="mock-test" element={<MockTest />} />
+                <Route path="chapter-wise-mcq" element={<ChapterWiseMcqHub />} />
+                <Route path="chapter-wise-mcq/:moduleId" element={<PaperChaptersList />} />
+                <Route path="chapter-wise-mcq/:moduleId/:chapterNumber" element={<ChapterMcqPractice />} />
                 
                 {/* Resources, Notes & Courses */}
                 <Route path="resources" element={<Resources />} />

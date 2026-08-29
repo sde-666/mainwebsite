@@ -147,6 +147,26 @@ export function Navbar() {
     },
   ];
 
+  // MCQ Dropdown Items
+  const mcqItems = [
+    {
+      title: 'MCQ Tests (Full Mock)',
+      desc: '100-Question Timed CBT Simulation with Scorecard',
+      href: '/mock-test',
+      icon: CheckCircle2,
+      badge: 'CBT Exam',
+      color: 'text-blue-600 bg-blue-50 border-blue-100',
+    },
+    {
+      title: 'Chapter Wise MCQ',
+      desc: '1-by-1 Practice with Instant Result & Hindi Explanations',
+      href: '/chapter-wise-mcq',
+      icon: Layers,
+      badge: 'Instant Result',
+      color: 'text-rose-600 bg-rose-50 border-rose-100',
+    },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
       
@@ -338,17 +358,69 @@ export function Navbar() {
               )}
             </div>
 
-            {/* Tab 4: MCQ */}
-            <Link
-              to="/mock-test"
-              className={`px-3 py-1.5 rounded-lg text-[13px] font-bold transition-colors ${
-                location.pathname.startsWith('/mock-test') 
-                  ? 'text-blue-700 bg-blue-50' 
-                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
-              }`}
+            {/* Tab 4: MCQ (Dropdown with MCQ Tests & Chapter Wise MCQ) */}
+            <div 
+              className="relative"
+              onMouseEnter={() => handleMouseEnter('mcq')}
+              onMouseLeave={handleMouseLeave}
             >
-              MCQ
-            </Link>
+              <Link
+                to="/mcqs"
+                className={`px-3 py-1.5 rounded-lg text-[13px] font-bold transition-all flex items-center gap-1 ${
+                  location.pathname === '/mcqs' || location.pathname.startsWith('/mock-test') || location.pathname.startsWith('/chapter-wise-mcq')
+                    ? 'text-blue-700 bg-blue-50' 
+                    : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+                }`}
+              >
+                <span>MCQ</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'mcq' ? 'rotate-180 text-blue-600' : 'text-slate-400'}`} />
+              </Link>
+
+              {/* MCQ Dropdown */}
+              {activeDropdown === 'mcq' && (
+                <div className="absolute left-0 top-full pt-1.5 w-80 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-xl p-2 space-y-1.5">
+                    <div className="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 flex items-center justify-between">
+                      <span>Select MCQ Practice Mode</span>
+                      <Link to="/mcqs" className="text-blue-600 hover:underline">Compare Modes →</Link>
+                    </div>
+
+                    {mcqItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.title}
+                          to={item.href}
+                          className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-slate-50 transition-colors group"
+                        >
+                          <div className={`p-2 rounded-lg border ${item.color} shrink-0 mt-0.5`}>
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[12px] font-bold text-slate-900 group-hover:text-blue-600 block">{item.title}</span>
+                              <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                                {item.badge}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 line-clamp-2 mt-0.5 leading-snug">{item.desc}</p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+
+                    <div className="pt-1 mt-1 border-t border-slate-100">
+                      <Link
+                        to="/mcqs"
+                        className="block text-center py-1.5 text-[11px] font-bold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        Open MCQ Selection Portal (2 Big Cards) →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Tab 5: Practical Lab */}
             <Link
@@ -586,24 +658,63 @@ export function Navbar() {
                       </span>
                     </Link>
 
-                    {/* 5. MCQ Mock Tests */}
-                    <Link
-                      to="/mock-test"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                        location.pathname.startsWith('/mock-test') 
-                          ? 'text-blue-700 bg-blue-50/80 shadow-2xs' 
-                          : 'text-slate-800 hover:bg-slate-100 hover:text-blue-600'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <GraduationCap className="w-4 h-4 text-emerald-600" />
-                        <span>MCQ Mock Tests</span>
-                      </span>
-                      <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full">
-                        ONLINE CBT
-                      </span>
-                    </Link>
+                    {/* 5. MCQ Portal (Accordion with Tests & Chapter Wise) */}
+                    <div className="py-0.5">
+                      <div className="flex items-center justify-between">
+                        <Link
+                          to="/mcqs"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-2.5 flex-1 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-800 hover:text-blue-600"
+                        >
+                          <GraduationCap className="w-4 h-4 text-emerald-600" />
+                          <span>MCQs (Tests & Chapter-Wise)</span>
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => setMobileExpanded(mobileExpanded === 'mcq' ? null : 'mcq')}
+                          className="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-slate-100 mr-1 cursor-pointer"
+                          aria-label="Toggle MCQ modes"
+                        >
+                          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileExpanded === 'mcq' ? 'rotate-180 text-blue-600' : 'text-slate-400'}`} />
+                        </button>
+                      </div>
+
+                      {mobileExpanded === 'mcq' && (
+                        <div className="pl-2.5 pr-2 py-1.5 space-y-1 bg-slate-50/90 rounded-xl mt-1 border border-slate-100">
+                          <Link
+                            to="/mock-test"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="block px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white hover:text-blue-600 transition-colors shadow-2xs"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-slate-800 text-[11px]">MCQ Tests (Full Mock)</span>
+                              <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-1.5 rounded">CBT</span>
+                            </div>
+                            <span className="text-[10px] text-slate-500">100-question timed exam simulation</span>
+                          </Link>
+
+                          <Link
+                            to="/chapter-wise-mcq"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="block px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white hover:text-rose-600 transition-colors shadow-2xs"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-slate-800 text-[11px]">Chapter Wise MCQ</span>
+                              <span className="text-[9px] bg-rose-100 text-rose-700 font-bold px-1.5 rounded">Instant</span>
+                            </div>
+                            <span className="text-[10px] text-slate-500">1-by-1 practice with instant feedback</span>
+                          </Link>
+
+                          <Link
+                            to="/mcqs"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="block px-2.5 py-1 text-[11px] font-bold text-blue-600 hover:underline"
+                          >
+                            Compare Both MCQ Modes (2 Big Cards) →
+                          </Link>
+                        </div>
+                      )}
+                    </div>
 
                     {/* 6. Practical Lab */}
                     <Link

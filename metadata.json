@@ -1,6 +1,6 @@
 {
   "name": "NIELIT O Level & CCC SEO Portal",
-  "description": "Comprehensive SEO-optimized NIELIT O Level & CCC educational platform with pre-rendered indexable pages, Schema.org JSON-LD, sitemap generator, meta tags manager, and high-ranking course study hub.",
+  "description": "Comprehensive NIELIT O Level & CCC educational portal featuring Chapter Wise Instant MCQs with bilingual explanations, 100-mark CBT Mock Tests, Practical coding workspace, and Chapter Notes.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

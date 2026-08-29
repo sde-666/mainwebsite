@@ -82,6 +82,7 @@ interface SEOProps {
   title?: string;
   description?: string;
   url?: string;
+  canonicalUrl?: string;
   keywords?: string[];
   schema?: Record<string, unknown> | Record<string, unknown>[];
   type?: string;
@@ -212,6 +213,7 @@ export function SEO({
   title,
   description,
   url,
+  canonicalUrl,
   keywords,
   schema,
   type = 'website',
@@ -227,7 +229,7 @@ export function SEO({
   // own correct canonical/og:url, without every page having to remember to
   // pass a `url` prop. An explicit `url` prop (if given) still wins.
   const autoUrl = `${siteConfig.url}${location.pathname === '/' ? '' : location.pathname}`;
-  const pageUrl = url || autoUrl;
+  const pageUrl = url || canonicalUrl || autoUrl;
   const pageKeywords = keywords ? [...keywords, ...siteConfig.keywords.slice(0, 10)].join(', ') : siteConfig.keywords.join(', ');
   const robotsContent = noIndex
     ? 'noindex, nofollow'

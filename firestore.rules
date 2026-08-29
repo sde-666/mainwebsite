@@ -41,6 +41,10 @@ service cloud.firestore {
     match /notes_topics/{topicId} {
       allow read, write: if true;
     }
+
+    match /chapter_mcqs/{mcqId} {
+      allow read, write: if true;
+    }
   }
 }
 

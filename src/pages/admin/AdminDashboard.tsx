@@ -41,13 +41,14 @@ import { initialPracticalTests } from '../../data/practicalTests';
 import { notesService } from '../../services/notesService';
 import { NoteCourse, NoteChapter, NoteTopic } from '../../types/notes';
 import { RichNoteEditor } from '../../components/admin/RichNoteEditor';
+import { AdminChapterMcqPanel } from '../../components/admin/AdminChapterMcqPanel';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
   const { currentUser, isAdmin, logout } = useAuth();
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<'resources' | 'quizzes' | 'practicals' | 'chapter-notes' | 'tools' | 'overview'>('chapter-notes');
+  const [activeTab, setActiveTab] = useState<'resources' | 'quizzes' | 'chapter-mcqs' | 'practicals' | 'chapter-notes' | 'tools' | 'overview'>('chapter-notes');
 
   // Notes & Chapters CMS State
   const [noteCourses, setNoteCourses] = useState<NoteCourse[]>([]);
@@ -754,7 +755,19 @@ export function AdminDashboard() {
             }`}
           >
             <HelpCircle className="w-4 h-4" />
-            <span>Online MCQ Tests ({quizzes.length})</span>
+            <span>Online CBT Tests ({quizzes.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('chapter-mcqs')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
+              activeTab === 'chapter-mcqs'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-850 border border-slate-800'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-rose-400" />
+            <span>Chapter Wise MCQs</span>
           </button>
 
           <button
@@ -1139,6 +1152,13 @@ export function AdminDashboard() {
               ))}
             </div>
 
+          </div>
+        )}
+
+        {/* ================= TAB: CHAPTER WISE MCQS ================= */}
+        {activeTab === 'chapter-mcqs' && (
+          <div className="pt-6">
+            <AdminChapterMcqPanel />
           </div>
         )}
 
