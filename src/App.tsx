@@ -24,6 +24,8 @@ import { NotesReader } from './pages/NotesReader';
 import { OLevelResultCalculator } from './pages/OLevelResultCalculator';
 import { Courses } from './pages/Courses';
 import { CourseDetail } from './pages/CourseDetail';
+import { MyCourses } from './pages/MyCourses';
+import { Login } from './pages/Login';
 import { AppPage } from './pages/AppPage';
 import { AppInstall } from './pages/AppInstall';
 import { Tutorials } from './pages/Tutorials';
@@ -90,6 +92,10 @@ export default function App() {
                 <Route path="courses/:courseId" element={<CourseDetail />} />
                 <Route path="paid-courses" element={<Courses />} />
                 <Route path="paid-courses/:courseId" element={<CourseDetail />} />
+                <Route path="my-courses" element={<MyCourses />} />
+                <Route path="login" element={<Login />} />
+                <Route path="signup" element={<Login />} />
+                <Route path="student-login" element={<Login />} />
                 
                 {/* App Promotion */}
                 <Route path="app" element={<AppPage />} />

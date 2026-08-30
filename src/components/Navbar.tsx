@@ -30,15 +30,20 @@ import { BrandLogo } from './BrandLogo';
 import { NielitLogo } from './NielitLogo';
 import { useAuth } from '../context/AuthContext';
 import { useAiAssistant } from '../context/AiAssistantContext';
+import { StudentAuthModal } from './auth/StudentAuthModal';
+import { User, LogOut } from 'lucide-react';
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
   
   const location = useLocation();
-  const { isAdmin } = useAuth();
+  const { currentUser, userProfile, isAdmin, logout } = useAuth();
   const { openAssistant } = useAiAssistant();
 
   // Listen for global custom events to open/toggle mobile menu (e.g. from bottom bar)
@@ -245,22 +250,6 @@ export function Navbar() {
               HOME
             </Link>
 
-            {/* Tab: PAID COURSES */}
-            <Link
-              to="/courses"
-              className={`px-3 py-1.5 rounded-lg text-[13px] font-bold transition-all flex items-center gap-1.5 ${
-                location.pathname.startsWith('/courses') || location.pathname.startsWith('/paid-courses')
-                  ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' 
-                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
-              }`}
-            >
-              <GraduationCap className="w-4 h-4 text-amber-500" />
-              <span>Paid Courses</span>
-              <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950 leading-none">
-                New
-              </span>
-            </Link>
-
             {/* Tab 2: O LEVEL (Dropdown with Chapter-wise Notes, Syllabus, Result Calculator) */}
             <div 
               className="relative"
@@ -446,12 +435,38 @@ export function Navbar() {
               Practical Lab
             </Link>
 
+            {/* Tab 6: Paid Courses (Basic clean style, after Practical Lab) */}
+            <Link
+              to="/courses"
+              className={`px-3 py-1.5 rounded-lg text-[13px] font-bold transition-colors ${
+                location.pathname.startsWith('/courses') || location.pathname.startsWith('/paid-courses')
+                  ? 'text-blue-700 bg-blue-50' 
+                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+              }`}
+            >
+              Paid Courses
+            </Link>
+
+            {/* Tab 7: My Courses (Visible when student is logged in) */}
+            {currentUser && (
+              <Link
+                to="/my-courses"
+                className={`px-3 py-1.5 rounded-lg text-[13px] font-bold transition-colors ${
+                  location.pathname.startsWith('/my-courses')
+                    ? 'text-blue-700 bg-blue-50 font-extrabold' 
+                    : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+                }`}
+              >
+                My Courses
+              </Link>
+            )}
+
           </nav>
 
-          {/* 3. Action Buttons & Mobile Hamburger Button */}
+          {/* 3. Action Buttons & Student Login & Mobile Hamburger Button */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             
-            {/* Tab 6: Ask AI Guru */}
+            {/* Ask AI Guru */}
             <button
               onClick={() => openAssistant()}
               className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
@@ -463,10 +478,83 @@ export function Navbar() {
               <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
             </button>
 
-            {/* Tab 7: Get App */}
+            {/* Student Auth / Login Button */}
+            {currentUser ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  type="button"
+                  id="student-profile-menu-btn"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 hover:text-blue-600 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                  title="Student Profile"
+                >
+                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                    {userProfile?.displayName ? userProfile.displayName.charAt(0).toUpperCase() : 'S'}
+                  </div>
+                  <span className="hidden md:inline max-w-[80px] truncate text-[11px]">
+                    {userProfile?.displayName || 'Student'}
+                  </span>
+                  <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1.5 w-56 bg-white rounded-2xl border border-slate-200 shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-1">
+                    <div className="px-3 py-2 border-b border-slate-100 mb-1">
+                      <p className="text-xs font-bold text-slate-900 truncate">
+                        {userProfile?.displayName || 'Student'}
+                      </p>
+                      <p className="text-[10px] text-slate-500 truncate">
+                        {currentUser.email}
+                      </p>
+                    </div>
+                    <Link
+                      to="/my-courses"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
+                    >
+                      <GraduationCap className="w-4 h-4 text-blue-600" />
+                      <span>My Enrolled Courses</span>
+                    </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-amber-700 hover:bg-amber-50 rounded-xl transition-colors"
+                      >
+                        <ShieldCheck className="w-4 h-4 text-amber-600" />
+                        <span>Admin CMS</span>
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        logout();
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                type="button"
+                id="student-login-header-btn"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-blue-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all cursor-pointer active:scale-95 shadow-2xs"
+                title="Student Sign In / Register"
+              >
+                <User className="w-3.5 h-3.5 text-blue-600" />
+                <span>Login</span>
+              </button>
+            )}
+
+            {/* Get App */}
             <Link
               to="/app"
-              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full text-xs font-bold text-white bg-slate-900 hover:bg-blue-600 transition-all shadow-2xs active:scale-95 shrink-0"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold text-white bg-slate-900 hover:bg-blue-600 transition-all shadow-2xs active:scale-95 shrink-0"
               title="Download Android App"
             >
               <Smartphone className="w-3.5 h-3.5 shrink-0" />
@@ -552,25 +640,6 @@ export function Navbar() {
                     >
                       <Home className="w-4 h-4 text-blue-600" />
                       <span>Home</span>
-                    </Link>
-
-                    {/* Paid Courses Link */}
-                    <Link
-                      to="/courses"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                        location.pathname.startsWith('/courses') 
-                          ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' 
-                          : 'text-slate-800 hover:bg-blue-50 hover:text-blue-600'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <GraduationCap className="w-4 h-4 text-amber-500" />
-                        <span>Paid Courses</span>
-                      </div>
-                      <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950">
-                        New
-                      </span>
                     </Link>
 
                     {/* 2. O Level (Accordion with Chapter-wise Notes, Syllabus, Result Calculator) */}
@@ -764,6 +833,40 @@ export function Navbar() {
                       </span>
                     </Link>
 
+                    {/* Paid Courses (Clean basic look, right after Practical Lab) */}
+                    <Link
+                      to="/courses"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                        location.pathname.startsWith('/courses') || location.pathname.startsWith('/paid-courses')
+                          ? 'text-blue-700 bg-blue-50/80 shadow-2xs' 
+                          : 'text-slate-800 hover:bg-slate-100 hover:text-blue-600'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <GraduationCap className="w-4 h-4 text-slate-600" />
+                        <span>Paid Courses</span>
+                      </span>
+                    </Link>
+
+                    {/* My Courses (If student logged in) */}
+                    {currentUser && (
+                      <Link
+                        to="/my-courses"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                          location.pathname.startsWith('/my-courses') 
+                            ? 'text-blue-700 bg-blue-50/80 shadow-2xs' 
+                            : 'text-slate-800 hover:bg-slate-100 hover:text-blue-600'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <BookOpen className="w-4 h-4 text-blue-600" />
+                          <span>My Courses</span>
+                        </span>
+                      </Link>
+                    )}
+
                     {/* 7. Resources & Downloads */}
                     <Link
                       to="/resources"
@@ -801,8 +904,60 @@ export function Navbar() {
                   </div>
                 </div>
 
-                {/* Mobile Footer Actions */}
+                {/* Mobile Footer Actions & Student Profile/Login */}
                 <div className="p-3 sm:p-4 border-t border-slate-200 space-y-2 bg-gradient-to-t from-slate-100 via-slate-50 to-white">
+                  
+                  {currentUser ? (
+                    <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black shrink-0">
+                            {userProfile?.displayName ? userProfile.displayName.charAt(0).toUpperCase() : 'S'}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-900 truncate">
+                              {userProfile?.displayName || 'Student'}
+                            </p>
+                            <p className="text-[10px] text-slate-500 truncate">
+                              {currentUser.email}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            logout();
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="Sign Out"
+                        >
+                          <LogOut className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <Link
+                        to="/my-courses"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="w-full flex items-center justify-center gap-1.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition-colors"
+                      >
+                        <GraduationCap className="w-3.5 h-3.5" />
+                        <span>View My Enrolled Courses</span>
+                      </Link>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      id="mobile-student-login-btn"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setIsAuthModalOpen(true);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-slate-800 bg-white hover:bg-slate-100 border border-slate-300 transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    >
+                      <User className="w-4 h-4 text-blue-600" />
+                      <span>Student Login / Sign Up</span>
+                    </button>
+                  )}
+
                   <button
                     type="button"
                     id="drawer-ask-guru-btn"
@@ -833,6 +988,13 @@ export function Navbar() {
         </AnimatePresence>,
         document.body
       )}
+
+      {/* Student Sign In / Sign Up Modal */}
+      <StudentAuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        redirectNotice="Sign in or register to access your courses and enroll."
+      />
 
     </header>
   );
