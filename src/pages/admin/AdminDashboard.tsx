@@ -25,7 +25,8 @@ import {
   Laptop,
   FileSpreadsheet,
   Upload,
-  Edit3
+  Edit3,
+  GraduationCap
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { resourceService, formatDirectPdfUrl } from '../../services/resourceService';
@@ -42,13 +43,14 @@ import { notesService } from '../../services/notesService';
 import { NoteCourse, NoteChapter, NoteTopic } from '../../types/notes';
 import { RichNoteEditor } from '../../components/admin/RichNoteEditor';
 import { AdminChapterMcqPanel } from '../../components/admin/AdminChapterMcqPanel';
+import { AdminPaidCoursesPanel } from '../../components/admin/AdminPaidCoursesPanel';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
   const { currentUser, isAdmin, logout } = useAuth();
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<'resources' | 'quizzes' | 'chapter-mcqs' | 'practicals' | 'chapter-notes' | 'tools' | 'overview'>('chapter-notes');
+  const [activeTab, setActiveTab] = useState<'paid-courses' | 'resources' | 'quizzes' | 'chapter-mcqs' | 'practicals' | 'chapter-notes' | 'tools' | 'overview'>('paid-courses');
 
   // Notes & Chapters CMS State
   const [noteCourses, setNoteCourses] = useState<NoteCourse[]>([]);
@@ -735,6 +737,18 @@ export function AdminDashboard() {
         {/* Navigation Tabs */}
         <div className="flex overflow-x-auto space-x-2 pb-4 border-b border-slate-800 scrollbar-none">
           <button
+            onClick={() => setActiveTab('paid-courses')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
+              activeTab === 'paid-courses'
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/30'
+                : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-850 border border-slate-800'
+            }`}
+          >
+            <GraduationCap className="w-4 h-4 text-amber-400" />
+            <span>Paid Courses CMS & Students</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('resources')}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'resources'
@@ -818,6 +832,13 @@ export function AdminDashboard() {
             <span>Direct PDF Link Helper</span>
           </button>
         </div>
+
+        {/* ================= TAB 0: PAID COURSES & STUDENTS CMS ================= */}
+        {activeTab === 'paid-courses' && (
+          <div className="pt-6">
+            <AdminPaidCoursesPanel />
+          </div>
+        )}
 
         {/* ================= TAB 1: FREE PDF & NOTES ================= */}
         {activeTab === 'resources' && (

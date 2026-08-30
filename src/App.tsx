@@ -88,6 +88,8 @@ export default function App() {
                 
                 <Route path="courses" element={<Courses />} />
                 <Route path="courses/:courseId" element={<CourseDetail />} />
+                <Route path="paid-courses" element={<Courses />} />
+                <Route path="paid-courses/:courseId" element={<CourseDetail />} />
                 
                 {/* App Promotion */}
                 <Route path="app" element={<AppPage />} />

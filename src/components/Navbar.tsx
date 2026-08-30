@@ -245,6 +245,22 @@ export function Navbar() {
               HOME
             </Link>
 
+            {/* Tab: PAID COURSES */}
+            <Link
+              to="/courses"
+              className={`px-3 py-1.5 rounded-lg text-[13px] font-bold transition-all flex items-center gap-1.5 ${
+                location.pathname.startsWith('/courses') || location.pathname.startsWith('/paid-courses')
+                  ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' 
+                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+              }`}
+            >
+              <GraduationCap className="w-4 h-4 text-amber-500" />
+              <span>Paid Courses</span>
+              <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950 leading-none">
+                New
+              </span>
+            </Link>
+
             {/* Tab 2: O LEVEL (Dropdown with Chapter-wise Notes, Syllabus, Result Calculator) */}
             <div 
               className="relative"
@@ -536,6 +552,25 @@ export function Navbar() {
                     >
                       <Home className="w-4 h-4 text-blue-600" />
                       <span>Home</span>
+                    </Link>
+
+                    {/* Paid Courses Link */}
+                    <Link
+                      to="/courses"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                        location.pathname.startsWith('/courses') 
+                          ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' 
+                          : 'text-slate-800 hover:bg-blue-50 hover:text-blue-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <GraduationCap className="w-4 h-4 text-amber-500" />
+                        <span>Paid Courses</span>
+                      </div>
+                      <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950">
+                        New
+                      </span>
                     </Link>
 
                     {/* 2. O Level (Accordion with Chapter-wise Notes, Syllabus, Result Calculator) */}
