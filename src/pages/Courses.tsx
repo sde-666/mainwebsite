@@ -33,6 +33,7 @@ export function Courses() {
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const [chapters, setChapters] = useState<CourseChapter[]>([]);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
+  const [enrollments, setEnrollments] = useState<any[]>([]);
   const [isGlobalComingSoon, setIsGlobalComingSoon] = useState<boolean>(false);
 
   const { currentUser } = useAuth();
@@ -44,12 +45,14 @@ export function Courses() {
     const unsubChapters = paidCourseService.subscribeChapters(setChapters);
     const unsubLessons = paidCourseService.subscribeLessons(setLessons);
     const unsubComingSoon = paidCourseService.subscribeComingSoon(setIsGlobalComingSoon);
+    const unsubEnrollments = paidCourseService.subscribeEnrollments(setEnrollments);
 
     return () => {
       unsubCourses();
       unsubChapters();
       unsubLessons();
       unsubComingSoon();
+      unsubEnrollments();
     };
   }, []);
 
@@ -196,7 +199,7 @@ export function Courses() {
           {filteredCourses.map((course) => {
             const courseLessons = lessons.filter(l => l.courseId === course.id);
             const courseChapters = chapters.filter(c => c.courseId === course.id);
-            const isEnrolled = paidCourseService.isUserEnrolled(currentUser?.uid, currentUser?.email, course.id);
+            const isEnrolled = paidCourseService.isUserEnrolled(currentUser?.uid, course.id, currentUser?.email);
 
             const discountPercent = course.originalPrice > course.price 
               ? Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100) 

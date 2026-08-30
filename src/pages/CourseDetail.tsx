@@ -77,6 +77,7 @@ export function CourseDetail() {
   const [authRedirectNotice, setAuthRedirectNotice] = useState('Please sign in or create an account to enroll.');
   const [isEnrolling, setIsEnrolling] = useState(false);
   const [enrollmentSuccessToast, setEnrollmentSuccessToast] = useState(false);
+  const [enrollments, setEnrollments] = useState<any[]>([]);
 
   const { currentUser, userProfile } = useAuth();
 
@@ -124,20 +125,22 @@ export function CourseDetail() {
     });
 
     const unsubComingSoon = paidCourseService.subscribeComingSoon(setIsGlobalComingSoon);
+    const unsubEnrollments = paidCourseService.subscribeEnrollments(setEnrollments);
 
     return () => {
       unsubCourses();
       unsubChapters();
       unsubLessons();
       unsubComingSoon();
+      unsubEnrollments();
     };
   }, [courseId, selectedChapterId]);
 
   // Check if current user is enrolled
   const isEnrolled = paidCourseService.isUserEnrolled(
     currentUser?.uid,
-    currentUser?.email,
-    courseId || ''
+    courseId || '',
+    currentUser?.email
   );
 
   // Close full screen on ESC key
