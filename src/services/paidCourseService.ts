@@ -21,11 +21,13 @@ const COURSES_COL = 'paid_courses';
 const CHAPTERS_COL = 'paid_course_chapters';
 const LESSONS_COL = 'paid_course_lessons';
 const ENROLLMENTS_COL = 'paid_course_enrollments';
+const SETTINGS_COL = 'app_settings';
 
 const LOCAL_COURSES_KEY = 'skilldotpy_paid_courses_cache';
 const LOCAL_CHAPTERS_KEY = 'skilldotpy_paid_chapters_cache';
 const LOCAL_LESSONS_KEY = 'skilldotpy_paid_lessons_cache';
 const LOCAL_ENROLLMENTS_KEY = 'skilldotpy_paid_enrollments_cache';
+const LOCAL_COMING_SOON_KEY = 'skilldotpy_paid_courses_coming_soon';
 
 // Helper to extract YouTube video ID from various YouTube URL formats
 export function extractYouTubeVideoId(urlOrId: string): string {
@@ -63,11 +65,13 @@ class PaidCourseService {
   private chapters: CourseChapter[] = [];
   private lessons: CourseLesson[] = [];
   private enrollments: StudentEnrollment[] = [];
+  private isComingSoonMode: boolean = false;
 
   private courseSubscribers: Array<(items: CourseItem[]) => void> = [];
   private chapterSubscribers: Array<(items: CourseChapter[]) => void> = [];
   private lessonSubscribers: Array<(items: CourseLesson[]) => void> = [];
   private enrollmentSubscribers: Array<(items: StudentEnrollment[]) => void> = [];
+  private comingSoonSubscribers: Array<(isComingSoon: boolean) => void> = [];
 
   private unsubFirestore: Array<() => void> = [];
 
@@ -82,6 +86,11 @@ class PaidCourseService {
   private initFromLocalStorage() {
     if (typeof window !== 'undefined') {
       try {
+        const storedComingSoon = localStorage.getItem(LOCAL_COMING_SOON_KEY);
+        if (storedComingSoon !== null) {
+          this.isComingSoonMode = storedComingSoon === 'true';
+        }
+
         const storedCourses = localStorage.getItem(LOCAL_COURSES_KEY);
         if (storedCourses) {
           const parsed = JSON.parse(storedCourses);
@@ -126,6 +135,15 @@ class PaidCourseService {
         console.warn('Failed to load paid course local cache:', err);
       }
     }
+  }
+
+  private saveComingSoonToLocal() {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(LOCAL_COMING_SOON_KEY, String(this.isComingSoonMode));
+      } catch (e) {}
+    }
+    this.comingSoonSubscribers.forEach(cb => cb(this.isComingSoonMode));
   }
 
   private saveCoursesToLocal() {
@@ -312,13 +330,49 @@ class PaidCourseService {
         }
       }, (err) => console.warn('Enrollments listener warning:', err));
 
-      this.unsubFirestore = [unsubCourses, unsubChapters, unsubLessons, unsubEnrollments];
+      // 5. Settings / Coming Soon Listener
+      const unsubSettings = onSnapshot(doc(db, SETTINGS_COL, 'paid_courses_config'), (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data && typeof data.isComingSoon === 'boolean') {
+            this.isComingSoonMode = data.isComingSoon;
+            this.saveComingSoonToLocal();
+          }
+        }
+      }, (err) => console.warn('Settings listener warning:', err));
+
+      this.unsubFirestore = [unsubCourses, unsubChapters, unsubLessons, unsubEnrollments, unsubSettings];
     } catch (err) {
       console.warn('Could not initialize Paid Courses listeners:', err);
     }
   }
 
   // ================= SUBSCRIPTIONS =================
+  public subscribeComingSoon(cb: (isComingSoon: boolean) => void): () => void {
+    this.comingSoonSubscribers.push(cb);
+    cb(this.isComingSoonMode);
+    return () => {
+      this.comingSoonSubscribers = this.comingSoonSubscribers.filter(c => c !== cb);
+    };
+  }
+
+  public getIsComingSoon(): boolean {
+    return this.isComingSoonMode;
+  }
+
+  public async setComingSoonMode(enabled: boolean): Promise<boolean> {
+    this.isComingSoonMode = enabled;
+    this.saveComingSoonToLocal();
+
+    try {
+      const docRef = doc(db, SETTINGS_COL, 'paid_courses_config');
+      await setDoc(docRef, { isComingSoon: enabled, updatedAt: Date.now() }, { merge: true });
+    } catch (err) {
+      console.error('Failed to save coming-soon state to Firestore:', err);
+    }
+
+    return enabled;
+  }
   public subscribeCourses(cb: (items: CourseItem[]) => void): () => void {
     this.courseSubscribers.push(cb);
     cb([...this.courses]);
@@ -423,6 +477,7 @@ class PaidCourseService {
       thumbnailUrl: course.thumbnailUrl || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=60',
       bannerUrl: course.bannerUrl || course.thumbnailUrl,
       isPublished: course.isPublished !== undefined ? course.isPublished : true,
+      isComingSoon: Boolean(course.isComingSoon),
       features: Array.isArray(course.features) ? course.features : [],
       learningOutcomes: Array.isArray(course.learningOutcomes) ? course.learningOutcomes : [],
       targetAudience: Array.isArray(course.targetAudience) ? course.targetAudience : [],
@@ -469,7 +524,25 @@ class PaidCourseService {
       await setDoc(docRef, { isPublished: newStatus, updatedAt: Date.now() }, { merge: true });
       return true;
     } catch (err) {
-      console.error('Failed to toggle course visibility:', err);
+      console.error('Failed to update course visibility in Firestore:', err);
+      return true;
+    }
+  }
+
+  public async toggleCourseComingSoon(courseId: string): Promise<boolean> {
+    const course = this.courses.find(c => c.id === courseId);
+    if (!course) return false;
+    const newStatus = !course.isComingSoon;
+    course.isComingSoon = newStatus;
+    course.updatedAt = Date.now();
+    this.saveCoursesToLocal();
+
+    try {
+      const docRef = doc(db, COURSES_COL, courseId);
+      await setDoc(docRef, { isComingSoon: newStatus, updatedAt: Date.now() }, { merge: true });
+      return true;
+    } catch (err) {
+      console.error('Failed to update course coming soon in Firestore:', err);
       return true;
     }
   }
