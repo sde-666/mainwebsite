@@ -183,7 +183,7 @@ class PaidCourseService {
   }
 
   /**
-   * Real-time listeners for all 4 Firebase collections
+   * Real-time listeners for all Firebase collections
    */
   private setupFirestoreListeners() {
     try {
@@ -206,6 +206,7 @@ class PaidCourseService {
               thumbnailUrl: data.thumbnailUrl || '',
               bannerUrl: data.bannerUrl,
               isPublished: data.isPublished !== undefined ? data.isPublished : true,
+              isComingSoon: Boolean(data.isComingSoon),
               features: Array.isArray(data.features) ? data.features : [],
               learningOutcomes: Array.isArray(data.learningOutcomes) ? data.learningOutcomes : [],
               targetAudience: Array.isArray(data.targetAudience) ? data.targetAudience : [],
@@ -220,7 +221,7 @@ class PaidCourseService {
             });
           });
 
-          // Merge cloud courses with seed data
+          // Merge cloud courses with seed data so defaults are available until synced
           const cloudIds = new Set(cloudCourses.map(c => c.id));
           const merged = [...cloudCourses];
           for (const seed of initialPaidCoursesSeed) {
@@ -228,6 +229,7 @@ class PaidCourseService {
               merged.push(seed);
             }
           }
+
           this.courses = merged;
           this.saveCoursesToLocal();
         }
@@ -258,6 +260,7 @@ class PaidCourseService {
               merged.push(seed);
             }
           }
+
           this.chapters = merged;
           this.saveChaptersToLocal();
         }
@@ -277,14 +280,14 @@ class PaidCourseService {
               lessonNumber: Number(data.lessonNumber) || 1,
               title: data.title || '',
               hindiTitle: data.hindiTitle,
-              duration: data.duration,
+              duration: data.duration || '25:00',
               videoType: 'youtube',
               youtubeUrl: data.youtubeUrl || '',
               videoId: data.videoId || extractYouTubeVideoId(data.youtubeUrl || ''),
               hasPdf: Boolean(data.hasPdf),
               pdfTitle: data.pdfTitle,
               pdfUrl: data.pdfUrl,
-              pdfPages: data.pdfPages,
+              pdfPages: Number(data.pdfPages) || 10,
               isFreePreview: Boolean(data.isFreePreview),
               createdAt: data.createdAt || Date.now(),
               updatedAt: data.updatedAt || Date.now()
@@ -298,6 +301,7 @@ class PaidCourseService {
               merged.push(seed);
             }
           }
+
           this.lessons = merged;
           this.saveLessonsToLocal();
         }
@@ -330,7 +334,7 @@ class PaidCourseService {
         }
       }, (err) => console.warn('Enrollments listener warning:', err));
 
-      // 5. Settings / Coming Soon Listener
+      // 5. Settings / Coming Soon Listener (Global switch)
       const unsubSettings = onSnapshot(doc(db, SETTINGS_COL, 'paid_courses_config'), (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -348,6 +352,7 @@ class PaidCourseService {
   }
 
   // ================= SUBSCRIPTIONS =================
+
   public subscribeComingSoon(cb: (isComingSoon: boolean) => void): () => void {
     this.comingSoonSubscribers.push(cb);
     cb(this.isComingSoonMode);
@@ -373,6 +378,7 @@ class PaidCourseService {
 
     return enabled;
   }
+
   public subscribeCourses(cb: (items: CourseItem[]) => void): () => void {
     this.courseSubscribers.push(cb);
     cb([...this.courses]);
@@ -406,6 +412,7 @@ class PaidCourseService {
   }
 
   // ================= GETTERS =================
+
   public getAllCourses(includeHidden = false): CourseItem[] {
     if (includeHidden) return [...this.courses];
     return this.courses.filter(c => c.isPublished);
@@ -432,36 +439,35 @@ class PaidCourseService {
       });
   }
 
-  public getLessonsByChapter(courseId: string, chapterId: string): CourseLesson[] {
-    return this.lessons
-      .filter(l => l.courseId === courseId && l.chapterId === chapterId)
-      .sort((a, b) => a.lessonNumber - b.lessonNumber);
-  }
-
-  public getAllEnrollments(): StudentEnrollment[] {
-    return [...this.enrollments].sort((a, b) => b.enrolledAt - a.enrolledAt);
-  }
-
-  public isUserEnrolled(userId: string | null | undefined, userEmail: string | null | undefined, courseId: string): boolean {
+  public isUserEnrolled(userId: string | undefined | null, courseId: string, userEmail?: string | null): boolean {
     if (!userId && !userEmail) return false;
-    return this.enrollments.some(e => 
-      e.status === 'active' && 
-      e.courseId === courseId && 
-      ((userId && e.userId === userId) || (userEmail && e.studentEmail?.toLowerCase() === userEmail.toLowerCase()))
-    );
+    const targetUserId = userId || '';
+    const targetEmail = (userEmail || userId || '').toLowerCase().trim();
+    return this.enrollments.some(e => {
+      if (e.courseId !== courseId) return false;
+      if (targetUserId && e.userId === targetUserId) return true;
+      if (targetEmail && e.studentEmail && e.studentEmail.toLowerCase() === targetEmail) return true;
+      return false;
+    });
   }
 
-  public getUserEnrolledCourses(userId: string | null | undefined, userEmail: string | null | undefined): CourseItem[] {
-    if (!userId && !userEmail) return [];
+  public isStudentEnrolled(userIdOrEmail: string, courseId: string): boolean {
+    return this.isUserEnrolled(userIdOrEmail, courseId, userIdOrEmail);
+  }
+
+  public getEnrolledCoursesForStudent(userIdOrEmail: string): CourseItem[] {
+    if (!userIdOrEmail) return [];
+    const lower = userIdOrEmail.toLowerCase().trim();
     const enrolledCourseIds = new Set(
       this.enrollments
-        .filter(e => e.status === 'active' && ((userId && e.userId === userId) || (userEmail && e.studentEmail?.toLowerCase() === userEmail.toLowerCase())))
+        .filter(e => e.userId === userIdOrEmail || (e.studentEmail && e.studentEmail.toLowerCase() === lower))
         .map(e => e.courseId)
     );
     return this.courses.filter(c => enrolledCourseIds.has(c.id));
   }
 
   // ================= ADMIN COURSE MUTATIONS =================
+
   public async saveCourse(course: Partial<CourseItem>): Promise<CourseItem> {
     const id = course.id || `course-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const fullItem: CourseItem = {
@@ -561,6 +567,7 @@ class PaidCourseService {
   }
 
   // ================= ADMIN CHAPTER MUTATIONS =================
+
   public async saveChapter(chapter: Partial<CourseChapter>): Promise<CourseChapter> {
     const id = chapter.id || `ch-${chapter.courseId}-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const fullChapter: CourseChapter = {
@@ -609,6 +616,7 @@ class PaidCourseService {
   }
 
   // ================= ADMIN LESSON MUTATIONS =================
+
   public async saveLesson(lesson: Partial<CourseLesson>): Promise<CourseLesson> {
     const id = lesson.id || `les-${lesson.courseId}-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const ytUrl = lesson.youtubeUrl || '';
@@ -666,7 +674,8 @@ class PaidCourseService {
     }
   }
 
-  // ================= ENROLLMENT & PAYMENT =================
+  // ================= ENROLLMENT & PAYMENT (Firebase-First) =================
+
   public async enrollStudent(data: {
     userId: string;
     studentEmail: string;

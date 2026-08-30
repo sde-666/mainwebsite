@@ -30,6 +30,7 @@ export interface NoteTopic {
   title: string; // 'Memory Systems'
   hindiTitle?: string; // 'कंप्यूटर मेमोरी'
   content: string; // Rich HTML/Markdown content
+  hindiContent?: string; // Hindi translated/parallel content
   readTime?: string; // '1 min read'
   views?: number; // 95
   tags?: string[];

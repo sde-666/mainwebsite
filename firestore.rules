@@ -45,6 +45,21 @@ service cloud.firestore {
     match /chapter_mcqs/{mcqId} {
       allow read, write: if true;
     }
+    match /paid_courses/{courseId} {
+      allow read, write: if true;
+    }
+    match /paid_course_chapters/{chapterId} {
+      allow read, write: if true;
+    }
+    match /paid_course_lessons/{lessonId} {
+      allow read, write: if true;
+    }
+    match /paid_course_enrollments/{enrollmentId} {
+      allow read, write: if true;
+    }
+    match /app_settings/{settingId} {
+      allow read, write: if true;
+    }
   }
 }
 

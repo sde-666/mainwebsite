@@ -525,6 +525,7 @@ Return a structured JSON with:
   }
 });
 
+
 async function startServer() {
   try {
     if (process.env.NODE_ENV !== 'production') {
