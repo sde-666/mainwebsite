@@ -59,6 +59,7 @@ export function CourseDetail() {
   
   // Active selection
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'chapters' | 'study-material'>('chapters');
   const [selectedLesson, setSelectedLesson] = useState<CourseLesson | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'lectures' | 'notes' | 'dpp'>('all');
   const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState(false);
@@ -69,8 +70,6 @@ export function CourseDetail() {
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
   // Chapter Notes Modal State (Triggered when user clicks "Notes & more")
-  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
-  const [activeNotesChapter, setActiveNotesChapter] = useState<CourseChapter | null>(null);
   
   // Auth & Razorpay Enrollment State
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -108,11 +107,6 @@ export function CourseDetail() {
       const filtered = chList.filter(ch => ch.courseId === courseId);
       const sorted = filtered.sort((a, b) => a.chapterNumber - b.chapterNumber);
       setChapters(sorted);
-      
-      // Auto select first chapter if none selected
-      if (sorted.length > 0 && !selectedChapterId) {
-        setSelectedChapterId(sorted[0].id);
-      }
     });
 
     const unsubLessons = paidCourseService.subscribeLessons((lList) => {
@@ -254,11 +248,6 @@ export function CourseDetail() {
     }
   };
 
-  // Open Notes & More Modal for a specific Chapter or Lesson
-  const handleOpenNotesAndMore = (chapter: CourseChapter) => {
-    setActiveNotesChapter(chapter);
-    setIsNotesModalOpen(true);
-  };
 
   const handleEnrollClick = () => {
     if (!currentUser) {
@@ -413,244 +402,221 @@ export function CourseDetail() {
       </header>
 
       {/* =========================================================================
-          DIRECT LEARNING VIEW: ALL CHAPTERS SIDEBAR + ALL LECTURES PRESENT
+          DIRECT LEARNING VIEW: TABS (CHAPTERS & STUDY MATERIAL)
          ========================================================================= */}
       <div className="flex-1 container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          
-          {/* ---------------------------------------------------------------------
-              LEFT SIDEBAR: "ALL CHAPTERS" (Always Present)
-             --------------------------------------------------------------------- */}
-          <aside className="hidden lg:block w-72 xl:w-80 shrink-0 sticky top-20 select-none">
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-blue-600" />
-                  <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-                    ALL CHAPTERS
-                  </h2>
-                </div>
-                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                  {chapters.length} Total
-                </span>
-              </div>
+        <div className="flex items-center gap-6 border-b border-slate-200 mb-6">
+          <button 
+            onClick={() => { setActiveTab('chapters'); setSelectedChapterId(null); }}
+            className={`pb-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === 'chapters' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          >
+            Chapters
+          </button>
+          <button 
+            onClick={() => { setActiveTab('study-material'); setSelectedChapterId(null); }}
+            className={`pb-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === 'study-material' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          >
+            Study Material
+          </button>
+        </div>
 
-              <div className="p-2 space-y-1.5 max-h-[calc(100vh-180px)] overflow-y-auto custom-scrollbar">
-                {chapters.map((chapter) => {
-                  const isCurrent = chapter.id === activeChapter?.id;
-                  const formattedChNumber = String(chapter.chapterNumber).padStart(2, '0');
+        {activeTab === 'chapters' && (
+          <>
+            {!selectedChapterId ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {chapters.map(chapter => {
                   const chLessons = lessons.filter(l => l.chapterId === chapter.id || l.chapterNumber === chapter.chapterNumber);
-
+                  const formattedChNumber = String(chapter.chapterNumber).padStart(2, '0');
                   return (
                     <button
                       key={chapter.id}
-                      onClick={() => {
-                        setSelectedChapterId(chapter.id);
-                        if (chLessons.length > 0) {
-                          setSelectedLesson(chLessons[0]);
-                        }
-                      }}
-                      className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-2.5 cursor-pointer ${
-                        isCurrent
-                          ? 'bg-blue-50/90 border-l-4 border-blue-600 text-slate-900 shadow-2xs'
-                          : 'hover:bg-slate-50 text-slate-600'
-                      }`}
+                      onClick={() => setSelectedChapterId(chapter.id)}
+                      className="bg-white border border-slate-200 hover:border-blue-300 rounded-2xl p-4 text-left shadow-2xs hover:shadow-md transition-all space-y-3 cursor-pointer group"
                     >
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded shrink-0 ${
-                        isCurrent 
-                          ? 'text-blue-700 bg-white border border-blue-200 font-extrabold' 
-                          : 'text-slate-500 bg-slate-100'
-                      }`}>
-                        CH - {formattedChNumber}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className={`text-xs truncate ${isCurrent ? 'font-bold text-slate-900' : 'font-medium'}`}>
-                          {chapter.title}
-                        </p>
-                        <p className="text-[10px] text-slate-400 font-medium">
-                          {chLessons.length} Lectures
-                        </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded uppercase">
+                          CH - {formattedChNumber}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                      </div>
+                      <h3 className="text-sm font-bold text-slate-900 line-clamp-2 leading-snug">
+                        {chapter.title}
+                      </h3>
+                      <div className="text-xs font-semibold text-slate-500">
+                        Lecture: {chLessons.length}
                       </div>
                     </button>
                   );
                 })}
               </div>
-            </div>
-          </aside>
-
-          {/* Mobile Slide-out Drawer for All Chapters */}
-          {isSidebarOpenMobile && (
-            <div className="fixed inset-0 z-50 lg:hidden flex">
-              <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onClick={() => setIsSidebarOpenMobile(false)} />
-              <div className="relative w-80 bg-white h-full flex flex-col z-10 shadow-2xl p-4 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-blue-600" />
-                    <h3 className="text-xs font-bold uppercase text-slate-900">All Chapters</h3>
-                  </div>
-                  <button onClick={() => setIsSidebarOpenMobile(false)} className="p-1 rounded-lg text-slate-500 hover:bg-slate-100">
-                    <X className="w-4 h-4" />
-                  </button>
+            ) : (
+              <div className="space-y-4 max-w-4xl mx-auto">
+                <button 
+                  onClick={() => setSelectedChapterId(null)}
+                  className="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Back to Chapters</span>
+                </button>
+                
+                <div className="flex flex-wrap items-center gap-3 py-2 border-b border-slate-100">
+                  <span className="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded">CH - {String(activeChapter?.chapterNumber || 0).padStart(2, '0')}</span>
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900">{activeChapter?.title}</h2>
+                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-semibold">{activeChapterLessons.length} Lectures</span>
                 </div>
-                <div className="flex-1 overflow-y-auto space-y-1">
-                  {chapters.map((ch) => {
-                    const isCur = ch.id === activeChapter?.id;
-                    const chLessons = lessons.filter(l => l.chapterId === ch.id || l.chapterNumber === ch.chapterNumber);
-                    return (
-                      <button
-                        key={ch.id}
-                        onClick={() => {
-                          setSelectedChapterId(ch.id);
-                          setIsSidebarOpenMobile(false);
-                          if (chLessons.length > 0) setSelectedLesson(chLessons[0]);
-                        }}
-                        className={`w-full p-2.5 rounded-xl text-left text-xs font-bold flex items-center gap-2 ${
-                          isCur ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600' : 'hover:bg-slate-50 text-slate-700'
-                        }`}
-                      >
-                        <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded">CH - {String(ch.chapterNumber).padStart(2, '0')}</span>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate">{ch.title}</p>
-                          <p className="text-[10px] text-slate-400 font-normal">{chLessons.length} Lectures</p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* ---------------------------------------------------------------------
-              RIGHT MAIN AREA: ALL LECTURES PRESENT DIRECTLY FOR ACTIVE CHAPTER
-             --------------------------------------------------------------------- */}
-          <main className="flex-1 min-w-0 space-y-4 w-full">
-            
-            {/* LECTURE CARDS LIST (ALL LECTURES PRESENT) */}
-            <div className="space-y-3.5">
-              {activeChapterLessons.length === 0 ? (
-                <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
-                  <Video className="w-10 h-10 text-slate-400 mx-auto" />
-                  <h3 className="text-sm font-bold text-slate-800">No lectures found for this chapter</h3>
-                  <p className="text-xs text-slate-500">
-                    Lectures for {activeChapter?.title} will be uploaded soon by the admin.
-                  </p>
-                </div>
-              ) : (
-                activeChapterLessons.map((lesson, idx) => {
-                  const globalIdx = lessons.findIndex(l => l.id === lesson.id);
-                  const unlocked = isLessonUnlocked(lesson, globalIdx);
-                  const isCompleted = completedLessonIds.includes(lesson.id);
-
-                  return (
-                    <div
-                      key={lesson.id}
-                      className="bg-white rounded-2xl border border-slate-200 hover:border-blue-300/80 shadow-2xs hover:shadow-sm transition-all overflow-hidden"
-                    >
-                      <div className="p-4 sm:p-5 space-y-4">
-                        
-                        {/* Content Row: Thumbnail + Meta + Title + Completed Checkmark */}
-                        <div className="flex items-start justify-between gap-4">
-                          
-                          <div className="flex items-start gap-3.5 sm:gap-4 min-w-0">
-                            {/* Thumbnail Box with Red Play Button Overlay - Clicking launches Fullscreen */}
-                            <div 
-                              onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
-                              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200 cursor-pointer group"
-                            >
-                              <img
-                                src={course.thumbnailUrl || 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&auto=format&fit=crop&q=60'}
-                                alt={lesson.title}
-                                referrerPolicy="no-referrer"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                              />
-                              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                <div className="space-y-3.5">
+                  {activeChapterLessons.length === 0 ? (
+                    <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
+                      <Video className="w-10 h-10 text-slate-400 mx-auto" />
+                      <h3 className="text-sm font-bold text-slate-800">No lectures found for this chapter</h3>
+                      <p className="text-xs text-slate-500">Lectures will be uploaded soon by the admin.</p>
+                    </div>
+                  ) : (
+                    activeChapterLessons.map((lesson, idx) => {
+                      const globalIdx = lessons.findIndex(l => l.id === lesson.id);
+                      const unlocked = isLessonUnlocked(lesson, globalIdx);
+                      const isCompleted = completedLessonIds.includes(lesson.id);
+                      return (
+                        <div key={lesson.id} className="bg-white rounded-2xl border border-slate-200 hover:border-blue-300/80 shadow-2xs hover:shadow-sm transition-all overflow-hidden">
+                          <div className="p-4 sm:p-5 space-y-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex items-start gap-3.5 sm:gap-4 min-w-0">
+                                <div 
+                                  onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
+                                  className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200 cursor-pointer group"
+                                >
+                                  <img 
+                                    src={course.thumbnailUrl || 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&auto=format&fit=crop&q=60'} 
+                                    alt={lesson.title} 
+                                    referrerPolicy="no-referrer" 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                                  />
+                                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="min-w-0 space-y-1">
+                                  <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                                    <span className="font-semibold text-slate-700">Lecture {lesson.lessonNumber || idx + 1}</span>
+                                    <span>•</span>
+                                    <span>{lesson.duration || '45m'}</span>
+                                    {lesson.isFreePreview || globalIdx < 2 ? (
+                                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">Free Demo</span>
+                                    ) : !isEnrolled ? (
+                                      <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded flex items-center gap-0.5">
+                                        <Lock className="w-2.5 h-2.5" />
+                                        <span>Locked</span>
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                  <h3 
+                                    onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
+                                    className="text-sm sm:text-base font-bold text-slate-900 leading-snug hover:text-blue-600 transition-colors cursor-pointer"
+                                  >
+                                    {lesson.title}
+                                  </h3>
+                                  {lesson.hindiTitle && (
+                                    <p className="text-xs text-slate-500 font-medium line-clamp-1">{lesson.hindiTitle}</p>
+                                  )}
                                 </div>
                               </div>
-                            </div>
-
-                            {/* Title, Hindi Title, Duration, Badges */}
-                            <div className="min-w-0 space-y-1">
-                              <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                                <span className="font-semibold text-slate-700">Lecture {lesson.lessonNumber || idx + 1}</span>
-                                <span>•</span>
-                                <span>{lesson.duration || '45m'}</span>
-                                {lesson.isFreePreview || globalIdx < 2 ? (
-                                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">
-                                    Free Demo
-                                  </span>
-                                ) : !isEnrolled ? (
-                                  <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded flex items-center gap-0.5">
-                                    <Lock className="w-2.5 h-2.5" />
-                                    <span>Locked</span>
-                                  </span>
-                                ) : null}
-                              </div>
-
-                              <h3 
-                                onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
-                                className="text-sm sm:text-base font-bold text-slate-900 leading-snug hover:text-blue-600 transition-colors cursor-pointer"
+                              <button 
+                                onClick={() => toggleLessonCompleted(lesson.id)}
+                                className={`p-1.5 rounded-full transition-colors shrink-0 cursor-pointer ${isCompleted ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' : 'text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200'}`}
+                                title={isCompleted ? 'Completed' : 'Mark as Completed'}
                               >
-                                {lesson.title}
-                              </h3>
+                                <CheckCircle2 className="w-5 h-5" />
+                              </button>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-3 pt-1">
+                              <button 
+                                onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
+                                className="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-2 transition-all active:scale-95 cursor-pointer shadow-md shadow-blue-500/20"
+                              >
+                                <Play className="w-3.5 h-3.5 fill-current text-white" />
+                                <span>{isCompleted ? 'Resume (Full Screen)' : 'Watch'}</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
-                              {lesson.hindiTitle && (
-                                <p className="text-xs text-slate-500 font-medium line-clamp-1">
-                                  {lesson.hindiTitle}
-                                </p>
+        {activeTab === 'study-material' && (
+          <div className="space-y-6 max-w-4xl mx-auto">
+            {chapters.length === 0 && (
+              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
+                <FolderOpen className="w-10 h-10 text-slate-400 mx-auto" />
+                <h3 className="text-sm font-bold text-slate-800">No study material found</h3>
+              </div>
+            )}
+            {chapters.map(chapter => {
+              const chNotes = lessons.filter(l => (l.chapterId === chapter.id || l.chapterNumber === chapter.chapterNumber) && !!l.pdfUrl);
+              if (chNotes.length === 0) return null;
+              return (
+                <div key={chapter.id} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 shadow-sm">
+                  <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+                    <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded uppercase shrink-0">
+                      CH - {String(chapter.chapterNumber).padStart(2, '0')}
+                    </span>
+                    <h3 className="text-sm font-bold text-slate-900 truncate">{chapter.title}</h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {chNotes.map(note => {
+                      const globalIdx = lessons.findIndex(l => l.id === note.id);
+                      const unlocked = isLessonUnlocked(note, globalIdx);
+                      return (
+                        <div key={note.id} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between gap-3 group hover:border-blue-200 transition-colors">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                              <FileText className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0">
+                              <h4 className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
+                                {note.pdfTitle || `${note.title} - Notes`}
+                              </h4>
+                              {note.duration && (
+                                <p className="text-[10px] text-slate-500 truncate">{note.duration}</p>
                               )}
                             </div>
                           </div>
-
-                          {/* Completed Status Checkmark in Top Right */}
-                          <button
-                            onClick={() => toggleLessonCompleted(lesson.id)}
-                            className={`p-1.5 rounded-full transition-colors shrink-0 cursor-pointer ${
-                              isCompleted
-                                ? 'text-emerald-600 bg-emerald-50 border border-emerald-200'
-                                : 'text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200'
-                            }`}
-                            title={isCompleted ? 'Completed' : 'Mark as Completed'}
-                          >
-                            <CheckCircle2 className="w-5 h-5" />
-                          </button>
-
+                          {unlocked ? (
+                            <a 
+                              href={note.pdfUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-lg shrink-0 transition-colors shadow-2xs"
+                              title="Download PDF"
+                            >
+                              <Download className="w-4 h-4" />
+                            </a>
+                          ) : (
+                            <button 
+                              onClick={handleEnrollClick} 
+                              className="w-8 h-8 flex items-center justify-center bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-lg shrink-0 transition-colors cursor-pointer"
+                              title="Locked"
+                            >
+                              <Lock className="w-4 h-4 text-amber-600" />
+                            </button>
+                          )}
                         </div>
-
-                        {/* Action Buttons: [Watch] & [Notes & more] */}
-                        <div className="flex flex-wrap items-center gap-3 pt-1">
-                          {/* Watch Button: Plays in Full Screen & Landscape on Mobile */}
-                          <button
-                            onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
-                            className="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-2 transition-all active:scale-95 cursor-pointer shadow-md shadow-blue-500/20"
-                          >
-                            <Play className="w-3.5 h-3.5 fill-current text-white" />
-                            <span>{isCompleted ? 'Resume (Full Screen)' : 'Watch'}</span>
-                          </button>
-
-                          {/* Notes & more Button: Shows all notes uploaded in that chapter by admin */}
-                          <button
-                            onClick={() => activeChapter && handleOpenNotesAndMore(activeChapter)}
-                            className="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-2 transition-all border border-slate-200 cursor-pointer"
-                          >
-                            <FileText className="w-3.5 h-3.5 text-slate-600" />
-                            <span>Notes & more</span>
-                          </button>
-                        </div>
-
-                      </div>
-
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-          </main>
-
-        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* =========================================================================
@@ -771,132 +737,6 @@ export function CourseDetail() {
               </a>
             </div>
           )}
-        </div>
-      )}
-
-      {/* =========================================================================
-          MODAL 2: "NOTES & MORE" (SHOWS ALL NOTES UPLOADED IN THAT CHAPTER BY ADMIN)
-         ========================================================================= */}
-      {isNotesModalOpen && activeNotesChapter && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl animate-in zoom-in-95 duration-200">
-            
-            {/* Header */}
-            <div className="flex items-start justify-between pb-4 border-b border-slate-100">
-              <div className="space-y-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 uppercase">
-                    CH - {String(activeNotesChapter.chapterNumber).padStart(2, '0')}
-                  </span>
-                  <span className="text-xs font-bold text-slate-500">
-                    Chapter Study Material
-                  </span>
-                </div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 truncate">
-                  {activeNotesChapter.title}
-                </h3>
-                {activeNotesChapter.hindiTitle && (
-                  <p className="text-xs text-slate-500 font-medium">
-                    {activeNotesChapter.hindiTitle}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={() => setIsNotesModalOpen(false)}
-                className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
-                title="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* List of uploaded Notes in this Chapter */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-                  Uploaded Chapter Notes & Formula PDFs
-                </h4>
-                <span className="text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full">
-                  Admin Verified Material
-                </span>
-              </div>
-
-              {activeChapterNotes.length === 0 ? (
-                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                  <FolderOpen className="w-8 h-8 text-slate-400 mx-auto" />
-                  <p className="text-xs font-bold text-slate-700">No PDF notes uploaded for this chapter yet</p>
-                  <p className="text-[11px] text-slate-500">
-                    The admin will upload handwritten formula sheets and PDF guides for this chapter shortly.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {activeChapterNotes.map((lesson, idx) => {
-                    const globalIdx = lessons.findIndex(l => l.id === lesson.id);
-                    const unlocked = isLessonUnlocked(lesson, globalIdx);
-
-                    return (
-                      <div
-                        key={lesson.id}
-                        className="p-4 bg-slate-50 hover:bg-blue-50/50 rounded-2xl border border-slate-200 transition-colors flex items-center justify-between gap-4"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                            <FileText className="w-5 h-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <h5 className="text-xs font-bold text-slate-900 truncate">
-                              {lesson.pdfTitle || `${lesson.title} - Chapter Notes PDF`}
-                            </h5>
-                            <p className="text-[10px] text-slate-500">
-                              Lecture {lesson.lessonNumber || idx + 1} • {lesson.duration || 'Full Theory & Code Examples'}
-                            </p>
-                          </div>
-                        </div>
-
-                        {unlocked ? (
-                          <a
-                            href={lesson.pdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 transition-colors shadow-2xs"
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                            <span>Download PDF</span>
-                          </a>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setIsNotesModalOpen(false);
-                              handleEnrollClick();
-                            }}
-                            className="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 transition-colors"
-                          >
-                            <Lock className="w-3.5 h-3.5 text-amber-600" />
-                            <span>Unlock Note</span>
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Attached DPP & Additional Resources section */}
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-500">Want to test your concepts?</span>
-              <Link
-                to="/mcq-test"
-                onClick={() => setIsNotesModalOpen(false)}
-                className="font-bold text-blue-600 hover:underline flex items-center gap-1"
-              >
-                <span>Attempt Chapter MCQ Test</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-          </div>
         </div>
       )}
 
