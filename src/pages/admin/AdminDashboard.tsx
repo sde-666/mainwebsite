@@ -47,10 +47,11 @@ import { AdminPaidCoursesPanel } from '../../components/admin/AdminPaidCoursesPa
 
 export function AdminDashboard() {
   const navigate = useNavigate();
-  const { currentUser, isAdmin, logout } = useAuth();
+  const { currentUser, isAdmin, loading: authLoading, logout } = useAuth();
 
   // Tab State
   const [activeTab, setActiveTab] = useState<'paid-courses' | 'resources' | 'quizzes' | 'chapter-mcqs' | 'practicals' | 'chapter-notes' | 'tools' | 'overview'>('paid-courses');
+
 
   // Notes & Chapters CMS State
   const [noteCourses, setNoteCourses] = useState<NoteCourse[]>([]);
@@ -105,10 +106,10 @@ export function AdminDashboard() {
 
   // Redirect if not admin
   useEffect(() => {
-    if (!isAdmin) {
+    if (!authLoading && !isAdmin) {
       navigate('/admin/login');
     }
-  }, [isAdmin, navigate]);
+  }, [isAdmin, authLoading, navigate]);
 
   // Subscribe to Resources & Quizzes
   useEffect(() => {
@@ -661,6 +662,19 @@ export function AdminDashboard() {
       q.title.toLowerCase().includes(quizSearch.toLowerCase()) ||
       q.moduleLabel.toLowerCase().includes(quizSearch.toLowerCase());
   });
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  // If not admin but loading finished, don't render dashboard while redirecting
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 pb-20">

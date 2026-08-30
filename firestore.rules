@@ -1,6 +1,16 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /admins/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false; // Only manageable from Firebase Console / Server
+    }
+
     // Anyone can read resources, notes, and tests for studying
     match /resources/{resourceId} {
       allow read, write: if true;
@@ -45,21 +55,25 @@ service cloud.firestore {
     match /chapter_mcqs/{mcqId} {
       allow read, write: if true;
     }
+
     match /paid_courses/{courseId} {
       allow read, write: if true;
     }
+
     match /paid_course_chapters/{chapterId} {
       allow read, write: if true;
     }
+
     match /paid_course_lessons/{lessonId} {
       allow read, write: if true;
     }
+
     match /paid_course_enrollments/{enrollmentId} {
       allow read, write: if true;
     }
+
     match /app_settings/{settingId} {
       allow read, write: if true;
     }
   }
 }
-
