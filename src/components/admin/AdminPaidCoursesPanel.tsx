@@ -20,7 +20,11 @@ import {
   X,
   Play,
   Layers,
-  GraduationCap
+  GraduationCap,
+  Clock,
+  Radio,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
 import { paidCourseService, extractYouTubeVideoId } from '../../services/paidCourseService';
 import { CourseItem, CourseChapter, CourseLesson, StudentEnrollment } from '../../types/paidCourse';
@@ -32,6 +36,7 @@ export function AdminPaidCoursesPanel() {
   const [chapters, setChapters] = useState<CourseChapter[]>([]);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const [enrollments, setEnrollments] = useState<StudentEnrollment[]>([]);
+  const [isGlobalComingSoon, setIsGlobalComingSoon] = useState<boolean>(false);
   
   // Modals
   const [editingCourse, setEditingCourse] = useState<Partial<CourseItem> | null>(null);
@@ -77,11 +82,16 @@ export function AdminPaidCoursesPanel() {
       setEnrollments(eList);
     });
 
+    const unsubComingSoon = paidCourseService.subscribeComingSoon((val) => {
+      setIsGlobalComingSoon(val);
+    });
+
     return () => {
       unsubCourses();
       unsubChapters();
       unsubLessons();
       unsubEnrollments();
+      unsubComingSoon();
     };
   }, [selectedCourseId]);
 
@@ -99,6 +109,31 @@ export function AdminPaidCoursesPanel() {
   // Calculate stats
   const totalRevenue = enrollments.reduce((acc, curr) => acc + (curr.amountPaid || 0), 0);
   const totalStudents = new Set(enrollments.map(e => e.studentEmail?.toLowerCase())).size;
+
+  // Toggle Global Coming Soon Mode
+  const handleToggleGlobalComingSoon = async () => {
+    try {
+      const nextState = !isGlobalComingSoon;
+      await paidCourseService.setComingSoonMode(nextState);
+      if (nextState) {
+        showToast('Coming Soon mode enabled for all paid courses! Visitors will now see the Coming Soon page.', 'success');
+      } else {
+        showToast('Coming Soon mode disabled. All published paid courses are now live for students!', 'success');
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update Coming Soon status', 'error');
+    }
+  };
+
+  // Toggle Single Course Coming Soon
+  const handleToggleCourseComingSoon = async (courseId: string) => {
+    try {
+      await paidCourseService.toggleCourseComingSoon(courseId);
+      showToast('Course Coming Soon status updated');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update course', 'error');
+    }
+  };
 
   // ================= COURSE HANDLERS =================
   const handleOpenCreateCourse = () => {
@@ -349,6 +384,20 @@ export function AdminPaidCoursesPanel() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Global Coming Soon Switch */}
+            <button
+              onClick={handleToggleGlobalComingSoon}
+              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                isGlobalComingSoon
+                  ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20 font-black'
+                  : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+              }`}
+              title="Toggle Coming Soon mode for all courses (Useful when preparing batches before launch)"
+            >
+              {isGlobalComingSoon ? <ToggleRight className="w-4 h-4 text-slate-950" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
+              <span>{isGlobalComingSoon ? 'Coming Soon Mode: ON' : 'Coming Soon Mode: OFF'}</span>
+            </button>
+
             <button
               onClick={handleSyncAll}
               disabled={isSyncing}
@@ -448,7 +497,20 @@ export function AdminPaidCoursesPanel() {
                         {course.category.toUpperCase()}
                       </span>
 
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleToggleCourseComingSoon(course.id)}
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border transition-colors cursor-pointer ${
+                            course.isComingSoon
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                              : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
+                          }`}
+                          title="Toggle Coming Soon status for this specific course"
+                        >
+                          <Clock className="w-3 h-3" />
+                          <span>{course.isComingSoon ? 'Coming Soon' : 'Live'}</span>
+                        </button>
+
                         <button
                           onClick={() => handleToggleVisibility(course.id)}
                           className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border transition-colors ${
@@ -942,17 +1004,32 @@ export function AdminPaidCoursesPanel() {
                 </div>
               </div>
 
-              <div className="pt-2 flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="isPublished"
-                  checked={editingCourse.isPublished}
-                  onChange={(e) => setEditingCourse({ ...editingCourse, isPublished: e.target.checked })}
-                  className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
-                />
-                <label htmlFor="isPublished" className="font-semibold text-white cursor-pointer">
-                  Visible on website (Publicly purchasable)
-                </label>
+              <div className="pt-2 flex flex-col sm:flex-row gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="isPublished"
+                    checked={editingCourse.isPublished}
+                    onChange={(e) => setEditingCourse({ ...editingCourse, isPublished: e.target.checked })}
+                    className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                  />
+                  <label htmlFor="isPublished" className="font-semibold text-white cursor-pointer text-xs">
+                    Visible on website
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="isComingSoon"
+                    checked={!!editingCourse.isComingSoon}
+                    onChange={(e) => setEditingCourse({ ...editingCourse, isComingSoon: e.target.checked })}
+                    className="rounded text-amber-500 focus:ring-amber-500 w-4 h-4"
+                  />
+                  <label htmlFor="isComingSoon" className="font-semibold text-amber-300 cursor-pointer text-xs flex items-center gap-1">
+                    <span>Show "Coming Soon" page (Pre-launch)</span>
+                  </label>
+                </div>
               </div>
 
               <div className="pt-4 border-t border-slate-800 flex items-center justify-between">

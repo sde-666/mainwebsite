@@ -23,6 +23,7 @@ import { siteConfig } from '../data/config';
 import { paidCourseService } from '../services/paidCourseService';
 import { CourseItem, CourseChapter, CourseLesson } from '../types/paidCourse';
 import { useAuth } from '../context/AuthContext';
+import { ComingSoon } from '../components/ComingSoon';
 
 export function Courses() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,6 +33,7 @@ export function Courses() {
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const [chapters, setChapters] = useState<CourseChapter[]>([]);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
+  const [isGlobalComingSoon, setIsGlobalComingSoon] = useState<boolean>(false);
 
   const { currentUser } = useAuth();
 
@@ -41,11 +43,13 @@ export function Courses() {
     });
     const unsubChapters = paidCourseService.subscribeChapters(setChapters);
     const unsubLessons = paidCourseService.subscribeLessons(setLessons);
+    const unsubComingSoon = paidCourseService.subscribeComingSoon(setIsGlobalComingSoon);
 
     return () => {
       unsubCourses();
       unsubChapters();
       unsubLessons();
+      unsubComingSoon();
     };
   }, []);
 
@@ -85,6 +89,10 @@ export function Courses() {
       }
     }))
   };
+
+  if (isGlobalComingSoon) {
+    return <ComingSoon isAllCourses />;
+  }
 
   return (
     <div className="bg-slate-50 min-h-screen py-10">
@@ -214,11 +222,15 @@ export function Courses() {
                     <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-600 text-white shadow-xs">
                       {course.category.toUpperCase()}
                     </span>
-                    {course.badge && (
+                    {course.isComingSoon ? (
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 shadow-xs flex items-center gap-1">
+                        <span>Coming Soon</span>
+                      </span>
+                    ) : course.badge ? (
                       <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 shadow-xs">
                         {course.badge}
                       </span>
-                    )}
+                    ) : null}
                   </div>
 
                   {/* Free Demo Tag */}

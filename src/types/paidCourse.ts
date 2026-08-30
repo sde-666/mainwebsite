@@ -11,6 +11,7 @@ export interface CourseItem {
   thumbnailUrl: string;
   bannerUrl?: string;
   isPublished: boolean; // toggle visible/hidden
+  isComingSoon?: boolean; // individual course coming soon override
   features: string[];
   learningOutcomes: string[];
   targetAudience?: string[];
@@ -44,6 +45,7 @@ export interface CourseLesson {
   title: string;
   hindiTitle?: string;
   duration?: string; // e.g. "28:45"
+  description?: string;
   
   // Video Content (Unlisted YouTube Video Link or ID)
   videoType: 'youtube';
@@ -78,6 +80,8 @@ export interface StudentEnrollment {
   status: 'active' | 'cancelled' | 'refunded';
   enrolledAt: number;
 }
+
+export type CourseEnrollment = StudentEnrollment;
 
 export interface RazorpayOrderData {
   key: string;
