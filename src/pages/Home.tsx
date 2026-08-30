@@ -173,7 +173,7 @@ export function Home() {
                 <span className="block text-slate-900">O Level और CCC में</span>
                 <span className="block mt-1 sm:mt-2">
                   पाएं पहली बार में{' '}
-                  <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+                  <span className="relative inline-block text-[#e76767]">
                     100% सफलता
                     {/* Artistic gradient underline curve matching reference */}
                     <svg
@@ -220,7 +220,7 @@ export function Home() {
                     <FileText className="w-5 h-5" />
                   </div>
                   <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-blue-700 transition-colors">
-                    फ्री PDF नोट्स
+                    फ्री Study नोट्स
                   </span>
                   <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
                     सभी विषय (M1-M4 & CCC)
@@ -284,7 +284,7 @@ export function Home() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto pt-2">
               <Link
                 to="/resources"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl font-extrabold text-white text-xs sm:text-sm bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:bg-indigo-800 shadow-md shadow-indigo-500/25 transition-all cursor-pointer group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl font-extrabold text-white text-xs sm:text-sm bg-[#e77979] hover:opacity-90 active:scale-95 shadow-md shadow-[#e77979]/25 transition-all cursor-pointer group"
               >
                 <Download className="w-4 h-4 sm:w-4.5 sm:h-4.5 group-hover:translate-y-0.5 transition-transform" />
                 <span>फ्री स्टडी मटीरियल डाउनलोड करें</span>
