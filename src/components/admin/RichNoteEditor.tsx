@@ -321,7 +321,7 @@ def solve_problem():
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[94vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Modal Top Header */}
@@ -331,7 +331,7 @@ def solve_problem():
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-extrabold text-slate-900">
+              <h2 className="text-lg font-extrabold text-slate-100">
                 {topic?.id ? 'Edit Chapter Note Article' : 'Create New Note (Word/Writer Style)'}
               </h2>
               <p className="text-xs text-slate-500">
@@ -349,7 +349,7 @@ def solve_problem():
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
                   editorMode === 'wysiwyg'
                     ? 'bg-white text-blue-700 shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-600 hover:text-slate-100'
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
@@ -361,7 +361,7 @@ def solve_problem():
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
                   editorMode === 'source'
                     ? 'bg-white text-blue-700 shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-600 hover:text-slate-100'
                 }`}
               >
                 <Code2 className="w-3.5 h-3.5" />
@@ -373,7 +373,7 @@ def solve_problem():
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
                   editorMode === 'preview'
                     ? 'bg-white text-blue-700 shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-600 hover:text-slate-100'
                 }`}
               >
                 <Eye className="w-3.5 h-3.5" />
@@ -384,7 +384,7 @@ def solve_problem():
             <button
               type="button"
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition-colors"
+              className="p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -445,7 +445,7 @@ def solve_problem():
             <div>
               <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
                 <span>Sub-Folder / Group</span>
-                <span className="text-[10px] text-slate-400 font-normal">(e.g. Memory Systems)</span>
+                <span className="text-[10px] text-slate-500 font-normal">(e.g. Memory Systems)</span>
               </label>
               <input
                 type="text"
@@ -538,7 +538,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('undo')}
                   title="Undo (Ctrl+Z)"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <Undo className="w-4 h-4" />
                 </button>
@@ -546,7 +546,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('redo')}
                   title="Redo (Ctrl+Y)"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <Redo className="w-4 h-4" />
                 </button>
@@ -580,7 +580,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('bold')}
                   title="Bold (Ctrl+B)"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <Bold className="w-4 h-4" />
                 </button>
@@ -588,7 +588,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('italic')}
                   title="Italic (Ctrl+I)"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <Italic className="w-4 h-4" />
                 </button>
@@ -596,7 +596,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('underline')}
                   title="Underline (Ctrl+U)"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <Underline className="w-4 h-4" />
                 </button>
@@ -604,7 +604,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('strikeThrough')}
                   title="Strikethrough"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <Strikethrough className="w-4 h-4" />
                 </button>
@@ -655,7 +655,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('justifyLeft')}
                   title="Align Left"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <AlignLeft className="w-4 h-4" />
                 </button>
@@ -663,7 +663,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('justifyCenter')}
                   title="Align Center"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <AlignCenter className="w-4 h-4" />
                 </button>
@@ -671,7 +671,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('justifyRight')}
                   title="Align Right"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <AlignRight className="w-4 h-4" />
                 </button>
@@ -683,7 +683,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('insertUnorderedList')}
                   title="Bullet List"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <List className="w-4 h-4" />
                 </button>
@@ -691,7 +691,7 @@ def solve_problem():
                   type="button"
                   onClick={() => formatDoc('insertOrderedList')}
                   title="Numbered List"
-                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-900"
+                  className="p-1.5 rounded hover:bg-slate-200 hover:text-slate-100"
                 >
                   <ListOrdered className="w-4 h-4" />
                 </button>
@@ -791,7 +791,7 @@ def solve_problem():
                 <textarea
                   value={contentHtml}
                   onChange={(e) => setContentHtml(e.target.value)}
-                  className="w-full flex-1 min-h-[420px] font-mono text-xs p-4 rounded-xl border border-slate-300 bg-slate-900 text-emerald-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner"
+                  className="w-full flex-1 min-h-[420px] font-mono text-xs p-4 rounded-xl border border-slate-300 bg-white text-emerald-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner"
                   placeholder="<h2>Enter HTML Content here...</h2>"
                 />
               </div>
@@ -807,7 +807,7 @@ def solve_problem():
                     {chapters.find(ch => ch.id === chapterId)?.title}
                   </span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 mb-2">
                   {title || 'Untitled Note Topic'}
                 </h1>
                 {hindiTitle && (
@@ -815,7 +815,7 @@ def solve_problem():
                     {hindiTitle}
                   </p>
                 )}
-                <div className="border-t border-slate-100 pt-4 notes-body" dangerouslySetInnerHTML={{ __html: contentHtml || '<p class="text-slate-400 italic">No content written yet.</p>' }} />
+                <div className="border-t border-slate-100 pt-4 notes-body" dangerouslySetInnerHTML={{ __html: contentHtml || '<p class="text-slate-500 italic">No content written yet.</p>' }} />
               </div>
             )}
           </div>
@@ -847,7 +847,7 @@ def solve_problem():
               <button
                 type="submit"
                 disabled={saving}
-                className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all flex items-center gap-1.5 disabled:opacity-50"
+                className="px-5 py-2 rounded-xl text-xs font-bold text-slate-900 bg-blue-600 hover:bg-blue-700 shadow-sm transition-all flex items-center gap-1.5 disabled:opacity-50"
               >
                 {saving ? (
                   <>

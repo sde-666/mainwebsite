@@ -672,7 +672,7 @@ export function AdminDashboard() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -684,24 +684,24 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 pb-20">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
       <SEO title="Skilldotpy Admin Control Panel" description="Manage NIELIT courses, PDF notes, and MCQ quizzes." noIndex />
 
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <a href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
               <div className="w-8 h-8 rounded-lg bg-white p-0.5 shadow-sm">
                 <img src="/skilldotpy-logo.svg" alt="Skilldotpy" className="w-full h-full object-contain" />
               </div>
-              <span className="font-extrabold text-white text-sm sm:text-base tracking-tight">
-                Skilldotpy <span className="text-blue-400 font-normal">Admin</span>
+              <span className="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight">
+                Skilldotpy <span className="text-blue-600 font-normal">Admin</span>
               </span>
             </a>
 
-            <span className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               Firestore Live
             </span>
           </div>
@@ -711,7 +711,7 @@ export function AdminDashboard() {
               onClick={handleSeedDatabase}
               disabled={isSeeding}
               title="Sync standard NIELIT materials into Firebase"
-              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-700 transition-colors"
+              className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 transition-colors"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-blue-400 ${isSeeding ? 'animate-spin' : ''}`} />
               <span className="hidden md:inline">{isSeeding ? 'Syncing...' : 'Sync Standard Data'}</span>
@@ -721,9 +721,9 @@ export function AdminDashboard() {
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-700 transition-colors"
+              className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 transition-colors"
             >
-              <Eye className="w-3.5 h-3.5 text-slate-400" />
+              <Eye className="w-3.5 h-3.5 text-slate-500" />
               <span className="hidden sm:inline">View Website</span>
             </a>
 
@@ -756,13 +756,13 @@ export function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         
         {/* Navigation Tabs */}
-        <div className="flex overflow-x-auto space-x-2 pb-4 border-b border-slate-800 scrollbar-none">
+        <div className="flex overflow-x-auto space-x-2 pb-4 border-b border-slate-200 scrollbar-none">
           <button
             onClick={() => setActiveTab('paid-courses')}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'paid-courses'
                 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-850 border border-slate-800'
+                : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <GraduationCap className="w-4 h-4 text-amber-400" />
@@ -774,7 +774,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'resources'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-850 border border-slate-800'
+                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -786,7 +786,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'quizzes'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-850 border border-slate-800'
+                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <HelpCircle className="w-4 h-4" />
@@ -798,7 +798,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'chapter-mcqs'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-850 border border-slate-800'
+                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <Sparkles className="w-4 h-4 text-rose-400" />
@@ -810,7 +810,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'chapter-notes'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-850 border border-slate-800'
+                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <BookOpen className="w-4 h-4 text-amber-400" />
@@ -822,7 +822,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'practicals'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-850 border border-slate-800'
+                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <Code className="w-4 h-4 text-emerald-400" />
@@ -834,7 +834,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'overview'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-850 border border-slate-800'
+                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <Database className="w-4 h-4" />
@@ -846,7 +846,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'tools'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-850 border border-slate-800'
+                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <LinkIcon className="w-4 h-4" />
@@ -866,12 +866,12 @@ export function AdminDashboard() {
           <div className="pt-6 space-y-6">
             
             {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200">
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => setSelectedCategory('all')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                    selectedCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'
+                    selectedCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   All ({resources.length})
@@ -881,7 +881,7 @@ export function AdminDashboard() {
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                      selectedCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'
+                      selectedCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-900'
                     }`}
                   >
                     {cat.title.split(' ')[0]}
@@ -897,7 +897,7 @@ export function AdminDashboard() {
                     value={resourceSearch}
                     onChange={(e) => setResourceSearch(e.target.value)}
                     placeholder="Search notes / syllabus..."
-                    className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -916,7 +916,7 @@ export function AdminDashboard() {
               {filteredResources.map((res) => (
                 <div
                   key={res.id}
-                  className="bg-slate-900 border border-slate-800 hover:border-slate-700 p-5 rounded-2xl flex flex-col justify-between transition-all group"
+                  className="bg-white border border-slate-200 hover:border-slate-300 p-5 rounded-2xl flex flex-col justify-between transition-all group"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -935,37 +935,37 @@ export function AdminDashboard() {
                         )}
                       </div>
                       {res.moduleCode && (
-                        <span className="text-[10px] font-semibold bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
                           {res.moduleCode}
                         </span>
                       )}
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-bold text-white line-clamp-2 group-hover:text-blue-400 transition-colors">
+                      <h4 className="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-blue-400 transition-colors">
                         {res.title}
                       </h4>
                       {res.hindiTitle && (
-                        <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">
+                        <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
                           {res.hindiTitle}
                         </p>
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                       {res.description}
                     </p>
 
                     <div className="flex flex-wrap gap-1 pt-1">
                       {res.tags?.slice(0, 3).map((tag, idx) => (
-                        <span key={idx} className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">
+                        <span key={idx} className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
                           #{tag}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between">
+                  <div className="pt-4 mt-4 border-t border-slate-200 flex items-center justify-between">
                     <div className="text-[11px] text-slate-500">
                       <span>{res.fileSize}</span> • <span>{res.downloadCount} downloads</span>
                     </div>
@@ -998,14 +998,14 @@ export function AdminDashboard() {
                       <button
                         onClick={() => handleOpenEditResource(res)}
                         title="Edit Card"
-                        className="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-slate-800 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteResource(res.id)}
                         title="Delete Card"
-                        className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1016,10 +1016,10 @@ export function AdminDashboard() {
             </div>
 
             {filteredResources.length === 0 && (
-              <div className="text-center py-16 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
+              <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 space-y-3">
                 <FileText className="w-12 h-12 text-slate-600 mx-auto" />
-                <h4 className="text-base font-bold text-white">No Notes Found</h4>
-                <p className="text-xs text-slate-400">Click "Add New PDF Note" or "Sync Standard Data" to populate.</p>
+                <h4 className="text-base font-bold text-slate-900">No Notes Found</h4>
+                <p className="text-xs text-slate-500">Click "Add New PDF Note" or "Sync Standard Data" to populate.</p>
               </div>
             )}
 
@@ -1031,7 +1031,7 @@ export function AdminDashboard() {
           <div className="pt-6 space-y-6">
             
             {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200">
               <div className="relative flex-1 sm:w-80">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
@@ -1039,7 +1039,7 @@ export function AdminDashboard() {
                   value={quizSearch}
                   onChange={(e) => setQuizSearch(e.target.value)}
                   placeholder="Search test name, subject..."
-                  className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -1057,39 +1057,39 @@ export function AdminDashboard() {
               {filteredQuizzes.map((quiz) => (
                 <div
                   key={quiz.id}
-                  className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm"
+                  className="bg-white border border-slate-200 p-6 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-400/30">
                         {quiz.moduleLabel || quiz.module}
                       </span>
-                      <span className="text-xs font-semibold text-slate-400">
+                      <span className="text-xs font-semibold text-slate-500">
                         {quiz.questions?.length || 0} Questions • {quiz.durationMinutes} Mins
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="text-base font-bold text-white">{quiz.title}</h4>
+                      <h4 className="text-base font-bold text-slate-900">{quiz.title}</h4>
                       {quiz.hindiTitle && (
-                        <p className="text-xs text-slate-400 mt-0.5">{quiz.hindiTitle}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{quiz.hindiTitle}</p>
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-400 leading-relaxed">
+                    <p className="text-xs text-slate-500 leading-relaxed">
                       {quiz.description}
                     </p>
 
                     <div className="grid grid-cols-3 gap-2 text-center text-[11px] pt-1">
-                      <div className="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                      <div className="bg-slate-50 p-2 rounded-xl border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Total Marks</span>
-                        <span className="font-bold text-white">{quiz.totalMarks}</span>
+                        <span className="font-bold text-slate-900">{quiz.totalMarks}</span>
                       </div>
-                      <div className="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                      <div className="bg-slate-50 p-2 rounded-xl border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Pass Marks</span>
                         <span className="font-bold text-emerald-400">{quiz.passingMarks}</span>
                       </div>
-                      <div className="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                      <div className="bg-slate-50 p-2 rounded-xl border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Attempts</span>
                         <span className="font-bold text-blue-400">{quiz.totalAttempts || 0}</span>
                       </div>
@@ -1097,7 +1097,7 @@ export function AdminDashboard() {
                   </div>
 
                   {/* Question Management Actions */}
-                  <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                  <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
                     <button
                       onClick={() => setActiveQuizForQuestions(activeQuizForQuestions?.id === quiz.id ? null : quiz)}
                       className="inline-flex items-center gap-1 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
@@ -1123,13 +1123,13 @@ export function AdminDashboard() {
                       </button>
                       <button
                         onClick={() => handleOpenEditQuiz(quiz)}
-                        className="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-slate-800 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteQuiz(quiz.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1138,9 +1138,9 @@ export function AdminDashboard() {
 
                   {/* Inline Questions List Accordion */}
                   {activeQuizForQuestions?.id === quiz.id && (
-                    <div className="mt-4 pt-4 border-t border-slate-800 space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800/80">
+                    <div className="mt-4 pt-4 border-t border-slate-200 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
                       <div className="flex items-center justify-between">
-                        <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+                        <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                           Questions inside this test ({quiz.questions?.length || 0})
                         </h5>
                         <div className="flex items-center gap-3">
@@ -1162,27 +1162,27 @@ export function AdminDashboard() {
                       </div>
 
                       {quiz.questions?.map((q, qIndex) => (
-                        <div key={q.id || qIndex} className="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                        <div key={q.id || qIndex} className="p-3 bg-white rounded-xl border border-slate-200 space-y-2">
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <span className="text-[10px] font-mono text-blue-400 font-bold mr-1.5">
                                 Q{qIndex + 1}.
                               </span>
-                              <span className="text-xs font-medium text-white">{q.question}</span>
+                              <span className="text-xs font-medium text-slate-900">{q.question}</span>
                               {q.hindiQuestion && (
-                                <p className="text-[11px] text-slate-400 mt-0.5">{q.hindiQuestion}</p>
+                                <p className="text-[11px] text-slate-500 mt-0.5">{q.hindiQuestion}</p>
                               )}
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
                               <button
                                 onClick={() => handleOpenEditQuestion(quiz, q)}
-                                className="p-1 text-slate-400 hover:text-blue-400"
+                                className="p-1 text-slate-500 hover:text-blue-400"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteQuestion(quiz, q.id)}
-                                className="p-1 text-slate-400 hover:text-rose-400"
+                                className="p-1 text-slate-500 hover:text-rose-400"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -1197,7 +1197,7 @@ export function AdminDashboard() {
                                 className={`px-2 py-1 rounded-md text-[10px] ${
                                   optIndex === q.correctIndex
                                     ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold'
-                                    : 'bg-slate-950 text-slate-400'
+                                    : 'bg-slate-50 text-slate-500'
                                 }`}
                               >
                                 {String.fromCharCode(65 + optIndex)}. {opt} {optIndex === q.correctIndex && '✓'}
@@ -1205,7 +1205,7 @@ export function AdminDashboard() {
                             ))}
                           </div>
                           {q.explanation && (
-                            <p className="text-[10px] text-slate-500 italic pt-1 border-t border-slate-800">
+                            <p className="text-[10px] text-slate-500 italic pt-1 border-t border-slate-200">
                               Explanation: {q.explanation}
                             </p>
                           )}
@@ -1231,10 +1231,10 @@ export function AdminDashboard() {
         {/* ================= TAB: PRACTICAL EXAM SETS & SUBMISSIONS ================= */}
         {activeTab === 'practicals' && (
           <div className="pt-6 space-y-6">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200">
               <div>
-                <h3 className="text-base font-bold text-white">NIELIT O Level Practical Exam Sets</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="text-base font-bold text-slate-900">NIELIT O Level Practical Exam Sets</h3>
+                <p className="text-xs text-slate-500">
                   Manage Python (PR3), Web Design (PR2), IoT (PR4), and IT Tools (PR1) practical lab exams with coding tasks and Viva Voce.
                 </p>
               </div>
@@ -1270,28 +1270,28 @@ export function AdminDashboard() {
             {/* Test Sets Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {practicalTests.map((t) => (
-                <div key={t.id} className="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-3">
+                <div key={t.id} className="bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-blue-400 bg-blue-950 px-2.5 py-0.5 rounded border border-blue-800/60">
                       {t.paperCode} • {t.module}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">{t.durationMinutes} Mins • 100 Marks</span>
+                    <span className="text-xs text-slate-500 font-medium">{t.durationMinutes} Mins • 100 Marks</span>
                   </div>
 
                   <div>
-                    <h4 className="text-base font-bold text-white">{t.title}</h4>
-                    <p className="text-xs text-slate-400 mt-1">{t.description}</p>
+                    <h4 className="text-base font-bold text-slate-900">{t.title}</h4>
+                    <p className="text-xs text-slate-500 mt-1">{t.description}</p>
                   </div>
 
-                  <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs space-y-1.5">
-                    <span className="font-bold text-slate-300 block">Tasks ({t.questions.length}):</span>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1.5">
+                    <span className="font-bold text-slate-700 block">Tasks ({t.questions.length}):</span>
                     {t.questions.map((q) => (
-                      <div key={q.id} className="text-slate-400 flex items-center gap-2">
+                      <div key={q.id} className="text-slate-500 flex items-center gap-2">
                         <span className="text-blue-400 font-bold">Q{q.number}.</span>
                         <span className="truncate">{q.title} ({q.language.toUpperCase()})</span>
                       </div>
                     ))}
-                    <div className="pt-1.5 border-t border-slate-800 text-[11px] text-amber-400">
+                    <div className="pt-1.5 border-t border-slate-200 text-[11px] text-amber-400">
                       + {t.vivaQuestions.length} Viva Voce Questions (20 Marks)
                     </div>
                   </div>
@@ -1300,7 +1300,7 @@ export function AdminDashboard() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleOpenEditPractical(t)}
-                        className="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
+                        className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
                       >
                         <Edit3 className="w-3 h-3" />
                         Edit
@@ -1328,8 +1328,8 @@ export function AdminDashboard() {
             </div>
 
             {/* Submissions Section */}
-            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
-              <h4 className="text-base font-bold text-white flex items-center gap-2">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
+              <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <FileText className="w-4 h-4 text-emerald-400" />
                 <span>Recent Practical Exam Submissions ({practicalSubmissions.length})</span>
               </h4>
@@ -1339,9 +1339,9 @@ export function AdminDashboard() {
               ) : (
                 <div className="space-y-2">
                   {practicalSubmissions.map((sub, i) => (
-                    <div key={sub.id || i} className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                    <div key={sub.id || i} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
                       <div>
-                        <span className="font-bold text-white">{sub.studentName}</span>
+                        <span className="font-bold text-slate-900">{sub.studentName}</span>
                         <span className="text-slate-500 ml-2">({sub.paperCode} - {sub.module})</span>
                       </div>
                       <div className="flex items-center gap-3">
@@ -1364,16 +1364,16 @@ export function AdminDashboard() {
         {activeTab === 'chapter-notes' && (
           <div className="pt-6 space-y-6">
             {/* Top Action & Course Selector Bar */}
-            <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
                       <BookOpen className="w-4 h-4" />
                     </span>
-                    <h3 className="text-base font-bold text-white">Hierarchical Notes & Blog CMS</h3>
+                    <h3 className="text-base font-bold text-slate-900">Hierarchical Notes & Blog CMS</h3>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Create and publish rich Word-style study notes organized by Module &rarr; Chapter &rarr; Topic with Hindi/English bilingual formatting.
                   </p>
                 </div>
@@ -1410,7 +1410,7 @@ export function AdminDashboard() {
               </div>
 
               {/* Course Selector Tabs */}
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-200">
                 {[
                   { id: 'm1-r5', label: 'M1-R5.1: IT Tools & Network Basics' },
                   { id: 'm2-r5', label: 'M2-R5.1: Web Design & Publishing' },
@@ -1429,13 +1429,13 @@ export function AdminDashboard() {
                       }}
                       className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                         isSelected
-                          ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
-                          : 'bg-slate-850 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                          ? 'bg-amber-500 text-slate-100 shadow-md font-extrabold'
+                          : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
                       }`}
                     >
                       <span>{c.label}</span>
                       <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                        isSelected ? 'bg-slate-950 text-amber-300' : 'bg-slate-950 text-slate-400'
+                        isSelected ? 'bg-slate-50 text-amber-300' : 'bg-slate-50 text-slate-500'
                       }`}>
                         {courseTopicsCount} Notes
                       </span>
@@ -1449,21 +1449,21 @@ export function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               
               {/* Left Column: Chapters Manager (4 cols) */}
-              <div className="lg:col-span-4 bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                   <div>
-                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                       <Layers className="w-4 h-4 text-blue-400" />
                       <span>Chapters</span>
                     </h4>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px] text-slate-500">
                       {noteChapters.filter(ch => ch.courseId === selectedNoteCourseId).length} Chapters in this Course
                     </span>
                   </div>
 
                   <button
                     onClick={handleOpenCreateChapter}
-                    className="inline-flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-700 transition-colors"
+                    className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-amber-300 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Chapter</span>
@@ -1476,7 +1476,7 @@ export function AdminDashboard() {
                   className={`w-full text-left p-2.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
                     selectedNoteChapterId === 'all'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-slate-950/70 text-slate-300 hover:bg-slate-800 border border-slate-800'
+                      : 'bg-slate-50/70 text-slate-700 hover:bg-slate-100 border border-slate-200'
                   }`}
                 >
                   <span>Show All Topics ({noteTopics.filter(t => t.courseId === selectedNoteCourseId).length})</span>
@@ -1496,8 +1496,8 @@ export function AdminDashboard() {
                           key={ch.id}
                           className={`p-3 rounded-xl border transition-all ${
                             isSelected
-                              ? 'bg-blue-950/50 border-blue-500/50 text-white'
-                              : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:border-slate-700'
+                              ? 'bg-blue-50 border-blue-200 text-slate-900'
+                              : 'bg-slate-50/50 border-slate-200 text-slate-700 hover:border-slate-300'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
@@ -1509,15 +1509,15 @@ export function AdminDashboard() {
                                 <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-extrabold text-[10px]">
                                   Ch {ch.chapterNumber}
                                 </span>
-                                <span className="text-[10px] text-slate-400">
+                                <span className="text-[10px] text-slate-500">
                                   {chapTopics.length} {chapTopics.length === 1 ? 'topic' : 'topics'}
                                 </span>
                               </div>
-                              <h5 className="font-bold text-xs text-white leading-tight">
+                              <h5 className="font-bold text-xs text-slate-900 leading-tight">
                                 {ch.title}
                               </h5>
                               {ch.hindiTitle && (
-                                <p className="text-[11px] text-slate-400 mt-0.5">
+                                <p className="text-[11px] text-slate-500 mt-0.5">
                                   {ch.hindiTitle}
                                 </p>
                               )}
@@ -1534,7 +1534,7 @@ export function AdminDashboard() {
                               <button
                                 onClick={() => handleOpenEditChapter(ch)}
                                 title="Edit chapter info"
-                                className="p-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700"
+                                className="p-1 rounded bg-slate-100 text-slate-700 hover:bg-slate-200"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </button>
@@ -1561,16 +1561,16 @@ export function AdminDashboard() {
               </div>
 
               {/* Right Column: Topics / Note Articles (8 cols) */}
-              <div className="lg:col-span-8 bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
+              <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
                 
                 {/* Search & Filter Header */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                   <div>
-                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                       <FileText className="w-4 h-4 text-emerald-400" />
                       <span>Note Articles & Blog Topics</span>
                     </h4>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px] text-slate-500">
                       {selectedNoteChapterId === 'all' 
                         ? 'Showing all topics in course'
                         : `Showing topics in ${noteChapters.find(c => c.id === selectedNoteChapterId)?.title || 'Chapter'}`}
@@ -1579,13 +1579,13 @@ export function AdminDashboard() {
 
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1 sm:w-64">
-                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
                         placeholder="Search notes in course..."
                         value={noteTopicSearch}
                         onChange={(e) => setNoteTopicSearch(e.target.value)}
-                        className="w-full pl-9 pr-3 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-blue-500"
+                        className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -1611,7 +1611,7 @@ export function AdminDashboard() {
                       return (
                         <div
                           key={topic.id}
-                          className="p-4 bg-slate-950/70 rounded-2xl border border-slate-800/80 hover:border-slate-700 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
+                          className="p-4 bg-slate-50/70 rounded-2xl border border-slate-200/80 hover:border-slate-300 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
                         >
                           <div className="space-y-1.5 flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
@@ -1621,23 +1621,23 @@ export function AdminDashboard() {
                                 </span>
                               )}
                               {topic.readTime && (
-                                <span className="text-[10px] text-slate-400">
+                                <span className="text-[10px] text-slate-500">
                                   ⏱ {topic.readTime}
                                 </span>
                               )}
                               {topic.views !== undefined && (
-                                <span className="text-[10px] text-slate-400">
+                                <span className="text-[10px] text-slate-500">
                                   👁 {topic.views} views
                                 </span>
                               )}
                             </div>
 
-                            <h5 className="font-bold text-sm text-white group-hover:text-amber-300 transition-colors">
+                            <h5 className="font-bold text-sm text-slate-900 group-hover:text-amber-600 transition-colors">
                               {topic.title}
                             </h5>
 
                             {topic.hindiTitle && (
-                              <p className="text-xs text-slate-400">
+                              <p className="text-xs text-slate-500">
                                 {topic.hindiTitle}
                               </p>
                             )}
@@ -1645,7 +1645,7 @@ export function AdminDashboard() {
                             {topic.tags && topic.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 pt-1">
                                 {topic.tags.map((tag, idx) => (
-                                  <span key={idx} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
+                                  <span key={idx} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
                                     #{tag}
                                   </span>
                                 ))}
@@ -1658,7 +1658,7 @@ export function AdminDashboard() {
                               href={`/notes/${topic.courseId}/${topic.chapterId}/${topic.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-300 text-xs font-semibold flex items-center gap-1 transition-colors"
+                              className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-blue-300 text-xs font-semibold flex items-center gap-1 transition-colors"
                             >
                               <Eye className="w-3.5 h-3.5" />
                               <span className="hidden sm:inline">View</span>
@@ -1684,9 +1684,9 @@ export function AdminDashboard() {
                     })}
 
                   {noteTopics.filter(t => t.courseId === selectedNoteCourseId && (selectedNoteChapterId === 'all' || t.chapterId === selectedNoteChapterId)).length === 0 && (
-                    <div className="text-center py-12 bg-slate-950/40 rounded-2xl border border-slate-800/50 space-y-3">
+                    <div className="text-center py-12 bg-slate-50/40 rounded-2xl border border-slate-200/50 space-y-3">
                       <BookOpen className="w-8 h-8 text-slate-600 mx-auto" />
-                      <p className="text-xs text-slate-400 font-medium">
+                      <p className="text-xs text-slate-500 font-medium">
                         No note articles created for this section yet.
                       </p>
                       <button
@@ -1708,33 +1708,33 @@ export function AdminDashboard() {
         {activeTab === 'overview' && (
           <div className="pt-6 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-2">
-                <span className="text-xs text-slate-400">Total PDF Notes</span>
-                <span className="block text-3xl font-extrabold text-white">{resources.length}</span>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
+                <span className="text-xs text-slate-500">Total PDF Notes</span>
+                <span className="block text-3xl font-extrabold text-slate-900">{resources.length}</span>
                 <span className="text-[11px] text-blue-400">Published across 5 categories</span>
               </div>
-              <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-2">
-                <span className="text-xs text-slate-400">Online MCQ Tests</span>
-                <span className="block text-3xl font-extrabold text-white">{quizzes.length}</span>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
+                <span className="text-xs text-slate-500">Online MCQ Tests</span>
+                <span className="block text-3xl font-extrabold text-slate-900">{quizzes.length}</span>
                 <span className="text-[11px] text-emerald-400">O Level M1-M4 & CCC</span>
               </div>
-              <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-2">
-                <span className="text-xs text-slate-400">Total Quiz Questions</span>
-                <span className="block text-3xl font-extrabold text-white">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
+                <span className="text-xs text-slate-500">Total Quiz Questions</span>
+                <span className="block text-3xl font-extrabold text-slate-900">
                   {quizzes.reduce((sum, q) => sum + (q.questions?.length || 0), 0)}
                 </span>
                 <span className="text-[11px] text-purple-400">With Hindi & English explanations</span>
               </div>
-              <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-2">
-                <span className="text-xs text-slate-400">Database Engine</span>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
+                <span className="text-xs text-slate-500">Database Engine</span>
                 <span className="block text-xl font-bold text-amber-400">Firebase Firestore</span>
-                <span className="text-[11px] text-slate-400">Serverless • Real-time Sync</span>
+                <span className="text-[11px] text-slate-500">Serverless • Real-time Sync</span>
               </div>
             </div>
 
-            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
-              <h4 className="text-base font-bold text-white">Firebase Connection Status</h4>
-              <div className="space-y-2 text-xs text-slate-300">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
+              <h4 className="text-base font-bold text-slate-900">Firebase Connection Status</h4>
+              <div className="space-y-2 text-xs text-slate-700">
                 <p>• <strong>Project:</strong> diesel-aloe-f8gvj</p>
                 <p>• <strong>Firestore Collections:</strong> <code>resources</code>, <code>mcq_tests</code>, <code>test_results</code></p>
                 <p>• <strong>Logged-in Educator:</strong> {currentUser?.email || 'Skilldotpy Master Admin'}</p>
@@ -1746,17 +1746,17 @@ export function AdminDashboard() {
         {/* ================= TAB 4: DIRECT PDF LINK CONVERTER ================= */}
         {activeTab === 'tools' && (
           <div className="pt-6 space-y-6 max-w-3xl">
-            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
               <div>
-                <h4 className="text-lg font-bold text-white">Direct PDF Link Generator</h4>
-                <p className="text-xs text-slate-400 mt-1">
+                <h4 className="text-lg font-bold text-slate-900">Direct PDF Link Generator</h4>
+                <p className="text-xs text-slate-500 mt-1">
                   Paste any Google Drive sharing link, Dropbox link, or raw PDF link. This tool automatically converts it into a direct embedded preview URL so students can view the PDF directly on your website without redirection!
                 </p>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Paste Google Drive / Cloud Link
                   </label>
                   <input
@@ -1764,7 +1764,7 @@ export function AdminDashboard() {
                     value={rawDriveUrl}
                     onChange={(e) => setRawDriveUrl(e.target.value)}
                     placeholder="https://drive.google.com/file/d/1a2b3c4d5e/view?usp=sharing"
-                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -1777,9 +1777,9 @@ export function AdminDashboard() {
                 </button>
 
                 {convertedUrl && (
-                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                     <span className="text-xs text-emerald-400 font-bold block">Converted Direct URL:</span>
-                    <code className="text-xs text-slate-300 font-mono break-all block bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+                    <code className="text-xs text-slate-700 font-mono break-all block bg-white p-2.5 rounded-lg border border-slate-200">
                       {convertedUrl}
                     </code>
                     <div className="flex gap-2 pt-2">
@@ -1788,7 +1788,7 @@ export function AdminDashboard() {
                           navigator.clipboard.writeText(convertedUrl);
                           showNotification('success', 'URL copied to clipboard!');
                         }}
-                        className="bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
                       >
                         Copy URL
                       </button>
@@ -1796,7 +1796,7 @@ export function AdminDashboard() {
                         href={convertedUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1"
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         <span>Test Preview</span>
@@ -1813,13 +1813,13 @@ export function AdminDashboard() {
 
       {/* ================= MODAL 1: CREATE / EDIT RESOURCE ================= */}
       {isResourceModalOpen && editingResource && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-base font-bold text-slate-900">
                 {editingResource.id ? 'Edit Study Material / PDF Card' : 'Add New Study Material / PDF Card'}
               </h3>
-              <button onClick={() => setIsResourceModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsResourceModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1828,7 +1828,7 @@ export function AdminDashboard() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Category</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Category</label>
                   <select
                     value={editingResource.category}
                     onChange={(e) => {
@@ -1840,7 +1840,7 @@ export function AdminDashboard() {
                         categoryLabel: catInfo ? catInfo.title : cat
                       });
                     }}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="o-level">O level (M1,M2,M3,M4)</option>
                     <option value="ccc">CCC (Grade S Prep)</option>
@@ -1850,59 +1850,59 @@ export function AdminDashboard() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Module / Paper Code (Optional)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Module / Paper Code (Optional)</label>
                   <input
                     type="text"
                     value={editingResource.moduleCode || ''}
                     onChange={(e) => setEditingResource({ ...editingResource, moduleCode: e.target.value })}
                     placeholder="e.g. M1-R5.1, M3-R5 (Python), CCC"
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Title (English)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Title (English)</label>
                 <input
                   type="text"
                   required
                   value={editingResource.title || ''}
                   onChange={(e) => setEditingResource({ ...editingResource, title: e.target.value })}
                   placeholder="e.g. NIELIT O Level M3-R5 Python Full Handwritten Notes PDF"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Hindi Title (Optional)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Hindi Title (Optional)</label>
                 <input
                   type="text"
                   value={editingResource.hindiTitle || ''}
                   onChange={(e) => setEditingResource({ ...editingResource, hindiTitle: e.target.value })}
                   placeholder="e.g. ओ लेवल M3-R5 पायथन कम्पलीट नोट्स पीडीएफ"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Description</label>
+                <label className="block font-semibold text-slate-700 mb-1">Description</label>
                 <textarea
                   rows={3}
                   required
                   value={editingResource.description || ''}
                   onChange={(e) => setEditingResource({ ...editingResource, description: e.target.value })}
                   placeholder="Detailed description of what is included inside this note or paper..."
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">File Type</label>
+                  <label className="block font-semibold text-slate-700 mb-1">File Type</label>
                   <select
                     value={editingResource.fileType}
                     onChange={(e) => setEditingResource({ ...editingResource, fileType: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="PDF">PDF Document</option>
                     <option value="SYLLABUS">Official Syllabus</option>
@@ -1912,34 +1912,34 @@ export function AdminDashboard() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">File Size</label>
+                  <label className="block font-semibold text-slate-700 mb-1">File Size</label>
                   <input
                     type="text"
                     value={editingResource.fileSize || ''}
                     onChange={(e) => setEditingResource({ ...editingResource, fileSize: e.target.value })}
                     placeholder="e.g. 2.4 MB"
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Initial Downloads</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Initial Downloads</label>
                   <input
                     type="text"
                     value={editingResource.downloadCount || ''}
                     onChange={(e) => setEditingResource({ ...editingResource, downloadCount: e.target.value })}
                     placeholder="e.g. 15,200+"
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               {/* Free vs Paid Monetization Controls */}
-              <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-4">
+              <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-200 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-white text-xs block">Pricing & Access Model</span>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="font-bold text-slate-900 text-xs block">Pricing & Access Model</span>
+                    <span className="text-[11px] text-slate-500">
                       Set this PDF notes card as 100% free or require payment to unlock.
                     </span>
                   </div>
@@ -1949,8 +1949,8 @@ export function AdminDashboard() {
                       onClick={() => setEditingResource({ ...editingResource, isPaid: false })}
                       className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                         !editingResource.isPaid 
-                          ? 'bg-emerald-500 text-slate-950 shadow-md font-black' 
-                          : 'bg-slate-800 text-slate-400 hover:text-white'
+                          ? 'bg-emerald-500 text-slate-100 shadow-md font-black' 
+                          : 'bg-slate-100 text-slate-500 hover:text-slate-900'
                       }`}
                     >
                       Free Note
@@ -1960,8 +1960,8 @@ export function AdminDashboard() {
                       onClick={() => setEditingResource({ ...editingResource, isPaid: true })}
                       className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                         editingResource.isPaid 
-                          ? 'bg-amber-500 text-slate-950 shadow-md font-black' 
-                          : 'bg-slate-800 text-slate-400 hover:text-white'
+                          ? 'bg-amber-500 text-slate-100 shadow-md font-black' 
+                          : 'bg-slate-100 text-slate-500 hover:text-slate-900'
                       }`}
                     >
                       Paid / Premium
@@ -1971,7 +1971,7 @@ export function AdminDashboard() {
 
                 {/* Paid Options & Pricing */}
                 {editingResource.isPaid ? (
-                  <div className="pt-3 border-t border-slate-800 space-y-4">
+                  <div className="pt-3 border-t border-slate-200 space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
                         <label className="block font-semibold text-amber-300 mb-1 text-xs">Selling Price (₹)</label>
@@ -1981,31 +1981,31 @@ export function AdminDashboard() {
                           value={editingResource.price ?? 49}
                           onChange={(e) => setEditingResource({ ...editingResource, price: Number(e.target.value) })}
                           placeholder="49"
-                          className="w-full px-3 py-2 bg-slate-900 border border-amber-500/40 rounded-xl text-white font-bold focus:outline-none focus:border-amber-400 text-xs"
+                          className="w-full px-3 py-2 bg-white border border-amber-500/40 rounded-xl text-slate-900 font-bold focus:outline-none focus:border-amber-400 text-xs"
                         />
                       </div>
 
                       <div>
-                        <label className="block font-semibold text-slate-300 mb-1 text-xs">Original / MRP Price (₹)</label>
+                        <label className="block font-semibold text-slate-700 mb-1 text-xs">Original / MRP Price (₹)</label>
                         <input
                           type="number"
                           min="1"
                           value={editingResource.originalPrice ?? 149}
                           onChange={(e) => setEditingResource({ ...editingResource, originalPrice: Number(e.target.value) })}
                           placeholder="149"
-                          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 text-xs"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500 text-xs"
                         />
                       </div>
 
                       <div>
-                        <label className="block font-semibold text-slate-300 mb-1 text-xs">Total Document Pages</label>
+                        <label className="block font-semibold text-slate-700 mb-1 text-xs">Total Document Pages</label>
                         <input
                           type="number"
                           min="1"
                           value={editingResource.totalPages ?? 45}
                           onChange={(e) => setEditingResource({ ...editingResource, totalPages: Number(e.target.value) })}
                           placeholder="45"
-                          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 text-xs"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500 text-xs"
                         />
                       </div>
                     </div>
@@ -2015,7 +2015,7 @@ export function AdminDashboard() {
                     </div>
                   </div>
                 ) : (
-                  <div className="pt-2 border-t border-slate-800">
+                  <div className="pt-2 border-t border-slate-200">
                     <p className="text-[11px] text-emerald-400 font-medium">
                       ✓ 100% Free Note: Students will directly view & download the actual PDF in a new window. No preview upload is required.
                     </p>
@@ -2026,7 +2026,7 @@ export function AdminDashboard() {
               {/* PDF URL Upload Options */}
               {editingResource.isPaid ? (
                 /* PAID NOTES: TWO OPTIONS */
-                <div className="space-y-4 p-4 bg-slate-950/60 rounded-2xl border border-slate-800">
+                <div className="space-y-4 p-4 bg-slate-50/60 rounded-2xl border border-slate-200">
                   {/* OPTION 1: PREVIEW PDF */}
                   <div>
                     <label className="block font-bold text-amber-300 text-xs mb-1 flex items-center justify-between">
@@ -2041,9 +2041,9 @@ export function AdminDashboard() {
                         previewPdfUrl: e.target.value 
                       })}
                       placeholder="https://drive.google.com/file/d/... or sample-preview.pdf"
-                      className="w-full px-3 py-2 bg-slate-900 border border-amber-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400 font-mono"
+                      className="w-full px-3 py-2 bg-white border border-amber-500/30 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-amber-400 font-mono"
                     />
-                    <p className="text-[10px] text-slate-400 mt-1">
+                    <p className="text-[10px] text-slate-500 mt-1">
                       Upload/paste the link for the sample PDF (e.g. first 2-3 sample pages). When students click "Preview Sample", this opens directly in a new window.
                     </p>
                   </div>
@@ -2063,9 +2063,9 @@ export function AdminDashboard() {
                         downloadUrl: e.target.value 
                       })}
                       placeholder="https://drive.google.com/file/d/... or full-complete-notes.pdf"
-                      className="w-full px-3 py-2 bg-slate-900 border border-emerald-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-400 font-mono"
+                      className="w-full px-3 py-2 bg-white border border-emerald-500/30 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-emerald-400 font-mono"
                     />
-                    <p className="text-[10px] text-slate-400 mt-1">
+                    <p className="text-[10px] text-slate-500 mt-1">
                       The complete master PDF. Kept locked and provided to students in a new window/download only after payment.
                     </p>
                   </div>
@@ -2073,7 +2073,7 @@ export function AdminDashboard() {
               ) : (
                 /* FREE NOTES: SINGLE ACTUAL PDF URL (NO PREVIEW UPLOAD) */
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1 text-xs">
+                  <label className="block font-semibold text-slate-700 mb-1 text-xs">
                     Actual Free Notes PDF URL (Google Drive / GitHub / Direct Link)
                   </label>
                   <input
@@ -2085,7 +2085,7 @@ export function AdminDashboard() {
                       downloadUrl: e.target.value 
                     })}
                     placeholder="https://drive.google.com/file/d/... or direct https://...pdf"
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-blue-500 font-mono"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-blue-500 font-mono"
                   />
                   <p className="text-[10px] text-slate-500 mt-1">
                     Paste Google Drive or direct link. Clicking "View PDF" or "Download" will open this complete PDF in a new window.
@@ -2094,7 +2094,7 @@ export function AdminDashboard() {
               )}
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Tags (Comma Separated)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Tags (Comma Separated)</label>
                 <input
                   type="text"
                   value={editingResource.tags?.join(', ') || ''}
@@ -2103,15 +2103,15 @@ export function AdminDashboard() {
                     tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) 
                   })}
                   placeholder="O Level, Python, M3-R5, Notes"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsResourceModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:text-slate-900 font-semibold"
                 >
                   Cancel
                 </button>
@@ -2131,20 +2131,20 @@ export function AdminDashboard() {
 
       {/* ================= MODAL 2: CREATE / EDIT QUIZ ================= */}
       {isQuizModalOpen && editingQuiz && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-base font-bold text-slate-900">
                 {editingQuiz.id ? 'Edit MCQ Test Series' : 'Create New Online MCQ Test'}
               </h3>
-              <button onClick={() => setIsQuizModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsQuizModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveQuiz} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Subject / Paper</label>
+                <label className="block font-semibold text-slate-700 mb-1">Subject / Paper</label>
                 <select
                   value={editingQuiz.module}
                   onChange={(e) => {
@@ -2164,7 +2164,7 @@ export function AdminDashboard() {
                       moduleLabel: labels[mod] || mod
                     });
                   }}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 >
                   <option value="m1">NIELIT O Level M1-R5 (IT Tools)</option>
                   <option value="m2">NIELIT O Level M2-R5 (Web Design)</option>
@@ -2177,77 +2177,77 @@ export function AdminDashboard() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Test Title</label>
+                <label className="block font-semibold text-slate-700 mb-1">Test Title</label>
                 <input
                   type="text"
                   required
                   value={editingQuiz.title || ''}
                   onChange={(e) => setEditingQuiz({ ...editingQuiz, title: e.target.value })}
                   placeholder="e.g. NIELIT O Level M3-R5 Python Full 100-Question Mock Test"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Hindi Title (Optional)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Hindi Title (Optional)</label>
                 <input
                   type="text"
                   value={editingQuiz.hindiTitle || ''}
                   onChange={(e) => setEditingQuiz({ ...editingQuiz, hindiTitle: e.target.value })}
                   placeholder="e.g. ओ लेवल M3-R5 पायथन 100 प्रश्नों का ऑनलाइन टेस्ट"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Instructions / Description</label>
+                <label className="block font-semibold text-slate-700 mb-1">Instructions / Description</label>
                 <textarea
                   rows={3}
                   value={editingQuiz.description || ''}
                   onChange={(e) => setEditingQuiz({ ...editingQuiz, description: e.target.value })}
                   placeholder="Instructions for students before starting test..."
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Duration (Mins)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Duration (Mins)</label>
                   <input
                     type="number"
                     min={5}
                     value={editingQuiz.durationMinutes || 45}
                     onChange={(e) => setEditingQuiz({ ...editingQuiz, durationMinutes: parseInt(e.target.value) || 45 })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Total Marks</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Total Marks</label>
                   <input
                     type="number"
                     value={editingQuiz.totalMarks || 50}
                     onChange={(e) => setEditingQuiz({ ...editingQuiz, totalMarks: parseInt(e.target.value) || 50 })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Passing Marks</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Passing Marks</label>
                   <input
                     type="number"
                     value={editingQuiz.passingMarks || 25}
                     onChange={(e) => setEditingQuiz({ ...editingQuiz, passingMarks: parseInt(e.target.value) || 25 })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsQuizModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:text-slate-900 font-semibold"
                 >
                   Cancel
                 </button>
@@ -2267,13 +2267,13 @@ export function AdminDashboard() {
 
       {/* ================= MODAL: ADD / EDIT PRACTICAL SET ================= */}
       {isPracticalModalOpen && editingPractical && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-base font-bold text-slate-900">
                 {editingPractical.id?.startsWith('prac-') ? 'Create Practical Test' : 'Edit Practical Test'}
               </h3>
-              <button onClick={() => setIsPracticalModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsPracticalModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -2281,11 +2281,11 @@ export function AdminDashboard() {
             <form onSubmit={handleSavePractical} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Module</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Module</label>
                   <select
                     value={editingPractical.module}
                     onChange={(e) => setEditingPractical({ ...editingPractical, module: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="M1-R5">M1-R5 (IT Tools)</option>
                     <option value="M2-R5">M2-R5 (Web Design)</option>
@@ -2294,43 +2294,43 @@ export function AdminDashboard() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Paper Code</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Paper Code</label>
                   <input
                     type="text"
                     required
                     value={editingPractical.paperCode || ''}
                     onChange={(e) => setEditingPractical({ ...editingPractical, paperCode: e.target.value })}
                     placeholder="e.g. PR3 B1"
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Test Title</label>
+                <label className="block font-semibold text-slate-700 mb-1">Test Title</label>
                 <input
                   type="text"
                   required
                   value={editingPractical.title || ''}
                   onChange={(e) => setEditingPractical({ ...editingPractical, title: e.target.value })}
                   placeholder="e.g. Python Practical Mock 1"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Description</label>
+                <label className="block font-semibold text-slate-700 mb-1">Description</label>
                 <textarea
                   rows={2}
                   value={editingPractical.description || ''}
                   onChange={(e) => setEditingPractical({ ...editingPractical, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
-              <div className="pt-4 border-t border-slate-800">
+              <div className="pt-4 border-t border-slate-200">
                 <div className="flex items-center justify-between mb-3">
-                  <label className="font-bold text-white text-sm">Coding Tasks (Questions)</label>
+                  <label className="font-bold text-slate-900 text-sm">Coding Tasks (Questions)</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -2348,7 +2348,7 @@ export function AdminDashboard() {
                         questions: [...(editingPractical.questions || []), newQ]
                       });
                     }}
-                    className="text-[10px] bg-slate-800 hover:bg-slate-700 text-white px-2 py-1 rounded flex items-center gap-1"
+                    className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-900 px-2 py-1 rounded flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" /> Add Task
                   </button>
@@ -2356,7 +2356,7 @@ export function AdminDashboard() {
                 
                 <div className="space-y-4">
                   {(editingPractical.questions || []).map((q, idx) => (
-                    <div key={q.id || idx} className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-3 relative">
+                    <div key={q.id || idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3 relative">
                       <button
                         type="button"
                         onClick={() => {
@@ -2371,7 +2371,7 @@ export function AdminDashboard() {
                       
                       <div className="grid grid-cols-3 gap-3 pr-8">
                         <div className="col-span-2">
-                          <label className="block text-slate-400 text-[10px] mb-1">Task Title</label>
+                          <label className="block text-slate-500 text-[10px] mb-1">Task Title</label>
                           <input
                             type="text"
                             required
@@ -2382,11 +2382,11 @@ export function AdminDashboard() {
                               setEditingPractical({ ...editingPractical, questions: newQs });
                             }}
                             placeholder="e.g. Write a Python program..."
-                            className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white text-xs focus:border-blue-500"
+                            className="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs focus:border-blue-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-400 text-[10px] mb-1">Language</label>
+                          <label className="block text-slate-500 text-[10px] mb-1">Language</label>
                           <select
                             value={q.language}
                             onChange={(e) => {
@@ -2394,7 +2394,7 @@ export function AdminDashboard() {
                               newQs[idx].language = e.target.value as any;
                               setEditingPractical({ ...editingPractical, questions: newQs });
                             }}
-                            className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white text-xs focus:border-blue-500"
+                            className="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs focus:border-blue-500"
                           >
                             <option value="python">Python</option>
                             <option value="html">HTML/JS</option>
@@ -2404,7 +2404,7 @@ export function AdminDashboard() {
                       </div>
                       
                       <div>
-                        <label className="block text-slate-400 text-[10px] mb-1">Full Description / Logic</label>
+                        <label className="block text-slate-500 text-[10px] mb-1">Full Description / Logic</label>
                         <textarea
                           rows={2}
                           value={q.description}
@@ -2413,12 +2413,12 @@ export function AdminDashboard() {
                             newQs[idx].description = e.target.value;
                             setEditingPractical({ ...editingPractical, questions: newQs });
                           }}
-                          className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white text-xs focus:border-blue-500"
+                          className="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs focus:border-blue-500"
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-slate-400 text-[10px] mb-1">Starter Code (Main File)</label>
+                        <label className="block text-slate-500 text-[10px] mb-1">Starter Code (Main File)</label>
                         <textarea
                           rows={3}
                           value={
@@ -2431,7 +2431,7 @@ export function AdminDashboard() {
                             setEditingPractical({ ...editingPractical, questions: newQs });
                           }}
                           placeholder="# Write your code here..."
-                          className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white font-mono text-[10px] focus:border-blue-500"
+                          className="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-slate-900 font-mono text-[10px] focus:border-blue-500"
                         />
                       </div>
                     </div>
@@ -2439,9 +2439,9 @@ export function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-800">
+              <div className="pt-4 border-t border-slate-200">
                 <div className="flex items-center justify-between mb-3">
-                  <label className="font-bold text-white text-sm">Viva Voce Questions</label>
+                  <label className="font-bold text-slate-900 text-sm">Viva Voce Questions</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -2456,7 +2456,7 @@ export function AdminDashboard() {
                         vivaQuestions: [...(editingPractical.vivaQuestions || []), newV]
                       });
                     }}
-                    className="text-[10px] bg-slate-800 hover:bg-slate-700 text-white px-2 py-1 rounded flex items-center gap-1"
+                    className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-900 px-2 py-1 rounded flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" /> Add Viva
                   </button>
@@ -2464,7 +2464,7 @@ export function AdminDashboard() {
 
                 <div className="space-y-4">
                   {(editingPractical.vivaQuestions || []).map((vq, idx) => (
-                    <div key={vq.id || idx} className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-3 relative">
+                    <div key={vq.id || idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3 relative">
                       <button
                         type="button"
                         onClick={() => {
@@ -2478,7 +2478,7 @@ export function AdminDashboard() {
                       </button>
 
                       <div className="pr-8">
-                        <label className="block text-slate-400 text-[10px] mb-1">Question</label>
+                        <label className="block text-slate-500 text-[10px] mb-1">Question</label>
                         <input
                           type="text"
                           required
@@ -2488,12 +2488,12 @@ export function AdminDashboard() {
                             newVs[idx].question = e.target.value;
                             setEditingPractical({ ...editingPractical, vivaQuestions: newVs });
                           }}
-                          className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white text-xs focus:border-blue-500"
+                          className="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs focus:border-blue-500"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-slate-400 text-[10px] mb-1">Model Answer / Key Points</label>
+                        <label className="block text-slate-500 text-[10px] mb-1">Model Answer / Key Points</label>
                         <textarea
                           rows={2}
                           value={vq.modelAnswer}
@@ -2502,7 +2502,7 @@ export function AdminDashboard() {
                             newVs[idx].modelAnswer = e.target.value;
                             setEditingPractical({ ...editingPractical, vivaQuestions: newVs });
                           }}
-                          className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-white text-xs focus:border-blue-500"
+                          className="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs focus:border-blue-500"
                         />
                       </div>
                     </div>
@@ -2510,11 +2510,11 @@ export function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsPracticalModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:text-slate-900 font-semibold"
                 >
                   Cancel
                 </button>
@@ -2533,47 +2533,47 @@ export function AdminDashboard() {
 
       {/* ================= MODAL 3: ADD / EDIT QUESTION ================= */}
       {isQuestionModalOpen && editingQuestion && activeQuizForQuestions && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
                 <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">
                   {activeQuizForQuestions.title}
                 </span>
-                <h3 className="text-base font-bold text-white">Add / Edit Question</h3>
+                <h3 className="text-base font-bold text-slate-900">Add / Edit Question</h3>
               </div>
-              <button onClick={() => setIsQuestionModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsQuestionModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveQuestion} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Question (English)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Question (English)</label>
                 <textarea
                   rows={2}
                   required
                   value={editingQuestion.question || ''}
                   onChange={(e) => setEditingQuestion({ ...editingQuestion, question: e.target.value })}
                   placeholder="e.g. Which keyword is used to create a function in Python?"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Question (Hindi - Optional)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Question (Hindi - Optional)</label>
                 <textarea
                   rows={2}
                   value={editingQuestion.hindiQuestion || ''}
                   onChange={(e) => setEditingQuestion({ ...editingQuestion, hindiQuestion: e.target.value })}
                   placeholder="e.g. पायथन में फंक्शन बनाने के लिए किस कीवर्ड का उपयोग किया जाता है?"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               {/* 4 Options */}
               <div className="space-y-3 pt-2">
-                <label className="block font-semibold text-slate-300">
+                <label className="block font-semibold text-slate-700">
                   4 Multiple Choice Options (Select radio button for Correct Answer)
                 </label>
 
@@ -2586,7 +2586,7 @@ export function AdminDashboard() {
                       onChange={() => setEditingQuestion({ ...editingQuestion, correctIndex: optIdx })}
                       className="w-4 h-4 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
                     />
-                    <span className="font-bold font-mono text-slate-400 w-4">
+                    <span className="font-bold font-mono text-slate-500 w-4">
                       {String.fromCharCode(65 + optIdx)}.
                     </span>
                     <input
@@ -2599,10 +2599,10 @@ export function AdminDashboard() {
                         setEditingQuestion({ ...editingQuestion, options: newOpts });
                       }}
                       placeholder={`Option ${String.fromCharCode(65 + optIdx)}`}
-                      className={`flex-1 px-3 py-2 bg-slate-950 border rounded-xl text-white focus:outline-none ${
+                      className={`flex-1 px-3 py-2 bg-slate-50 border rounded-xl text-slate-900 focus:outline-none ${
                         editingQuestion.correctIndex === optIdx 
                           ? 'border-emerald-500 ring-1 ring-emerald-500' 
-                          : 'border-slate-700 focus:border-blue-500'
+                          : 'border-slate-300 focus:border-blue-500'
                       }`}
                     />
                   </div>
@@ -2610,21 +2610,21 @@ export function AdminDashboard() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Answer Explanation & Concept (Shown after test)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Answer Explanation & Concept (Shown after test)</label>
                 <textarea
                   rows={2}
                   value={editingQuestion.explanation || ''}
                   onChange={(e) => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
                   placeholder="e.g. 'def' keyword is used to define functions in Python."
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsQuestionModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:text-slate-900 font-semibold"
                 >
                   Cancel
                 </button>
@@ -2657,14 +2657,14 @@ export function AdminDashboard() {
 
       {/* ================= MODAL 5: ADD / EDIT CHAPTER ================= */}
       {isChapterModalOpen && editingChapter && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-lg space-y-4 shadow-2xl animate-in fade-in">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-lg space-y-4 shadow-2xl animate-in fade-in">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
                   <Layers className="w-4 h-4" />
                 </span>
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   {editingChapter.id ? 'Edit Chapter' : 'Add New Chapter to Module'}
                 </h3>
               </div>
@@ -2673,7 +2673,7 @@ export function AdminDashboard() {
                   setIsChapterModalOpen(false);
                   setEditingChapter(null);
                 }} 
-                className="text-slate-400 hover:text-white"
+                className="text-slate-500 hover:text-slate-900"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2681,11 +2681,11 @@ export function AdminDashboard() {
 
             <form onSubmit={handleSaveChapter} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Target Course / Paper</label>
+                <label className="block font-semibold text-slate-700 mb-1">Target Course / Paper</label>
                 <select
                   value={editingChapter.courseId || selectedNoteCourseId}
                   onChange={(e) => setEditingChapter({ ...editingChapter, courseId: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 >
                   <option value="m1-r5">M1-R5.1: IT Tools & Network Basics</option>
                   <option value="m2-r5">M2-R5.1: Web Design & Publishing</option>
@@ -2697,70 +2697,70 @@ export function AdminDashboard() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Chapter Number</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Chapter Number</label>
                   <input
                     type="number"
                     min={1}
                     required
                     value={editingChapter.chapterNumber || 1}
                     onChange={(e) => setEditingChapter({ ...editingChapter, chapterNumber: parseInt(e.target.value) || 1, order: parseInt(e.target.value) || 1 })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Display Order</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Display Order</label>
                   <input
                     type="number"
                     value={editingChapter.order || editingChapter.chapterNumber || 1}
                     onChange={(e) => setEditingChapter({ ...editingChapter, order: parseInt(e.target.value) || 1 })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Chapter Title (English)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Chapter Title (English)</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Introduction to Computer & LibreOffice"
                   value={editingChapter.title || ''}
                   onChange={(e) => setEditingChapter({ ...editingChapter, title: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Hindi Title (Optional)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Hindi Title (Optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. कंप्यूटर का परिचय एवं अनुप्रयोग"
                   value={editingChapter.hindiTitle || ''}
                   onChange={(e) => setEditingChapter({ ...editingChapter, hindiTitle: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Short Summary / Syllabus Overview</label>
+                <label className="block font-semibold text-slate-700 mb-1">Short Summary / Syllabus Overview</label>
                 <textarea
                   rows={2}
                   placeholder="Brief overview of topics covered in this chapter..."
                   value={editingChapter.description || ''}
                   onChange={(e) => setEditingChapter({ ...editingChapter, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => {
                     setIsChapterModalOpen(false);
                     setEditingChapter(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:text-slate-900 font-semibold"
                 >
                   Cancel
                 </button>

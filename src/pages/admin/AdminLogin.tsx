@@ -50,7 +50,7 @@ export function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       <SEO title="Admin Portal Login - Skilldotpy" description="Secure educator login for managing syllabus notes and test series." noIndex />
 
       {/* Background decorative glow */}
@@ -58,15 +58,15 @@ export function AdminLogin() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2">
         <div className="flex justify-center mb-2">
-          <div className="p-3 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md shadow-xl">
+          <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-xl">
             <BrandLogo size="lg" />
           </div>
         </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           <span>Restricted Admin Portal</span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Educator Sign In
         </h2>
         <p className="text-xs sm:text-sm text-slate-400">
@@ -75,7 +75,7 @@ export function AdminLogin() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
-        <div className="bg-slate-900 border border-slate-800 py-8 px-6 shadow-2xl rounded-3xl sm:px-10">
+        <div className="bg-white border border-slate-200 py-8 px-6 shadow-2xl rounded-3xl sm:px-10">
           
           {error && (
             <div className="mb-5 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">
@@ -86,7 +86,7 @@ export function AdminLogin() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Admin Email Address
               </label>
               <div className="relative">
@@ -105,7 +105,7 @@ export function AdminLogin() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -140,14 +140,14 @@ export function AdminLogin() {
           </form>
 
           {/* Security notice */}
-          <div className="mt-6 pt-5 border-t border-slate-800/80 text-center space-y-3">
+          <div className="mt-6 pt-5 border-t border-slate-200 text-center space-y-3">
             <p className="text-[11px] text-slate-500 leading-relaxed">
               🔒 Public account creation is disabled. Only user accounts created by the administrator directly inside the Firebase Console can access this portal.
             </p>
             <div>
               <a
                 href="/"
-                className="text-xs text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1"
+                className="text-xs text-slate-500 hover:text-slate-900 transition-colors inline-flex items-center gap-1"
               >
                 ← Back to Main Website
               </a>

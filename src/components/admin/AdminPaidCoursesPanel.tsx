@@ -364,7 +364,7 @@ export function AdminPaidCoursesPanel() {
       )}
 
       {/* Top Banner & Quick Metrics */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+      <div className="bg-white border border-slate-200 rounded-3xl p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
@@ -378,7 +378,7 @@ export function AdminPaidCoursesPanel() {
             <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
               Course, Chapter & Video Lectures Manager
             </h2>
-            <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+            <p className="text-xs text-slate-500 mt-1 max-w-2xl">
               Add course videos (Unlisted YouTube links), attach PDF notes, create chapters, toggle course visibility, and manage enrolled students with automatic unlocking.
             </p>
           </div>
@@ -389,12 +389,12 @@ export function AdminPaidCoursesPanel() {
               onClick={handleToggleGlobalComingSoon}
               className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                 isGlobalComingSoon
-                  ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20 font-black'
-                  : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                  ? 'bg-amber-500 text-slate-100 border-amber-400 shadow-md shadow-amber-500/20 font-black'
+                  : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
               }`}
               title="Toggle Coming Soon mode for all courses (Useful when preparing batches before launch)"
             >
-              {isGlobalComingSoon ? <ToggleRight className="w-4 h-4 text-slate-950" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
+              {isGlobalComingSoon ? <ToggleRight className="w-4 h-4 text-slate-100" /> : <ToggleLeft className="w-4 h-4 text-slate-500" />}
               <span>{isGlobalComingSoon ? 'Coming Soon Mode: ON' : 'Coming Soon Mode: OFF'}</span>
             </button>
 
@@ -427,28 +427,28 @@ export function AdminPaidCoursesPanel() {
         </div>
 
         {/* Quick Analytics Counters */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-800">
-          <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Courses</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-200">
+          <div className="p-3 bg-slate-50/60 rounded-xl border border-slate-200">
+            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Total Courses</span>
             <p className="text-lg font-black text-white mt-0.5">{courses.length}</p>
           </div>
-          <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Published Active</span>
+          <div className="p-3 bg-slate-50/60 rounded-xl border border-slate-200">
+            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Published Active</span>
             <p className="text-lg font-black text-emerald-400 mt-0.5">{courses.filter(c => c.isPublished).length}</p>
           </div>
-          <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Enrolled Students</span>
+          <div className="p-3 bg-slate-50/60 rounded-xl border border-slate-200">
+            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Enrolled Students</span>
             <p className="text-lg font-black text-blue-400 mt-0.5">{totalStudents}</p>
           </div>
-          <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Revenue</span>
+          <div className="p-3 bg-slate-50/60 rounded-xl border border-slate-200">
+            <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Total Revenue</span>
             <p className="text-lg font-black text-amber-400 mt-0.5">₹{totalRevenue.toLocaleString('en-IN')}</p>
           </div>
         </div>
       </div>
 
       {/* Tabs Switcher: Courses vs Chapters & Lectures vs Enrolled Students */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
         {[
           { id: 'courses', label: '1. Manage Courses', icon: Layers },
           { id: 'chapters-lessons', label: '2. Chapters, Videos & PDF Notes', icon: Video },
@@ -463,7 +463,7 @@ export function AdminPaidCoursesPanel() {
               className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
                 isActive
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                  : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
+                  : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -487,8 +487,8 @@ export function AdminPaidCoursesPanel() {
                   key={course.id}
                   className={`p-5 rounded-2xl border transition-all space-y-4 flex flex-col justify-between ${
                     course.isPublished
-                      ? 'bg-slate-900 border-slate-800 hover:border-slate-700'
-                      : 'bg-slate-950/60 border-rose-950/60 opacity-85'
+                      ? 'bg-white border-slate-200 hover:border-slate-300'
+                      : 'bg-slate-50/60 border-rose-950/60 opacity-85'
                   }`}
                 >
                   <div className="space-y-3">
@@ -503,7 +503,7 @@ export function AdminPaidCoursesPanel() {
                           className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border transition-colors cursor-pointer ${
                             course.isComingSoon
                               ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                              : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
+                              : 'bg-slate-100 text-slate-500 border-slate-300 hover:text-slate-800'
                           }`}
                           title="Toggle Coming Soon status for this specific course"
                         >
@@ -527,21 +527,21 @@ export function AdminPaidCoursesPanel() {
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-bold text-white leading-snug">
+                      <h3 className="text-sm font-bold text-slate-900 leading-snug">
                         {course.title}
                       </h3>
                       {course.hindiTitle && (
-                        <p className="text-xs text-slate-400 line-clamp-1 mt-0.5 font-medium">
+                        <p className="text-xs text-slate-500 line-clamp-1 mt-0.5 font-medium">
                           {course.hindiTitle}
                         </p>
                       )}
                     </div>
 
-                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                    <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
                       {course.overview}
                     </p>
 
-                    <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-200/80">
                       <div>
                         <span className="text-base font-black text-white">₹{course.price}</span>
                         {course.originalPrice > course.price && (
@@ -551,7 +551,7 @@ export function AdminPaidCoursesPanel() {
                         )}
                       </div>
 
-                      <div className="text-[10px] text-slate-400 font-mono space-x-2">
+                      <div className="text-[10px] text-slate-500 font-mono space-x-2">
                         <span>{chCount} Chs</span>
                         <span>•</span>
                         <span>{lesCount} Lectures</span>
@@ -561,7 +561,7 @@ export function AdminPaidCoursesPanel() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-800">
+                  <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-200">
                     <button
                       onClick={() => {
                         setSelectedCourseId(course.id);
@@ -578,7 +578,7 @@ export function AdminPaidCoursesPanel() {
                         href={`/courses/${course.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
                         title="Student View"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -588,7 +588,7 @@ export function AdminPaidCoursesPanel() {
                           setEditingCourse({ ...course });
                           setIsCourseModalOpen(true);
                         }}
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors"
                         title="Edit Course Info"
                       >
                         <Edit className="w-3.5 h-3.5" />
@@ -613,15 +613,15 @@ export function AdminPaidCoursesPanel() {
       {activeTab === 'chapters-lessons' && (
         <div className="space-y-6">
           {/* Course Selector Dropdown */}
-          <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-4 bg-white border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0">
                 Selected Course:
               </label>
               <select
                 value={selectedCourseId}
                 onChange={(e) => setSelectedCourseId(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-blue-500 max-w-md"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500 max-w-md"
               >
                 {courses.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -634,7 +634,7 @@ export function AdminPaidCoursesPanel() {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleOpenCreateChapter}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Chapter</span>
@@ -656,25 +656,25 @@ export function AdminPaidCoursesPanel() {
               const chLessons = courseLessons.filter(l => l.chapterId === ch.id || l.chapterNumber === ch.chapterNumber);
 
               return (
-                <div key={ch.id} className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                <div key={ch.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
                   {/* Chapter Header */}
-                  <div className="p-4 bg-slate-950/70 border-b border-slate-800 flex items-center justify-between gap-3">
+                  <div className="p-4 bg-slate-50/70 border-b border-slate-200 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
                       <span className="w-7 h-7 rounded-lg bg-blue-600 text-white font-black text-xs flex items-center justify-center">
                         {ch.chapterNumber}
                       </span>
                       <div>
-                        <h4 className="text-xs sm:text-sm font-bold text-white">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">
                           Chapter {ch.chapterNumber}: {ch.title}
                         </h4>
                         {ch.hindiTitle && (
-                          <p className="text-[11px] text-slate-400">{ch.hindiTitle}</p>
+                          <p className="text-[11px] text-slate-500">{ch.hindiTitle}</p>
                         )}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-bold">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-500 font-bold">
                         {chLessons.length} Lectures
                       </span>
                       <button
@@ -690,7 +690,7 @@ export function AdminPaidCoursesPanel() {
                           setEditingChapter({ ...ch });
                           setIsChapterModalOpen(true);
                         }}
-                        className="p-1 text-slate-400 hover:text-white"
+                        className="p-1 text-slate-500 hover:text-slate-900"
                         title="Edit Chapter Title"
                       >
                         <Edit className="w-3.5 h-3.5" />
@@ -710,16 +710,16 @@ export function AdminPaidCoursesPanel() {
                     {chLessons.map((les, idx) => (
                       <div
                         key={les.id || idx}
-                        className="p-3 bg-slate-950 rounded-xl border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-slate-700 transition-all"
+                        className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-slate-300 transition-all"
                       >
                         <div className="flex items-start gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 mt-0.5 text-blue-400">
+                          <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 mt-0.5 text-blue-400">
                             <Video className="w-4 h-4" />
                           </div>
 
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-xs font-bold text-white">
+                              <span className="text-xs font-bold text-slate-900">
                                 {les.title}
                               </span>
                               {les.isFreePreview ? (
@@ -736,7 +736,7 @@ export function AdminPaidCoursesPanel() {
                             </div>
 
                             {les.hindiTitle && (
-                              <p className="text-[10px] text-slate-400">{les.hindiTitle}</p>
+                              <p className="text-[10px] text-slate-500">{les.hindiTitle}</p>
                             )}
 
                             <div className="flex items-center gap-3 text-[10px] text-slate-500 font-mono mt-1">
@@ -761,7 +761,7 @@ export function AdminPaidCoursesPanel() {
                             href={les.youtubeUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1"
+                            className="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 text-xs font-bold flex items-center gap-1"
                             title="Test YouTube Video Link"
                           >
                             <Play className="w-3 h-3" />
@@ -773,7 +773,7 @@ export function AdminPaidCoursesPanel() {
                               setEditingLesson({ ...les });
                               setIsLessonModalOpen(true);
                             }}
-                            className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white"
+                            className="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900"
                             title="Edit Lecture"
                           >
                             <Edit className="w-3.5 h-3.5" />
@@ -791,7 +791,7 @@ export function AdminPaidCoursesPanel() {
                     ))}
 
                     {chLessons.length === 0 && (
-                      <div className="text-center py-6 border border-dashed border-slate-800 rounded-xl">
+                      <div className="text-center py-6 border border-dashed border-slate-200 rounded-xl">
                         <p className="text-xs text-slate-500">No lectures added in this chapter yet.</p>
                         <button
                           onClick={() => handleOpenCreateLesson(ch.id, ch.chapterNumber)}
@@ -807,9 +807,9 @@ export function AdminPaidCoursesPanel() {
             })}
 
             {courseChapters.length === 0 && (
-              <div className="text-center py-12 bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
+              <div className="text-center py-12 bg-white border border-slate-200 rounded-2xl space-y-3">
                 <Layers className="w-10 h-10 text-slate-600 mx-auto" />
-                <p className="text-xs text-slate-400">No chapters found for this course.</p>
+                <p className="text-xs text-slate-500">No chapters found for this course.</p>
                 <button
                   onClick={handleOpenCreateChapter}
                   className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold"
@@ -824,11 +824,11 @@ export function AdminPaidCoursesPanel() {
 
       {/* ================= TAB 3: ENROLLED STUDENTS ================= */}
       {activeTab === 'enrollments' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-bold text-white">Enrolled Students Directory</h3>
-              <p className="text-xs text-slate-400">All students who purchased courses via Razorpay or granted access by Admin</p>
+              <h3 className="text-sm font-bold text-slate-900">Enrolled Students Directory</h3>
+              <p className="text-xs text-slate-500">All students who purchased courses via Razorpay or granted access by Admin</p>
             </div>
 
             <button
@@ -843,7 +843,7 @@ export function AdminPaidCoursesPanel() {
           {/* Enrollments Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
+              <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200">
                 <tr>
                   <th className="p-3">Student Name & Email</th>
                   <th className="p-3">Course Enrolled</th>
@@ -853,23 +853,23 @@ export function AdminPaidCoursesPanel() {
                   <th className="p-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-200/60">
                 {enrollments.map((en) => (
-                  <tr key={en.id} className="hover:bg-slate-950/40">
+                  <tr key={en.id} className="hover:bg-slate-50/40">
                     <td className="p-3">
-                      <span className="font-bold text-white block">{en.studentName || 'Student'}</span>
-                      <span className="text-[11px] text-slate-400 font-mono">{en.studentEmail}</span>
+                      <span className="font-bold text-slate-900 block">{en.studentName || 'Student'}</span>
+                      <span className="text-[11px] text-slate-500 font-mono">{en.studentEmail}</span>
                     </td>
-                    <td className="p-3 font-medium text-slate-200">
+                    <td className="p-3 font-medium text-slate-800">
                       {en.courseTitle}
                     </td>
                     <td className="p-3 font-mono font-bold text-emerald-400">
                       ₹{en.amountPaid}
                     </td>
-                    <td className="p-3 font-mono text-[10px] text-slate-400">
+                    <td className="p-3 font-mono text-[10px] text-slate-500">
                       {en.paymentId}
                     </td>
-                    <td className="p-3 text-[11px] text-slate-400">
+                    <td className="p-3 text-[11px] text-slate-500">
                       {new Date(en.enrolledAt).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
@@ -897,48 +897,48 @@ export function AdminPaidCoursesPanel() {
 
       {/* ================= MODAL 1: ADD / EDIT COURSE ================= */}
       {isCourseModalOpen && editingCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-base font-bold text-slate-900">
                 {editingCourse.id ? 'Edit Course Details' : 'Create New Paid Course'}
               </h3>
-              <button onClick={() => setIsCourseModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsCourseModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveCourse} className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Course Title (English) *</label>
+                <label className="block font-semibold text-slate-700 mb-1">Course Title (English) *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. NIELIT O Level Python (M3-R5.1) Complete Masterclass"
                   value={editingCourse.title || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, title: e.target.value })}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Course Title (Hindi - Optional)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Course Title (Hindi - Optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. ओ लेवल पायथन कम्पलीट वीडियो बैच + नोट्स"
                   value={editingCourse.hindiTitle || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, hindiTitle: e.target.value })}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Category *</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Category *</label>
                   <select
                     value={editingCourse.category || 'm3'}
                     onChange={(e) => setEditingCourse({ ...editingCourse, category: e.target.value as any })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-medium"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white font-medium"
                   >
                     <option value="m1">M1-R5 (IT Tools)</option>
                     <option value="m2">M2-R5 (Web Design)</option>
@@ -950,56 +950,56 @@ export function AdminPaidCoursesPanel() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Selling Price (₹) *</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Selling Price (₹) *</label>
                   <input
                     type="number"
                     required
                     value={editingCourse.price || 499}
                     onChange={(e) => setEditingCourse({ ...editingCourse, price: Number(e.target.value) })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white font-bold"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Original Price (₹)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Original Price (₹)</label>
                   <input
                     type="number"
                     value={editingCourse.originalPrice || 1499}
                     onChange={(e) => setEditingCourse({ ...editingCourse, originalPrice: Number(e.target.value) })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Overview / Description</label>
+                <label className="block font-semibold text-slate-700 mb-1">Overview / Description</label>
                 <textarea
                   rows={3}
                   value={editingCourse.overview || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, overview: e.target.value })}
                   placeholder="Detailed course description..."
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Thumbnail Image URL</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Thumbnail Image URL</label>
                   <input
                     type="url"
                     value={editingCourse.thumbnailUrl || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, thumbnailUrl: e.target.value })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Teacher / Mentor Name</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Teacher / Mentor Name</label>
                   <input
                     type="text"
                     value={editingCourse.teacherName || 'Er. Aditya Pathak'}
                     onChange={(e) => setEditingCourse({ ...editingCourse, teacherName: e.target.value })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                   />
                 </div>
               </div>
@@ -1032,11 +1032,11 @@ export function AdminPaidCoursesPanel() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => setIsCourseModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900"
                 >
                   Cancel
                 </button>
@@ -1055,13 +1055,13 @@ export function AdminPaidCoursesPanel() {
 
       {/* ================= MODAL 2: ADD / EDIT CHAPTER ================= */}
       {isChapterModalOpen && editingChapter && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-lg space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-lg space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-base font-bold text-slate-900">
                 {editingChapter.id ? 'Edit Chapter' : 'Add New Chapter to Course'}
               </h3>
-              <button onClick={() => setIsChapterModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsChapterModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1069,44 +1069,44 @@ export function AdminPaidCoursesPanel() {
             <form onSubmit={handleSaveChapter} className="space-y-3 text-xs">
               <div className="flex items-center gap-3">
                 <div className="w-24">
-                  <label className="block font-semibold text-slate-300 mb-1">Ch No. *</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Ch No. *</label>
                   <input
                     type="number"
                     required
                     value={editingChapter.chapterNumber || 1}
                     onChange={(e) => setEditingChapter({ ...editingChapter, chapterNumber: Number(e.target.value) })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white font-bold"
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block font-semibold text-slate-300 mb-1">Chapter Title (English) *</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Chapter Title (English) *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Variables, Expressions & Operators"
                     value={editingChapter.title || ''}
                     onChange={(e) => setEditingChapter({ ...editingChapter, title: e.target.value })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-medium"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white font-medium"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Chapter Title (Hindi)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Chapter Title (Hindi)</label>
                 <input
                   type="text"
                   placeholder="e.g. वेरिएबल्स, एक्सप्रेशन्स एवं ऑपरेटर्स"
                   value={editingChapter.hindiTitle || ''}
                   onChange={(e) => setEditingChapter({ ...editingChapter, hindiTitle: e.target.value })}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                 />
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => setIsChapterModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900"
                 >
                   Cancel
                 </button>
@@ -1125,18 +1125,18 @@ export function AdminPaidCoursesPanel() {
 
       {/* ================= MODAL 3: ADD / EDIT LECTURE (YOUTUBE + PDF) ================= */}
       {isLessonModalOpen && editingLesson && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
                 <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">
                   Video Lecture & Notes CMS
                 </span>
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   {editingLesson.id ? 'Edit Video Lecture' : 'Add Unlisted YouTube Video Lecture'}
                 </h3>
               </div>
-              <button onClick={() => setIsLessonModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsLessonModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1144,7 +1144,7 @@ export function AdminPaidCoursesPanel() {
             <form onSubmit={handleSaveLesson} className="space-y-3 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Target Chapter *</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Target Chapter *</label>
                   <select
                     value={editingLesson.chapterId || ''}
                     onChange={(e) => {
@@ -1155,7 +1155,7 @@ export function AdminPaidCoursesPanel() {
                         chapterNumber: ch?.chapterNumber || 1
                       });
                     }}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-medium"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white font-medium"
                   >
                     {courseChapters.map((ch) => (
                       <option key={ch.id} value={ch.id}>
@@ -1166,47 +1166,47 @@ export function AdminPaidCoursesPanel() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Duration (e.g. 28:45)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Duration (e.g. 28:45)</label>
                   <input
                     type="text"
                     placeholder="28:45"
                     value={editingLesson.duration || '25:00'}
                     onChange={(e) => setEditingLesson({ ...editingLesson, duration: e.target.value })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Lecture Title (English) *</label>
+                <label className="block font-semibold text-slate-700 mb-1">Lecture Title (English) *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. L03: Python Variables, Identifiers & Data Types"
                   value={editingLesson.title || ''}
                   onChange={(e) => setEditingLesson({ ...editingLesson, title: e.target.value })}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-medium"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white font-medium"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Lecture Title (Hindi)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Lecture Title (Hindi)</label>
                 <input
                   type="text"
                   placeholder="e.g. पायथन में वेरिएबल्स और डेटा टाइप्स"
                   value={editingLesson.hindiTitle || ''}
                   onChange={(e) => setEditingLesson({ ...editingLesson, hindiTitle: e.target.value })}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                 />
               </div>
 
               {/* YouTube Video Link Field */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="block font-bold text-amber-400">
                     Unlisted YouTube Video Link or Video ID *
                   </label>
-                  <span className="text-[10px] text-slate-400">YouTube Player Embedded</span>
+                  <span className="text-[10px] text-slate-500">YouTube Player Embedded</span>
                 </div>
                 <input
                   type="text"
@@ -1222,7 +1222,7 @@ export function AdminPaidCoursesPanel() {
                       videoId: vId
                     });
                   }}
-                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono text-[11px]"
+                  className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-[11px]"
                 />
                 {editingLesson.videoId && (
                   <p className="text-[10px] text-emerald-400 font-mono">
@@ -1232,10 +1232,10 @@ export function AdminPaidCoursesPanel() {
               </div>
 
               {/* PDF Notes Field */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="block font-bold text-blue-400">Attached PDF Notes URL</label>
-                  <span className="text-[10px] text-slate-400">Google Drive / Cloud PDF Link</span>
+                  <span className="text-[10px] text-slate-500">Google Drive / Cloud PDF Link</span>
                 </div>
                 <input
                   type="url"
@@ -1246,22 +1246,22 @@ export function AdminPaidCoursesPanel() {
                     pdfUrl: e.target.value,
                     hasPdf: Boolean(e.target.value?.trim())
                   })}
-                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono text-[11px]"
+                  className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-[11px]"
                 />
                 <input
                   type="text"
                   placeholder="PDF Notes Title (e.g. Chapter 2 Complete Handwritten Notes PDF)"
                   value={editingLesson.pdfTitle || ''}
                   onChange={(e) => setEditingLesson({ ...editingLesson, pdfTitle: e.target.value })}
-                  className="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs"
+                  className="w-full p-2 bg-white border border-slate-300 rounded-lg text-white text-xs"
                 />
               </div>
 
               {/* Free Preview Toggle */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-white block">Free Demo Preview Access</span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="font-bold text-slate-900 block">Free Demo Preview Access</span>
+                  <span className="text-[11px] text-slate-500">
                     If checked, all free visitors can watch this lecture without paying. (Course rule: first 2 are free).
                   </span>
                 </div>
@@ -1273,11 +1273,11 @@ export function AdminPaidCoursesPanel() {
                 />
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => setIsLessonModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900"
                 >
                   Cancel
                 </button>
@@ -1296,22 +1296,22 @@ export function AdminPaidCoursesPanel() {
 
       {/* ================= MODAL 4: GRANT MANUAL ACCESS ================= */}
       {isManualEnrollModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white">Grant Free Student Course Access</h3>
-              <button onClick={() => setIsManualEnrollModalOpen(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-xs p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-base font-bold text-slate-900">Grant Free Student Course Access</h3>
+              <button onClick={() => setIsManualEnrollModalOpen(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleGrantManualAccess} className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Select Course *</label>
+                <label className="block font-semibold text-slate-700 mb-1">Select Course *</label>
                 <select
                   value={selectedCourseId}
                   onChange={(e) => setSelectedCourseId(e.target.value)}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-medium"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white font-medium"
                 >
                   {courses.map((c) => (
                     <option key={c.id} value={c.id}>{c.title}</option>
@@ -1320,33 +1320,33 @@ export function AdminPaidCoursesPanel() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Student Name</label>
+                <label className="block font-semibold text-slate-700 mb-1">Student Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Vikas Kumar"
                   value={manualStudentName}
                   onChange={(e) => setManualStudentName(e.target.value)}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Student Email *</label>
+                <label className="block font-semibold text-slate-700 mb-1">Student Email *</label>
                 <input
                   type="email"
                   required
                   placeholder="student@gmail.com"
                   value={manualStudentEmail}
                   onChange={(e) => setManualStudentEmail(e.target.value)}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-white"
                 />
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => setIsManualEnrollModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900"
                 >
                   Cancel
                 </button>
