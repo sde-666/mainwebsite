@@ -311,7 +311,13 @@ export function AdminDashboard() {
       downloadUrl: '',
       directPdfUrl: '',
       tags: ['O Level', 'Notes', 'PDF'],
-      isOfficialSyllabus: false
+      isOfficialSyllabus: false,
+      isPaid: false,
+      price: 49,
+      originalPrice: 149,
+      previewPageCount: 3,
+      totalPages: 45,
+      sampleHighlights: []
     });
     setIsResourceModalOpen(true);
   };
@@ -913,9 +919,20 @@ export function AdminDashboard() {
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-400/30">
-                        {res.categoryLabel || res.category}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-400/30">
+                          {res.categoryLabel || res.category}
+                        </span>
+                        {res.isPaid ? (
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                            PAID • ₹{res.price || 49}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                            FREE
+                          </span>
+                        )}
+                      </div>
                       {res.moduleCode && (
                         <span className="text-[10px] font-semibold bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
                           {res.moduleCode}
@@ -1901,6 +1918,84 @@ export function AdminDashboard() {
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
+              </div>
+
+              {/* Free vs Paid Monetization Controls */}
+              <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-white text-xs block">Pricing & Access Model</span>
+                    <span className="text-[11px] text-slate-400">
+                      Set this PDF notes card as 100% free or require payment to unlock.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingResource({ ...editingResource, isPaid: false })}
+                      className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                        !editingResource.isPaid 
+                          ? 'bg-emerald-500 text-slate-950 shadow-md font-black' 
+                          : 'bg-slate-800 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Free Note
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingResource({ ...editingResource, isPaid: true })}
+                      className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                        editingResource.isPaid 
+                          ? 'bg-amber-500 text-slate-950 shadow-md font-black' 
+                          : 'bg-slate-800 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Paid / Premium
+                    </button>
+                  </div>
+                </div>
+
+                {editingResource.isPaid && (
+                  <div className="pt-3 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block font-semibold text-amber-300 mb-1">Selling Price (₹)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={editingResource.price ?? 49}
+                        onChange={(e) => setEditingResource({ ...editingResource, price: Number(e.target.value) })}
+                        placeholder="49"
+                        className="w-full px-3 py-2 bg-slate-900 border border-amber-500/40 rounded-xl text-white font-bold focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold text-slate-300 mb-1">Original Price (₹)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={editingResource.originalPrice ?? 149}
+                        onChange={(e) => setEditingResource({ ...editingResource, originalPrice: Number(e.target.value) })}
+                        placeholder="149"
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold text-slate-300 mb-1">Visible Preview Pages</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={editingResource.previewPageCount ?? 3}
+                        onChange={(e) => setEditingResource({ ...editingResource, previewPageCount: Number(e.target.value) })}
+                        placeholder="3"
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
+                      />
+                      <p className="text-[10px] text-slate-500 mt-0.5">Pages 1 to {editingResource.previewPageCount || 3} visible; rest are blurred.</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>

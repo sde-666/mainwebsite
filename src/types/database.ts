@@ -18,6 +18,33 @@ export interface DynamicResource {
   createdAt?: string | number;
   updatedAt?: string | number;
   featured?: boolean;
+  // Paid resource properties
+  isPaid?: boolean;
+  price?: number; // e.g. 49, 99
+  originalPrice?: number; // e.g. 199 (strikethrough discount price)
+  previewPageCount?: number; // default 2 or 3 pages visible
+  totalPages?: number; // e.g. 45 pages
+  previewPagesUrls?: string[]; // sample preview page image or PDF URLs
+  sampleHighlights?: string[]; // Bullet points for preview
+}
+
+export interface PurchasedResource {
+  id: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  resourceId: string;
+  resourceTitle: string;
+  category?: string;
+  moduleCode?: string;
+  fileType?: string;
+  fileSize?: string;
+  downloadUrl: string;
+  directPdfUrl?: string;
+  amountPaid: number;
+  paymentId: string;
+  orderId?: string;
+  purchasedAt: number;
 }
 
 export interface QuizQuestionItem {

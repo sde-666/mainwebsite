@@ -1,4 +1,5 @@
 import { CourseItem, RazorpayOrderData } from '../types/paidCourse';
+import { DynamicResource } from '../types/database';
 
 declare global {
   interface Window {
@@ -119,3 +120,88 @@ export async function openRazorpayCheckout({
     if (onError) onError(error);
   }
 }
+
+/**
+ * Open Instant Razorpay Checkout modal for Paid PDF Study Notes
+ */
+export async function openResourceRazorpayCheckout({
+  resource,
+  studentName,
+  studentEmail,
+  studentPhone,
+  onSuccess,
+  onDismiss,
+  onError
+}: {
+  resource: DynamicResource;
+  studentName: string;
+  studentEmail: string;
+  studentPhone?: string;
+  onSuccess: (paymentId: string, orderId?: string) => void;
+  onDismiss?: () => void;
+  onError?: (err: any) => void;
+}) {
+  try {
+    const isLoaded = await loadRazorpayScript();
+    if (!isLoaded) {
+      alert('Unable to load Razorpay payment gateway. Please check your internet connection.');
+      return;
+    }
+
+    const key = getRazorpayKey();
+    const price = resource.price || 49;
+    const amountInPaise = Math.round(price * 100);
+
+    const options: RazorpayOrderData = {
+      key: key,
+      amount: amountInPaise,
+      currency: 'INR',
+      name: 'Skilldotpy Study Notes',
+      description: `PDF Notes: ${resource.title.substring(0, 40)}`,
+      image: 'https://skilldotpy.com/skilldotpy-logo.svg',
+      handler: function (response: any) {
+        if (response && response.razorpay_payment_id) {
+          onSuccess(response.razorpay_payment_id, response.razorpay_order_id || '');
+        } else {
+          const simPaymentId = `pay_res_${Date.now()}`;
+          onSuccess(simPaymentId, '');
+        }
+      },
+      prefill: {
+        name: studentName || 'Student',
+        email: studentEmail || 'student@skilldotpy.com',
+        contact: studentPhone || '9876543210'
+      },
+      notes: {
+        resourceId: resource.id,
+        resourceTitle: resource.title,
+        studentEmail: studentEmail
+      },
+      theme: {
+        color: '#2563eb'
+      },
+      modal: {
+        ondismiss: function () {
+          if (onDismiss) onDismiss();
+        }
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+
+    rzp.on('payment.failed', function (response: any) {
+      console.warn('Payment failed callback:', response.error);
+      if (onError) {
+        onError(response.error);
+      } else {
+        alert(`Payment Failed: ${response.error?.description || 'Transaction was not completed'}`);
+      }
+    });
+
+    rzp.open();
+  } catch (error) {
+    console.error('Error opening Razorpay checkout for resource:', error);
+    if (onError) onError(error);
+  }
+}
+

@@ -96,10 +96,16 @@ export interface Resource {
   isOfficialSyllabus?: boolean;
   downloadUrl: string;
   tags: string[];
+  isPaid?: boolean;
+  price?: number;
+  originalPrice?: number;
+  previewPageCount?: number;
+  totalPages?: number;
+  sampleHighlights?: string[];
 }
 
 export const resources: Resource[] = [
-  // OFFICIAL SYLLABUS FILES
+  // OFFICIAL SYLLABUS FILES (100% FREE)
   {
     id: 'o-level-official-syllabus-r5',
     category: 'o-level',
@@ -113,7 +119,8 @@ export const resources: Resource[] = [
     downloadCount: '45,200+',
     isOfficialSyllabus: true,
     downloadUrl: '/downloads/o-level-r5-syllabus.pdf',
-    tags: ['Syllabus', 'Official NIELIT', 'R5.1', 'All Papers']
+    tags: ['Syllabus', 'Official NIELIT', 'R5.1', 'All Papers'],
+    isPaid: false
   },
   {
     id: 'ccc-official-syllabus',
@@ -127,100 +134,140 @@ export const resources: Resource[] = [
     downloadCount: '38,100+',
     isOfficialSyllabus: true,
     downloadUrl: '/downloads/ccc-syllabus.pdf',
-    tags: ['CCC Syllabus', 'LibreOffice', 'Official']
+    tags: ['CCC Syllabus', 'LibreOffice', 'Official'],
+    isPaid: false
   },
 
-  // M1-R5 FREE NOTES & PAPERS
+  // M1-R5 PREMIUM HANDWRITTEN MASTER NOTES (PAID)
   {
     id: 'm1-chapter-wise-notes',
     category: 'o-level',
     categoryLabel: 'NIELIT O Level',
     moduleCode: 'M1-R5.1',
-    title: 'M1-R5: IT Tools & Network Basics Complete Handwritten & Typed Notes PDF',
-    hindiTitle: 'M1-R5: आईटी टूल्स कम्पलीट हिंदी एवं इंग्लिश नोट्स',
-    description: 'Comprehensive chapter-wise notes covering Hardware, OS, LibreOffice Writer, Calc, Impress, Internet, Digital Finance, and Cyber Security in easy Hindi & English.',
+    title: 'M1-R5: IT Tools & Network Basics Complete Handwritten Master Notes PDF',
+    hindiTitle: 'M1-R5: आईटी टूल्स कम्पलीट हस्तलिखित मास्टर नोट्स (सॉल्व्ड एक्सरसाइज)',
+    description: 'Comprehensive 65-page handwritten & color-coded notes covering Hardware, OS, LibreOffice Writer, Calc, Impress, Internet, Digital Finance, and Cyber Security with 300+ Solved MCQs & Diagrams.',
     fileType: 'PDF',
     fileSize: '4.8 MB',
     downloadCount: '24,500+',
     downloadUrl: '/downloads/m1-r5-notes.pdf',
-    tags: ['M1-R5', 'IT Tools', 'LibreOffice Notes', 'Hindi Notes']
+    tags: ['M1-R5', 'IT Tools', 'LibreOffice Notes', 'Handwritten'],
+    isPaid: true,
+    price: 39,
+    originalPrice: 129,
+    previewPageCount: 3,
+    totalPages: 65,
+    sampleHighlights: [
+      'Bilingual Hindi & English explanations with architectural flowcharts',
+      'LibreOffice Writer, Calc & Impress complete menu shortcut charts',
+      'Digital payment UPI, AEPS, USSD, and Cyber Security threat tables',
+      'Chapter-end high-yield summary & 300+ NIELIT exam repeated MCQs'
+    ]
   },
+  // M1-R5 FREE SOLVED QUESTION PAPERS (FREE)
   {
     id: 'm1-previous-papers',
     category: 'o-level',
     categoryLabel: 'NIELIT O Level',
     moduleCode: 'M1-R5.1',
-    title: 'M1-R5: Solved Question Papers (Past 5 Exam Cycles with Solutions)',
-    hindiTitle: 'M1-R5: पिछले 5 वर्षों के हल प्रश्न पत्र',
-    description: 'Detailed question paper solutions with answer keys and explanations for January & July exam cycles.',
+    title: 'M1-R5: Solved Question Papers (Past 5 Exam Cycles with Answer Key)',
+    hindiTitle: 'M1-R5: पिछले 5 वर्षों के हल प्रश्न पत्र (100% फ्री)',
+    description: 'Detailed question paper solutions with verified answer keys and bilingual explanations for January & July exam cycles.',
     fileType: 'PDF',
     fileSize: '3.2 MB',
     downloadCount: '19,800+',
     downloadUrl: '/downloads/m1-r5-solved-papers.pdf',
-    tags: ['M1-R5', 'Old Papers', 'Solved Questions']
+    tags: ['M1-R5', 'Old Papers', 'Solved Questions'],
+    isPaid: false
   },
 
-  // M2-R5 FREE NOTES & PRACTICALS
+  // M2-R5 WEB DESIGNING PREMIUM BUNDLE (PAID)
   {
     id: 'm2-chapter-wise-notes',
     category: 'o-level',
     categoryLabel: 'NIELIT O Level',
     moduleCode: 'M2-R5.1',
-    title: 'M2-R5: Web Designing & Publishing Complete Notes with Code Snippets',
+    title: 'M2-R5: Web Designing & Publishing Complete Handwritten Color Notes PDF',
     hindiTitle: 'M2-R5: वेब डिजाइनिंग (HTML5, CSS3, JS, W3.CSS) सम्पूर्ण नोट्स',
-    description: 'Covers HTML5 semantic markup, CSS3 styling, responsive box model, JavaScript DOM manipulation, Photoshop/GIMP tools, and publishing essentials.',
+    description: 'Covers HTML5 semantic markup, CSS3 Flexbox & Grid, responsive box model, JavaScript DOM manipulation, Photoshop/GIMP tools, and publishing essentials with live code output screenshots.',
     fileType: 'PDF',
     fileSize: '5.2 MB',
     downloadCount: '22,100+',
     downloadUrl: '/downloads/m2-r5-notes.pdf',
-    tags: ['M2-R5', 'Web Design', 'HTML5 CSS3', 'JavaScript']
+    tags: ['M2-R5', 'Web Design', 'HTML5 CSS3', 'JavaScript'],
+    isPaid: true,
+    price: 49,
+    originalPrice: 149,
+    previewPageCount: 3,
+    totalPages: 78,
+    sampleHighlights: [
+      'HTML5 semantic tags & CSS3 layout styling with syntax highlights',
+      'JavaScript event handling, form validation & DOM code examples',
+      'W3.CSS responsive grid framework cheatsheet',
+      'Photo editing tools, web publishing FTP/HTTP protocols guide'
+    ]
   },
+  // M2-R5 FREE PRACTICAL CODE BUNDLE (FREE)
   {
     id: 'm2-practical-code-bundle',
     category: 'practicals',
     categoryLabel: 'Lab & Practical Codes',
     moduleCode: 'M2-R5.1',
     title: 'M2-R5: 25+ Solved Web Design Practical Programs (HTML, CSS, JS Source Code)',
-    hindiTitle: 'M2-R5: 25+ प्रैक्टिकल प्रोग्राम्स का सोर्स कोड बंडल',
+    hindiTitle: 'M2-R5: 25+ प्रैक्टिकल प्रोग्राम्स का सोर्स कोड बंडल (फ्री)',
     description: 'Ready-to-run HTML/CSS/JS source code bundle including Student Admission Form, Animated Navigation Bar, Image Gallery, and Calculator.',
     fileType: 'CODE',
     fileSize: '1.8 MB',
     downloadCount: '17,400+',
     downloadUrl: '/downloads/m2-r5-practical-codes.pdf',
-    tags: ['Practical Code', 'HTML Source', 'JS Form Validation']
+    tags: ['Practical Code', 'HTML Source', 'JS Form Validation'],
+    isPaid: false
   },
 
-  // M3-R5 FREE NOTES & PRACTICALS
+  // M3-R5 PYTHON PREMIUM MASTERCLASS NOTES (PAID)
   {
     id: 'm3-python-complete-notes',
     category: 'o-level',
     categoryLabel: 'NIELIT O Level',
     moduleCode: 'M3-R5.1',
-    title: 'M3-R5: Python Programming Complete Hindi-English Simplified Notes PDF',
-    hindiTitle: 'M3-R5: पायथन प्रोग्रामिंग कम्पलीट नोट्स (सरल भाषा में)',
-    description: 'Learn Python fundamentals, Flowcharts, Control Flow, Lists, Tuples, Dictionaries, Sets, Functions, File Handling, and NumPy module with syntax diagrams.',
+    title: 'M3-R5: Python Programming Complete Simplified Master Notes PDF',
+    hindiTitle: 'M3-R5: पायथन प्रोग्रामिंग कम्पलीट नोट्स (एल्गोरिदम व NumPy सहित)',
+    description: 'Master Python effortlessly! Covers Flowcharts, Control Flow, Lists, Tuples, Dictionaries, Sets, Functions, File Handling, Recursion, and NumPy module with syntax diagrams and 400+ solved practice problems.',
     fileType: 'PDF',
     fileSize: '6.1 MB',
     downloadCount: '31,900+',
     downloadUrl: '/downloads/m3-r5-notes.pdf',
-    tags: ['M3-R5', 'Python Notes', 'NumPy', 'File Handling']
+    tags: ['M3-R5', 'Python Notes', 'NumPy', 'File Handling'],
+    isPaid: true,
+    price: 49,
+    originalPrice: 199,
+    previewPageCount: 3,
+    totalPages: 92,
+    sampleHighlights: [
+      'Line-by-line code execution tracing & dry-run memory tables',
+      'Complete coverage of Lists, Tuples, Dicts, Sets and Comprehensions',
+      'NumPy 1D/2D array creation, slicing & mathematical operations',
+      'File Handling (read, write, append, seek/tell) with exception handling'
+    ]
   },
+  // M3-R5 FREE PRACTICAL BUNDLE (FREE)
   {
     id: 'm3-python-practical-bundle',
     category: 'practicals',
     categoryLabel: 'Lab & Practical Codes',
     moduleCode: 'M3-R5.1',
     title: 'M3-R5: 50+ Top Repeated Python Practical Exam Programs with .py Files',
-    hindiTitle: 'M3-R5: 50+ पायथन प्रैक्टिकल प्रोग्राम्स (.py फाइल्स)',
+    hindiTitle: 'M3-R5: 50+ पायथन प्रैक्टिकल प्रोग्राम्स (.py फाइल्स फ्री)',
     description: 'Complete Python scripts with output screenshots: Armstrong number, Fibonacci series, Palindrome check, Pattern printing, Matrix addition/multiplication, and File word counter.',
     fileType: 'CODE',
     fileSize: '2.4 MB',
     downloadCount: '28,600+',
     downloadUrl: '/downloads/m3-r5-practical-codes.pdf',
-    tags: ['Python Code', 'Practicals', 'Algorithms']
+    tags: ['Python Code', 'Practicals', 'Algorithms'],
+    isPaid: false
   },
 
-  // M4-R5 FREE NOTES & PRACTICALS
+  // M4-R5 IOT PREMIUM NOTES & CIRCUITS (PAID)
   {
     id: 'm4-iot-notes',
     category: 'o-level',
@@ -233,24 +280,37 @@ export const resources: Resource[] = [
     fileSize: '5.5 MB',
     downloadCount: '18,300+',
     downloadUrl: '/downloads/m4-r5-notes.pdf',
-    tags: ['M4-R5', 'IoT Notes', 'Arduino Uno', 'MQTT']
+    tags: ['M4-R5', 'IoT Notes', 'Arduino Uno', 'MQTT'],
+    isPaid: true,
+    price: 39,
+    originalPrice: 129,
+    previewPageCount: 3,
+    totalPages: 56,
+    sampleHighlights: [
+      'Clear circuit wiring schematics for Arduino Uno and ESP8266/ESP32',
+      'DHT11 temperature sensor, LDR, PIR motion & Ultrasonic sensor code',
+      'MQTT publisher/subscriber IoT network communication protocols',
+      'Soft skills, communication & personality development module'
+    ]
   },
+  // M4-R5 FREE ARDUINO SKETCHES (FREE)
   {
     id: 'm4-arduino-sketches',
     category: 'practicals',
     categoryLabel: 'Lab & Practical Codes',
     moduleCode: 'M4-R5.1',
     title: 'M4-R5: 20+ Arduino Uno Lab Simulation Sketches (.ino Files & Schematics)',
-    hindiTitle: 'M4-R5: 20+ आर्डुइनो प्रैक्टिकल स्केच कोड',
+    hindiTitle: 'M4-R5: 20+ आर्डुइनो प्रैक्टिकल स्केच कोड (100% फ्री)',
     description: 'Ready-to-upload Arduino sketch (.ino) files with TinkerCAD circuit diagrams for all practical lab questions.',
     fileType: 'CODE',
     fileSize: '2.1 MB',
     downloadCount: '15,200+',
     downloadUrl: '/downloads/m4-r5-practical-codes.pdf',
-    tags: ['Arduino', 'IoT Code', 'Schematics']
+    tags: ['Arduino', 'IoT Code', 'Schematics'],
+    isPaid: false
   },
 
-  // CHEAT SHEETS & OFFICE SUITE
+  // CHEAT SHEETS & OFFICE SUITE (FREE)
   {
     id: 'libreoffice-shortcut-cheatsheet',
     category: 'office-suite',
@@ -262,7 +322,8 @@ export const resources: Resource[] = [
     fileSize: '950 KB',
     downloadCount: '41,000+',
     downloadUrl: '/downloads/libreoffice-shortcuts.pdf',
-    tags: ['Shortcuts', 'LibreOffice', 'Cheat Sheet', 'CCC']
+    tags: ['Shortcuts', 'LibreOffice', 'Cheat Sheet', 'CCC'],
+    isPaid: false
   },
   {
     id: 'o-level-project-guide',
@@ -276,6 +337,7 @@ export const resources: Resource[] = [
     fileSize: '620 KB',
     downloadCount: '14,300+',
     downloadUrl: '/downloads/o-level-project-guide.pdf',
-    tags: ['Project Guide', 'Proforma', 'Certification']
+    tags: ['Project Guide', 'Proforma', 'Certification'],
+    isPaid: false
   }
 ];

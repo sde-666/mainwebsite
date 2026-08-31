@@ -11,7 +11,7 @@ export interface CourseItem {
   thumbnailUrl: string;
   bannerUrl?: string;
   isPublished: boolean; // toggle visible/hidden
-  isComingSoon?: boolean; // individual course coming soon override
+  isComingSoon?: boolean; // Coming soon badge & disabled checkout
   features: string[];
   learningOutcomes: string[];
   targetAudience?: string[];

@@ -1,18 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { FileText, Download, ArrowLeft, Eye, ExternalLink } from 'lucide-react';
+import { 
+  FileText, 
+  Download, 
+  ArrowLeft, 
+  Eye, 
+  ExternalLink,
+  Sparkles,
+  CheckCircle2,
+  Lock
+} from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { Card, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
 import { AdBanner } from '../components/AdBanner';
 import { resourceCategories } from '../data/resources';
 import { resourceService } from '../services/resourceService';
-import { DynamicResource } from '../types/database';
-import { PdfViewerModal } from '../components/PdfViewerModal';
+import { DynamicResource, PurchasedResource } from '../types/database';
+import { ResourcePreviewModal } from '../components/ResourcePreviewModal';
+import { useAuth } from '../context/AuthContext';
+import { openResourceRazorpayCheckout } from '../utils/razorpay';
+import { StudentAuthModal } from '../components/auth/StudentAuthModal';
 
 export function ResourceCategory() {
   const { categoryId } = useParams<{ categoryId: string }>();
   const normalizedCategoryId = (categoryId || '').toLowerCase().trim();
+  const { currentUser, userProfile } = useAuth();
 
   // Find category by direct ID, or alias mappings
   const category = resourceCategories.find(c => {
@@ -27,7 +40,13 @@ export function ResourceCategory() {
   });
 
   const [allResources, setAllResources] = useState<DynamicResource[]>([]);
-  const [viewingResource, setViewingResource] = useState<DynamicResource | null>(null);
+  const [purchasedList, setPurchasedList] = useState<PurchasedResource[]>([]);
+  const [previewingResource, setPreviewingResource] = useState<DynamicResource | null>(null);
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authNotice, setAuthNotice] = useState('');
+  const [pendingUnlockResource, setPendingUnlockResource] = useState<DynamicResource | null>(null);
+  const [isUnlockingId, setIsUnlockingId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsub = resourceService.subscribeResources((data) => {
@@ -35,6 +54,22 @@ export function ResourceCategory() {
     });
     return unsub;
   }, []);
+
+  useEffect(() => {
+    const unsubPurchases = resourceService.subscribePurchasedResources(
+      currentUser?.uid,
+      currentUser?.email || undefined,
+      (purchases) => {
+        setPurchasedList(purchases);
+      }
+    );
+    return unsubPurchases;
+  }, [currentUser]);
+
+  const isResourcePurchased = (resourceId: string): boolean => {
+    return purchasedList.some(p => p.resourceId === resourceId) ||
+      resourceService.isResourcePurchased(currentUser?.uid, resourceId, currentUser?.email || undefined);
+  };
 
   // Filter resources by category or moduleCode match
   const categoryResources = allResources.filter(r => {
@@ -79,29 +114,83 @@ export function ResourceCategory() {
     );
   }
 
-  const handleOpenPdf = (res: DynamicResource) => {
-    setViewingResource(res);
-    resourceService.recordDownload(res.id);
+  const handleOpenPreview = (res: DynamicResource) => {
+    setPreviewingResource(res);
   };
 
   const handleDirectDownload = (res: DynamicResource) => {
     resourceService.recordDownload(res.id);
     const url = res.directPdfUrl || res.downloadUrl;
-    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-      window.open(url, '_blank', 'noopener,noreferrer');
+    if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/downloads/'))) {
+      const link = document.createElement('a');
+      link.href = url;
+      const downloadFileName = url.startsWith('/downloads/') 
+        ? url.split('/').pop() || `${res.id}.pdf`
+        : `${res.id}.pdf`;
+      link.setAttribute('download', downloadFileName);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } else {
-      setViewingResource(res);
+      setPreviewingResource(res);
     }
+  };
+
+  const handleDirectUnlock = (res: DynamicResource) => {
+    if (!currentUser) {
+      setPendingUnlockResource(res);
+      setAuthNotice(`Please sign in with your student account to unlock and download "${res.title}".`);
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const price = res.price || 49;
+    setIsUnlockingId(res.id);
+
+    openResourceRazorpayCheckout({
+      resource: res,
+      studentName: userProfile?.displayName || currentUser.displayName || 'Student',
+      studentEmail: currentUser.email || 'student@skilldotpy.com',
+      studentPhone: userProfile?.phoneNumber || '9876543210',
+      onSuccess: async (paymentId, orderId) => {
+        try {
+          await resourceService.purchaseResource({
+            userId: currentUser.uid,
+            userEmail: currentUser.email || '',
+            userName: userProfile?.displayName || currentUser.displayName || 'Student',
+            resource: res,
+            amountPaid: price,
+            paymentId,
+            orderId
+          });
+
+          handleDirectDownload(res);
+        } catch (err) {
+          console.error('Purchase processing error:', err);
+        } finally {
+          setIsUnlockingId(null);
+        }
+      },
+      onDismiss: () => {
+        setIsUnlockingId(null);
+      },
+      onError: (err) => {
+        setIsUnlockingId(null);
+        console.error('Payment failed:', err);
+      }
+    });
   };
 
   return (
     <>
-      <SEO title={`${category.title} - Notes`} description={category.description} />
+      <SEO title={`${category.title} - Notes & Study Material`} description={category.description} />
       
-      {/* PDF Viewer Modal */}
-      <PdfViewerModal
-        resource={viewingResource}
-        onClose={() => setViewingResource(null)}
+      {/* PDF Viewer & Secure Preview Modal */}
+      <ResourcePreviewModal
+        resource={previewingResource}
+        onClose={() => setPreviewingResource(null)}
       />
 
       <div className="bg-slate-900 text-white py-12">
@@ -127,55 +216,110 @@ export function ResourceCategory() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {categoryResources.length > 0 ? (
           <div className="space-y-4">
-            {categoryResources.map((resource) => (
-              <Card key={resource.id} className="hover:border-blue-300 transition-colors">
-                <CardContent className="p-5 sm:flex sm:items-center sm:justify-between">
-                  <div className="mb-4 sm:mb-0 max-w-2xl">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      {resource.moduleCode && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">
-                          {resource.moduleCode}
+            {categoryResources.map((resource) => {
+              const purchased = isResourcePurchased(resource.id);
+              const price = resource.price || 49;
+              const originalPrice = resource.originalPrice || Math.round(price * 2.5);
+
+              return (
+                <Card key={resource.id} className="hover:border-blue-300 transition-colors">
+                  <CardContent className="p-5 sm:flex sm:items-center sm:justify-between">
+                    <div className="mb-4 sm:mb-0 max-w-2xl">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        {purchased ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-md">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <span>UNLOCKED</span>
+                          </span>
+                        ) : resource.isPaid ? (
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-md">
+                              <Sparkles className="w-3 h-3 text-amber-600" />
+                              <span>PREMIUM</span>
+                            </span>
+                            <span className="text-xs font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                              ₹{price} <span className="line-through text-slate-400 font-normal text-[10px]">₹{originalPrice}</span>
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="inline-flex items-center text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md">
+                            100% FREE
+                          </span>
+                        )}
+
+                        {resource.moduleCode && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">
+                            {resource.moduleCode}
+                          </span>
+                        )}
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                          {resource.fileType} • {resource.fileSize}
                         </span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          {resource.downloadCount} downloads
+                        </span>
+                      </div>
+
+                      <h3 className="text-base font-bold text-gray-900">{resource.title}</h3>
+                      {resource.hindiTitle && (
+                        <p className="text-xs font-medium text-blue-700 mt-0.5">{resource.hindiTitle}</p>
                       )}
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                        {resource.fileType} • {resource.fileSize}
-                      </span>
-                      <span className="text-xs text-gray-500 font-medium">
-                        {resource.downloadCount} downloads
-                      </span>
+                      <p className="mt-1.5 text-xs text-gray-600 leading-relaxed">{resource.description}</p>
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {resource.tags?.map((tag, idx) => (
+                          <span key={idx} className="text-[10px] font-medium px-2 py-0.5 bg-slate-100 text-slate-600 rounded">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <h3 className="text-base font-bold text-gray-900">{resource.title}</h3>
-                    {resource.hindiTitle && (
-                      <p className="text-xs font-medium text-blue-700 mt-0.5">{resource.hindiTitle}</p>
-                    )}
-                    <p className="mt-1.5 text-xs text-gray-600 leading-relaxed">{resource.description}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {resource.tags?.map((tag, idx) => (
-                        <span key={idx} className="text-3xs font-medium px-2 py-0.5 bg-slate-100 text-slate-600 rounded">
-                          #{tag}
-                        </span>
-                      ))}
+
+                    <div className="sm:ml-6 shrink-0 flex items-center gap-2">
+                      {purchased || !resource.isPaid ? (
+                        <>
+                          <button
+                            onClick={() => handleOpenPreview(resource)}
+                            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-slate-500" />
+                            <span>View PDF</span>
+                          </button>
+                          <button
+                            onClick={() => handleDirectDownload(resource)}
+                            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors flex items-center gap-1 shadow-2xs cursor-pointer"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Direct Download</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleOpenPreview(resource)}
+                            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-100/80 hover:bg-amber-100 text-slate-800 border border-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-amber-700" />
+                            <span>Preview Sample</span>
+                          </button>
+                          <button
+                            onClick={() => handleDirectUnlock(resource)}
+                            disabled={isUnlockingId === resource.id}
+                            className="px-3.5 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 transition-all shadow-md shadow-amber-500/25 flex items-center gap-1 cursor-pointer"
+                          >
+                            {isUnlockingId === resource.id ? (
+                              <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Lock className="w-3.5 h-3.5 text-slate-950 fill-current" />
+                            )}
+                            <span>Unlock ₹{price}</span>
+                          </button>
+                        </>
+                      )}
                     </div>
-                  </div>
-                  <div className="sm:ml-6 shrink-0 flex items-center gap-2">
-                    <button
-                      onClick={() => handleOpenPdf(resource)}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-slate-500" />
-                      <span>View PDF</span>
-                    </button>
-                    <button
-                      onClick={() => handleDirectDownload(resource)}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors flex items-center gap-1 shadow-2xs"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Direct Download</span>
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
 
             {/* In-Category Sponsor Banner */}
             <div className="pt-6">
@@ -189,6 +333,24 @@ export function ResourceCategory() {
           </div>
         )}
       </div>
+
+      {/* Student Auth Modal */}
+      <StudentAuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          setPendingUnlockResource(null);
+        }}
+        redirectNotice={authNotice}
+        onSuccess={() => {
+          setIsAuthModalOpen(false);
+          if (pendingUnlockResource) {
+            const resToUnlock = pendingUnlockResource;
+            setPendingUnlockResource(null);
+            setTimeout(() => handleDirectUnlock(resToUnlock), 300);
+          }
+        }}
+      />
     </>
   );
 }
