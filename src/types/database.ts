@@ -13,7 +13,8 @@ export interface DynamicResource {
   downloadCount: string | number;
   isOfficialSyllabus?: boolean;
   downloadUrl: string;
-  directPdfUrl?: string; // Direct link to open PDF in browser or viewer
+  directPdfUrl?: string; // Direct link to open actual full PDF in browser or viewer
+  previewPdfUrl?: string; // Dedicated Sample / Preview PDF URL (for paid notes preview in new window)
   tags: string[];
   createdAt?: string | number;
   updatedAt?: string | number;

@@ -17,7 +17,6 @@ import { AdBanner } from '../components/AdBanner';
 import { resourceCategories } from '../data/resources';
 import { resourceService, formatDirectDownloadUrl } from '../services/resourceService';
 import { DynamicResource, PurchasedResource } from '../types/database';
-import { ResourcePreviewModal } from '../components/ResourcePreviewModal';
 import { useAuth } from '../context/AuthContext';
 import { openResourceRazorpayCheckout } from '../utils/razorpay';
 import { StudentAuthModal } from '../components/auth/StudentAuthModal';
@@ -41,7 +40,6 @@ export function ResourceCategory() {
 
   const [allResources, setAllResources] = useState<DynamicResource[]>([]);
   const [purchasedList, setPurchasedList] = useState<PurchasedResource[]>([]);
-  const [previewingResource, setPreviewingResource] = useState<DynamicResource | null>(null);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authNotice, setAuthNotice] = useState('');
@@ -114,8 +112,21 @@ export function ResourceCategory() {
     );
   }
 
-  const handleOpenPreview = (res: DynamicResource) => {
-    setPreviewingResource(res);
+  // Open Sample Preview in a New Window
+  const handlePreviewSample = (res: DynamicResource) => {
+    const sampleUrl = res.previewPdfUrl || res.directPdfUrl || res.downloadUrl;
+    if (sampleUrl) {
+      window.open(sampleUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  // Open Full PDF in a New Window
+  const handleOpenPdf = (res: DynamicResource) => {
+    resourceService.recordDownload(res.id);
+    const targetUrl = res.directPdfUrl || res.downloadUrl;
+    if (targetUrl) {
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const handleDirectDownload = (res: DynamicResource) => {
@@ -134,8 +145,8 @@ export function ResourceCategory() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else {
-      setPreviewingResource(res);
+    } else if (rawUrl) {
+      window.open(rawUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -167,7 +178,7 @@ export function ResourceCategory() {
             orderId
           });
 
-          handleDirectDownload(res);
+          handleOpenPdf(res);
         } catch (err) {
           console.error('Purchase processing error:', err);
         } finally {
@@ -187,12 +198,6 @@ export function ResourceCategory() {
   return (
     <>
       <SEO title={`${category.title} - Notes & Study Material`} description={category.description} />
-      
-      {/* PDF Viewer & Secure Preview Modal */}
-      <ResourcePreviewModal
-        resource={previewingResource}
-        onClose={() => setPreviewingResource(null)}
-      />
 
       <div className="bg-slate-900 text-white py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -279,10 +284,11 @@ export function ResourceCategory() {
                       {purchased || !resource.isPaid ? (
                         <>
                           <button
-                            onClick={() => handleOpenPreview(resource)}
+                            onClick={() => handleOpenPdf(resource)}
+                            title="Open PDF in a new tab"
                             className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
                           >
-                            <Eye className="w-3.5 h-3.5 text-slate-500" />
+                            <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
                             <span>View PDF</span>
                           </button>
                           <button
@@ -296,10 +302,11 @@ export function ResourceCategory() {
                       ) : (
                         <>
                           <button
-                            onClick={() => handleOpenPreview(resource)}
+                            onClick={() => handlePreviewSample(resource)}
+                            title="Open sample preview PDF in a new tab"
                             className="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-100/80 hover:bg-amber-100 text-slate-800 border border-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
                           >
-                            <Eye className="w-3.5 h-3.5 text-amber-700" />
+                            <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
                             <span>Preview Sample</span>
                           </button>
                           <button

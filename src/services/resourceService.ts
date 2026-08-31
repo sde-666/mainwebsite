@@ -180,13 +180,15 @@ export const resourceService = {
   // Create a new resource
   createResource: async (resource: Omit<DynamicResource, 'id'>): Promise<string> => {
     const colRef = collection(db, RESOURCES_COLLECTION);
+    const isPaid = Boolean(resource.isPaid);
     const dataToSave = cleanObject({
       ...resource,
-      isPaid: Boolean(resource.isPaid),
-      price: resource.price ? Number(resource.price) : 0,
-      originalPrice: resource.originalPrice ? Number(resource.originalPrice) : 0,
-      previewPageCount: resource.previewPageCount ? Number(resource.previewPageCount) : 3,
+      isPaid,
+      price: isPaid && resource.price ? Number(resource.price) : 0,
+      originalPrice: isPaid && resource.originalPrice ? Number(resource.originalPrice) : 0,
+      previewPageCount: isPaid && resource.previewPageCount ? Number(resource.previewPageCount) : 3,
       totalPages: resource.totalPages ? Number(resource.totalPages) : 30,
+      previewPdfUrl: isPaid && resource.previewPdfUrl ? formatDirectPdfUrl(resource.previewPdfUrl) : '',
       directPdfUrl: resource.directPdfUrl ? formatDirectPdfUrl(resource.directPdfUrl) : (resource.downloadUrl.startsWith('http') ? formatDirectPdfUrl(resource.downloadUrl) : ''),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
@@ -204,6 +206,14 @@ export const resourceService = {
     } else if (cleanUpdates.downloadUrl && cleanUpdates.downloadUrl.startsWith('http')) {
       cleanUpdates.directPdfUrl = formatDirectPdfUrl(cleanUpdates.downloadUrl);
     }
+    
+    // For free notes, ensure previewPdfUrl is cleared
+    if (cleanUpdates.isPaid === false) {
+      cleanUpdates.previewPdfUrl = '';
+    } else if (cleanUpdates.previewPdfUrl) {
+      cleanUpdates.previewPdfUrl = formatDirectPdfUrl(cleanUpdates.previewPdfUrl);
+    }
+
     cleanUpdates.updatedAt = serverTimestamp() as any;
     await setDoc(docRef, cleanUpdates, { merge: true });
   },

@@ -310,6 +310,7 @@ export function AdminDashboard() {
       downloadCount: '1,200+',
       downloadUrl: '',
       directPdfUrl: '',
+      previewPdfUrl: '',
       tags: ['O Level', 'Notes', 'PDF'],
       isOfficialSyllabus: false,
       isPaid: false,
@@ -970,15 +971,28 @@ export function AdminDashboard() {
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      {res.directPdfUrl && (
+                      {res.isPaid && res.previewPdfUrl && (
                         <a
-                          href={res.directPdfUrl}
+                          href={res.previewPdfUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          title="Preview Direct PDF"
-                          className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 rounded-lg transition-colors"
+                          title="Open Preview Sample PDF in New Tab"
+                          className="px-2 py-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg transition-colors flex items-center gap-1"
                         >
-                          <ExternalLink className="w-4 h-4" />
+                          <span>Sample</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                      {(res.directPdfUrl || res.downloadUrl) && (
+                        <a
+                          href={res.directPdfUrl || res.downloadUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Open Actual Full PDF in New Tab"
+                          className="px-2 py-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg transition-colors flex items-center gap-1"
+                        >
+                          <span>{res.isPaid ? 'Full PDF' : 'PDF'}</span>
+                          <ExternalLink className="w-3 h-3" />
                         </a>
                       )}
                       <button
@@ -1955,68 +1969,129 @@ export function AdminDashboard() {
                   </div>
                 </div>
 
-                {editingResource.isPaid && (
-                  <div className="pt-3 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block font-semibold text-amber-300 mb-1">Selling Price (₹)</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={editingResource.price ?? 49}
-                        onChange={(e) => setEditingResource({ ...editingResource, price: Number(e.target.value) })}
-                        placeholder="49"
-                        className="w-full px-3 py-2 bg-slate-900 border border-amber-500/40 rounded-xl text-white font-bold focus:outline-none focus:border-amber-400"
-                      />
+                {/* Paid Options & Pricing */}
+                {editingResource.isPaid ? (
+                  <div className="pt-3 border-t border-slate-800 space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block font-semibold text-amber-300 mb-1 text-xs">Selling Price (₹)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editingResource.price ?? 49}
+                          onChange={(e) => setEditingResource({ ...editingResource, price: Number(e.target.value) })}
+                          placeholder="49"
+                          className="w-full px-3 py-2 bg-slate-900 border border-amber-500/40 rounded-xl text-white font-bold focus:outline-none focus:border-amber-400 text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold text-slate-300 mb-1 text-xs">Original / MRP Price (₹)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editingResource.originalPrice ?? 149}
+                          onChange={(e) => setEditingResource({ ...editingResource, originalPrice: Number(e.target.value) })}
+                          placeholder="149"
+                          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold text-slate-300 mb-1 text-xs">Total Document Pages</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editingResource.totalPages ?? 45}
+                          onChange={(e) => setEditingResource({ ...editingResource, totalPages: Number(e.target.value) })}
+                          placeholder="45"
+                          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 text-xs"
+                        />
+                      </div>
                     </div>
 
-                    <div>
-                      <label className="block font-semibold text-slate-300 mb-1">Original Price (₹)</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={editingResource.originalPrice ?? 149}
-                        onChange={(e) => setEditingResource({ ...editingResource, originalPrice: Number(e.target.value) })}
-                        placeholder="149"
-                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
-                      />
+                    <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-[11px] text-amber-200/90 leading-relaxed">
+                      💡 <strong>Paid Notes Setup:</strong> Provide two separate PDF URLs below. Option 1 is a public sample PDF students can preview in a new window. Option 2 is the actual full notes PDF unlocked after Razorpay checkout.
                     </div>
-
-                    <div>
-                      <label className="block font-semibold text-slate-300 mb-1">Visible Preview Pages</label>
-                      <input
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={editingResource.previewPageCount ?? 3}
-                        onChange={(e) => setEditingResource({ ...editingResource, previewPageCount: Number(e.target.value) })}
-                        placeholder="3"
-                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
-                      />
-                      <p className="text-[10px] text-slate-500 mt-0.5">Pages 1 to {editingResource.previewPageCount || 3} visible; rest are blurred.</p>
-                    </div>
+                  </div>
+                ) : (
+                  <div className="pt-2 border-t border-slate-800">
+                    <p className="text-[11px] text-emerald-400 font-medium">
+                      ✓ 100% Free Note: Students will directly view & download the actual PDF in a new window. No preview upload is required.
+                    </p>
                   </div>
                 )}
               </div>
 
-              <div>
-                <label className="block font-semibold text-slate-300 mb-1">
-                  Direct PDF URL (Google Drive / GitHub / Direct Download Link)
-                </label>
-                <input
-                  type="text"
-                  value={editingResource.directPdfUrl || editingResource.downloadUrl || ''}
-                  onChange={(e) => setEditingResource({ 
-                    ...editingResource, 
-                    directPdfUrl: e.target.value,
-                    downloadUrl: e.target.value 
-                  })}
-                  placeholder="https://drive.google.com/file/d/... or direct https://...pdf"
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500"
-                />
-                <p className="text-[10px] text-slate-500 mt-1">
-                  If you paste a Google Drive link, the system will automatically convert it to open directly in the website's built-in PDF viewer!
-                </p>
-              </div>
+              {/* PDF URL Upload Options */}
+              {editingResource.isPaid ? (
+                /* PAID NOTES: TWO OPTIONS */
+                <div className="space-y-4 p-4 bg-slate-950/60 rounded-2xl border border-slate-800">
+                  {/* OPTION 1: PREVIEW PDF */}
+                  <div>
+                    <label className="block font-bold text-amber-300 text-xs mb-1 flex items-center justify-between">
+                      <span>Option 1: Preview / Sample Notes PDF URL (Demo)</span>
+                      <span className="text-[10px] text-amber-400/80 font-normal">Opens in New Window for Students</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editingResource.previewPdfUrl || ''}
+                      onChange={(e) => setEditingResource({ 
+                        ...editingResource, 
+                        previewPdfUrl: e.target.value 
+                      })}
+                      placeholder="https://drive.google.com/file/d/... or sample-preview.pdf"
+                      className="w-full px-3 py-2 bg-slate-900 border border-amber-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400 font-mono"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Upload/paste the link for the sample PDF (e.g. first 2-3 sample pages). When students click "Preview Sample", this opens directly in a new window.
+                    </p>
+                  </div>
+
+                  {/* OPTION 2: ACTUAL FULL PDF */}
+                  <div>
+                    <label className="block font-bold text-emerald-300 text-xs mb-1 flex items-center justify-between">
+                      <span>Option 2: Actual / Full Notes PDF URL (Complete Document)</span>
+                      <span className="text-[10px] text-emerald-400/80 font-normal">Protected • Unlocked After Purchase</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editingResource.directPdfUrl || editingResource.downloadUrl || ''}
+                      onChange={(e) => setEditingResource({ 
+                        ...editingResource, 
+                        directPdfUrl: e.target.value,
+                        downloadUrl: e.target.value 
+                      })}
+                      placeholder="https://drive.google.com/file/d/... or full-complete-notes.pdf"
+                      className="w-full px-3 py-2 bg-slate-900 border border-emerald-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-400 font-mono"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      The complete master PDF. Kept locked and provided to students in a new window/download only after payment.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* FREE NOTES: SINGLE ACTUAL PDF URL (NO PREVIEW UPLOAD) */
+                <div>
+                  <label className="block font-semibold text-slate-300 mb-1 text-xs">
+                    Actual Free Notes PDF URL (Google Drive / GitHub / Direct Link)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingResource.directPdfUrl || editingResource.downloadUrl || ''}
+                    onChange={(e) => setEditingResource({ 
+                      ...editingResource, 
+                      directPdfUrl: e.target.value,
+                      downloadUrl: e.target.value 
+                    })}
+                    placeholder="https://drive.google.com/file/d/... or direct https://...pdf"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-blue-500 font-mono"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Paste Google Drive or direct link. Clicking "View PDF" or "Download" will open this complete PDF in a new window.
+                  </p>
+                </div>
+              )}
 
               <div>
                 <label className="block font-semibold text-slate-300 mb-1">Tags (Comma Separated)</label>

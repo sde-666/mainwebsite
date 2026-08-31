@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Download, 
+  Download, Gift, Crown, ChevronDown, ShieldCheck, Bookmark, Zap as Lightning, Cloud, 
   FileText, 
   Code, 
   BookOpen, 
@@ -15,7 +15,6 @@ import {
   Lock,
   Unlock,
   CreditCard,
-  Zap,
   Star,
   GraduationCap
 } from 'lucide-react';
@@ -24,7 +23,6 @@ import { AdBanner } from '../components/AdBanner';
 import { DynamicResource, PurchasedResource } from '../types/database';
 import { resourceService, formatDirectDownloadUrl } from '../services/resourceService';
 import { resourceCategories } from '../data/resources';
-import { ResourcePreviewModal } from '../components/ResourcePreviewModal';
 import { useAuth } from '../context/AuthContext';
 import { openResourceRazorpayCheckout } from '../utils/razorpay';
 import { StudentAuthModal } from '../components/auth/StudentAuthModal';
@@ -36,7 +34,6 @@ export function Resources() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [priceFilter, setPriceFilter] = useState<'all' | 'free' | 'paid'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [previewingResource, setPreviewingResource] = useState<DynamicResource | null>(null);
 
   // Auth Modal trigger
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -99,11 +96,31 @@ export function Resources() {
     return matchesCat && matchesSearch;
   });
 
-  const handleOpenPreview = (res: DynamicResource) => {
-    setPreviewingResource(res);
+  // Always open sample preview in a new window
+  const handlePreviewSample = (res: DynamicResource) => {
+    const sampleUrl = res.previewPdfUrl || res.directPdfUrl || res.downloadUrl;
+    if (sampleUrl) {
+      window.open(sampleUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      setToastMessage('Sample preview link is being updated. Please check back shortly.');
+      setTimeout(() => setToastMessage(null), 4000);
+    }
   };
 
-  const handleFreeDownload = (res: DynamicResource) => {
+  // Always open full PDF in a new window
+  const handleOpenPdf = (res: DynamicResource) => {
+    resourceService.recordDownload(res.id);
+    const targetUrl = res.directPdfUrl || res.downloadUrl;
+    if (targetUrl) {
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      setToastMessage('PDF link is being updated. Please try again in a moment.');
+      setTimeout(() => setToastMessage(null), 4000);
+    }
+  };
+
+  // Direct download PDF
+  const handleDownloadPdf = (res: DynamicResource) => {
     resourceService.recordDownload(res.id);
     const rawUrl = res.directPdfUrl || res.downloadUrl;
     const downloadUrl = formatDirectDownloadUrl(rawUrl);
@@ -119,8 +136,8 @@ export function Resources() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else {
-      setPreviewingResource(res);
+    } else if (rawUrl) {
+      window.open(rawUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -152,8 +169,8 @@ export function Resources() {
             orderId
           });
 
-          setToastMessage(`Success! "${res.title}" unlocked and added to your My Courses.`);
-          handleFreeDownload(res);
+          setToastMessage(`Success! "${res.title}" unlocked. Opening complete notes in a new window.`);
+          handleOpenPdf(res);
           setTimeout(() => setToastMessage(null), 5000);
         } catch (err) {
           console.error('Purchase processing error:', err);
@@ -172,7 +189,7 @@ export function Resources() {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen py-10">
+    <div className="bg-slate-50 min-h-screen pb-16">
       <SEO
         title="NIELIT O Level & CCC Study Notes (Free & Paid PDF) 2026"
         description="Download free and premium NIELIT O Level (M1-R5.1, M2-R5.1, M3-R5.1, M4-R5.1) and CCC handwritten PDF notes, solved papers, practical code files & formula sheets."
@@ -192,15 +209,6 @@ export function Resources() {
         ]}
       />
 
-      {/* Secure 2-3 Page Preview & Unlock Modal */}
-      <ResourcePreviewModal
-        resource={previewingResource}
-        onClose={() => setPreviewingResource(null)}
-        onPurchaseSuccess={(res) => {
-          setToastMessage(`Successfully unlocked ${res.title}! Check My Courses tab.`);
-        }}
-      />
-
       {/* Floating Success Toast */}
       {toastMessage && (
         <div className="fixed top-6 right-6 z-50 animate-bounce max-w-md">
@@ -211,363 +219,327 @@ export function Resources() {
         </div>
       )}
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        
-        {/* Page Header */}
-        <div className="max-w-4xl mx-auto text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 bg-blue-100/80 text-blue-900 border border-blue-200 text-xs font-bold px-3.5 py-1 rounded-full">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" /> 
+      {/* =========================================================================
+          HERO BANNER (MATCHING CHAPTER WISE MCQ HUB LAYOUT)
+         ========================================================================= */}
+      <section className="bg-slate-900 text-white pt-10 sm:pt-14 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+        <div className="container mx-auto max-w-6xl text-center relative z-10">
+          <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 text-xs font-black px-3.5 py-1.5 rounded-full mb-4 border border-blue-400/30 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
             <span>Official Study Portal • Free & Premium PDF Library</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-black text-gray-900 tracking-tight">
-            NIELIT O Level & CCC Study Notes & PDF Hub
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+            NIELIT Study Notes & PDF Hub
           </h1>
           
-          <p className="text-xs sm:text-sm text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-300 mt-3 max-w-2xl mx-auto leading-relaxed">
             Access free official syllabuses, practical scripts, and high-scoring handwritten master notes. Read sample pages before unlocking, with 100% lifetime access in your student library.
           </p>
 
           {/* Quick Access Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-1 text-xs">
-            <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full font-bold">
-              <CheckCircle2 className="w-3.5 h-3.5" /> 100% Free Official Syllabuses & Codes
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-6 text-xs">
+            <div className="flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-3 py-1.5 rounded-full font-bold">
+              <CheckCircle2 className="w-3.5 h-3.5" /> 100% Free Official Syllabuses
             </div>
-            <div className="flex items-center gap-1.5 bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-bold">
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400" /> Premium Handwritten Notes (₹39 - ₹49)
+            <div className="flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-400/30 px-3 py-1.5 rounded-full font-bold">
+              <Star className="w-3.5 h-3.5 text-amber-400" /> Premium Handwritten Notes
             </div>
             <Link
               to="/my-courses"
-              className="flex items-center gap-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 px-3 py-1 rounded-full font-bold transition-colors"
+              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white border border-blue-500 px-4 py-1.5 rounded-full font-bold transition-colors"
             >
               <GraduationCap className="w-3.5 h-3.5" /> My Purchased Notes ({purchasedList.length})
             </Link>
           </div>
-
+          
           {isAdmin && (
-            <div className="pt-1">
+            <div className="pt-4">
               <Link
                 to="/admin"
-                className="inline-flex items-center gap-1.5 bg-slate-900 text-amber-300 border border-slate-700 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 px-4 py-2 rounded-full text-xs font-bold shadow-sm hover:bg-slate-700 transition-colors"
               >
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Admin CMS: Add or Set Notes Price & Preview Pages</span>
+                <span>Admin CMS: Manage Notes</span>
               </Link>
             </div>
           )}
         </div>
+      </section>
 
-        {/* Featured Chapter-Wise Interactive Notes Portal Banner */}
-        <div className="max-w-5xl mx-auto rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 p-6 sm:p-8 text-white shadow-xl border border-blue-900/40 relative overflow-hidden">
-          <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2 max-w-xl">
-              <div className="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-300 border border-blue-400/30 px-3 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Interactive Web Chapter Notes
-              </div>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-                Read Notes Online Chapter-by-Chapter
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Structured NIELIT notes organized by Course &rarr; Chapter &rarr; Topic with bilingual Hindi/English explanations, diagrams, exam tips, and quick print mode.
-              </p>
-
-              {/* Quick Course Tags */}
-              <div className="flex flex-wrap gap-2 pt-2">
-                <Link
-                  to="/notes/m1-r5"
-                  className="px-3 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 border border-blue-400/30 text-xs font-bold text-blue-200 transition-colors"
-                >
-                  M1-R5.1 & CCC
-                </Link>
-                <Link
-                  to="/notes/m2-r5"
-                  className="px-3 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-400/30 text-xs font-bold text-emerald-200 transition-colors"
-                >
-                  M2-R5.1 Web
-                </Link>
-                <Link
-                  to="/notes/m3-r5"
-                  className="px-3 py-1 rounded-lg bg-amber-600/30 hover:bg-amber-600/50 border border-amber-400/30 text-xs font-bold text-amber-200 transition-colors"
-                >
-                  M3-R5.1 Python
-                </Link>
-                <Link
-                  to="/notes/m4-r5"
-                  className="px-3 py-1 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400/30 text-xs font-bold text-purple-200 transition-colors"
-                >
-                  M4-R5.1 IoT
-                </Link>
-              </div>
-            </div>
-
-            <div className="shrink-0 w-full md:w-auto">
-              <Link
-                to="/notes/m1-r5/m1-ch1-intro-computer/m1-ch1-memory-systems"
-                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-600/30 hover:scale-[1.02] transition-all"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span>Open Notes Reader →</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Ad Banner */}
-        <AdBanner slotId="resources-mid-page" format="horizontal" fallbackType="app" />
-
-        {/* Search & Comprehensive Filters */}
-        <div className="max-w-4xl mx-auto space-y-4">
-          
-          {/* Search Box */}
-          <div className="relative">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search by topic, paper (M1, M2, M3, M4, Python, CCC, LibreOffice, Syllabus)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 bg-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
-            />
-          </div>
-
-          {/* Price Filter Pill Switches */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <button
-              onClick={() => setPriceFilter('all')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                priceFilter === 'all'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
-              }`}
-            >
-              All Notes ({resourcesList.length})
-            </button>
-            <button
-              onClick={() => setPriceFilter('free')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
-                priceFilter === 'free'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50'
-              }`}
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>100% Free Only</span>
-            </button>
-            <button
-              onClick={() => setPriceFilter('paid')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
-                priceFilter === 'paid'
-                  ? 'bg-amber-500 text-slate-950 shadow-xs'
-                  : 'bg-white text-amber-800 border border-amber-300 hover:bg-amber-50'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              <span>Premium Paid Notes (₹)</span>
-            </button>
-          </div>
-
-          {/* Category Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+      <main className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4 sm:mt-8 mb-16">
+  <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+    
+    {/* Sidebar Navigation */}
+    <aside className="w-full lg:w-64 shrink-0">
+      <div className="sticky top-24 space-y-8">
+        <div>
+          <h3 className="text-xs font-black text-gray-400 mb-3 uppercase tracking-wider ml-1">Categories</h3>
+          <div className="flex lg:flex-col gap-2 overflow-x-auto pb-4 lg:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] -mx-4 px-4 lg:mx-0 lg:px-0">
             <button
               onClick={() => setActiveCategory('all')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-between group ${
                 activeCategory === 'all'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 border border-blue-500'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-blue-200'
               }`}
             >
-              All Papers
+              <span>All Papers</span>
+              <ChevronDown className={`w-4 h-4 -rotate-90 opacity-0 lg:opacity-100 transition-transform ${activeCategory === 'all' ? 'text-blue-200 translate-x-1' : 'text-gray-300 group-hover:text-blue-400 group-hover:translate-x-1'}`} />
             </button>
             {resourceCategories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-between group ${
                   activeCategory === cat.id
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 border border-blue-500'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-blue-200'
                 }`}
               >
-                {cat.title}
+                <span>{cat.title}</span>
+                <ChevronDown className={`w-4 h-4 -rotate-90 opacity-0 lg:opacity-100 transition-transform ${activeCategory === cat.id ? 'text-blue-200 translate-x-1' : 'text-gray-300 group-hover:text-blue-400 group-hover:translate-x-1'}`} />
               </button>
             ))}
           </div>
         </div>
+      </div>
+    </aside>
 
-        {/* Resources Grid with Free / Paid Markers & Price Tags */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredResources.map((res) => {
-            const purchased = isResourcePurchased(res.id);
-            const price = res.price || 49;
-            const originalPrice = res.originalPrice || Math.round(price * 2.5);
-            const discount = Math.round(((originalPrice - price) / originalPrice) * 100);
-            const totalPages = res.totalPages || 45;
-            const previewPages = res.previewPageCount || 3;
+    {/* Main Content Area */}
+    <div className="flex-1 min-w-0 space-y-8">
+      
+      {/* Search & Top Filters */}
+      <div className="space-y-4">
+        {/* Search Box */}
+        <div className="relative max-w-full">
+          <Search className="w-5 h-5 text-gray-400 absolute left-5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search by topic, paper (M1, M2, M3...), Python, CCC, LibreOffice..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-shadow"
+          />
+        </div>
 
-            return (
-              <div
-                key={res.id}
-                className={`bg-white rounded-3xl border transition-all duration-300 p-6 flex flex-col justify-between hover:shadow-xl group relative overflow-hidden ${
-                  res.isPaid 
-                    ? 'border-amber-200/80 hover:border-amber-400 bg-gradient-to-b from-white via-white to-amber-50/20' 
-                    : 'border-slate-200 hover:border-blue-400'
-                }`}
-              >
-                {/* Free / Paid / Purchased Corner Marker */}
-                <div className="flex items-center justify-between gap-2 mb-3">
+        {/* Price Filter Pill Switches */}
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setPriceFilter('all')}
+            className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 border cursor-pointer ${
+              priceFilter === 'all'
+                ? 'bg-blue-50 text-blue-700 border-blue-200 shadow-sm'
+                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            <Gift className={`w-4 h-4 ${priceFilter === 'all' ? 'text-blue-500' : 'text-gray-400'}`} />
+            <span>All ({resourcesList.length})</span>
+          </button>
+          <button
+            onClick={() => setPriceFilter('free')}
+            className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 border ${
+              priceFilter === 'free'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-sm'
+                : 'bg-white text-emerald-600 border-gray-200 hover:bg-emerald-50'
+            }`}
+          >
+            <Gift className="w-4 h-4 text-emerald-500" />
+            <span>Free ({resourcesList.filter(r => !r.isPaid).length})</span>
+          </button>
+          <button
+            onClick={() => setPriceFilter('paid')}
+            className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 border ${
+              priceFilter === 'paid'
+                ? 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
+                : 'bg-white text-amber-600 border-gray-200 hover:bg-amber-50'
+            }`}
+          >
+            <Crown className="w-4 h-4 text-amber-500" />
+            <span>Premium ({resourcesList.filter(r => r.isPaid).length})</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Resources Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 pt-2">
+        {filteredResources.map((res) => {
+          const purchased = isResourcePurchased(res.id);
+          const price = res.price || 49;
+          const totalPages = res.totalPages || 45;
+
+          return (
+            <div
+              key={res.id}
+              className="bg-white border border-gray-200 rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  {/* Free / Premium Badge */}
                   {purchased ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                      <span>UNLOCKED & PURCHASED</span>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wide bg-emerald-50 text-emerald-600 px-3 py-1 rounded-md">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> UNLOCKED
                     </span>
                   ) : res.isPaid ? (
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full">
-                        <Sparkles className="w-3 h-3 text-amber-600" />
-                        <span>PREMIUM NOTES</span>
-                      </span>
-                      <span className="text-[11px] font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
-                        ₹{price} <span className="line-through text-slate-400 font-normal text-[10px]">₹{originalPrice}</span>
-                      </span>
-                    </div>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wide bg-amber-50 text-amber-600 px-3 py-1 rounded-md">
+                      <Crown className="w-3.5 h-3.5 text-amber-500" /> PREMIUM
+                    </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                      <span>100% FREE</span>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wide bg-emerald-50 text-emerald-600 px-3 py-1 rounded-md">
+                      <Gift className="w-3.5 h-3.5 text-emerald-500" /> FREE
                     </span>
                   )}
 
-                  <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                    {res.fileType} • {res.fileSize}
+                  {/* Category / Pages */}
+                  <span className="text-[11px] sm:text-xs font-semibold text-gray-400">
+                    {res.isPaid ? `${totalPages} Pages` : (res.categoryLabel || res.category || "NIELIT O Level")}
                   </span>
                 </div>
 
-                {/* Content Details */}
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    {res.moduleCode && (
-                      <span className="text-[11px] font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-                        {res.moduleCode}
-                      </span>
+                {/* Title & Icon Layout */}
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-base sm:text-lg font-extrabold text-gray-900 leading-snug line-clamp-3">
+                      {res.title}
+                    </h3>
+                    {res.hindiTitle && (
+                      <p className="text-xs text-gray-500 font-medium line-clamp-1 mt-1">
+                        {res.hindiTitle}
+                      </p>
                     )}
-                    <span className="text-[10px] font-medium text-slate-500">
-                      {res.isPaid ? `${totalPages} Pages` : (res.categoryLabel || res.category)}
-                    </span>
-                  </div>
-
-                  <h3 className="font-bold text-sm text-gray-900 leading-snug group-hover:text-blue-600 transition-colors">
-                    {res.title}
-                  </h3>
-                  {res.hindiTitle && (
-                    <p className="text-[11px] font-medium text-blue-700 mt-0.5">
-                      {res.hindiTitle}
-                    </p>
-                  )}
-
-                  <p className="text-xs text-gray-600 mt-2 line-clamp-3 leading-relaxed">
-                    {res.description}
-                  </p>
-
-                  {/* Highlights if present */}
-                  {res.isPaid && res.sampleHighlights && res.sampleHighlights.length > 0 && (
-                    <div className="mt-3 p-2.5 bg-amber-50/70 border border-amber-100 rounded-xl space-y-1">
-                      <p className="text-[10px] font-black text-amber-900 uppercase">Includes:</p>
-                      <ul className="text-[11px] text-amber-800 space-y-0.5">
-                        {res.sampleHighlights.slice(0, 2).map((h, i) => (
-                          <li key={i} className="truncate flex items-center gap-1">
-                            <span className="w-1 h-1 rounded-full bg-amber-500 shrink-0" />
-                            <span>{h}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="flex items-center gap-1.5 mt-3 text-xs font-semibold text-gray-500">
+                      <FileText className="w-4 h-4 text-emerald-500" />
+                      <span>{res.fileType || 'PDF'} • {res.fileSize || '850 KB'}</span>
                     </div>
-                  )}
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-gray-100">
-                    {res.tags?.map((tag, i) => (
-                      <span key={i} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
-                        #{tag}
-                      </span>
-                    ))}
                   </div>
-                </div>
-
-                {/* Bottom Action Area */}
-                <div className="mt-5 pt-4 border-t border-gray-100 space-y-2">
-                  <div className="flex items-center justify-between text-[10px] text-gray-400 font-medium">
-                    <span>📥 {typeof res.downloadCount === 'number' ? `${res.downloadCount}+` : res.downloadCount} downloads</span>
-                    {res.isPaid && !purchased && (
-                      <span className="text-amber-700 font-bold">{previewPages} Pages Free Preview</span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-1">
-                    {purchased || !res.isPaid ? (
-                      /* Free or Already Unlocked Actions */
-                      <>
-                        <button
-                          onClick={() => handleOpenPreview(res)}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-slate-600" />
-                          <span>View PDF</span>
-                        </button>
-
-                        <button
-                          onClick={() => handleFreeDownload(res)}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 active:scale-95 cursor-pointer"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>Download PDF</span>
-                        </button>
-                      </>
-                    ) : (
-                      /* Paid Notes Actions: Preview (2-3 Pages) + Direct Unlock */
-                      <>
-                        <button
-                          onClick={() => handleOpenPreview(res)}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 bg-amber-100/70 hover:bg-amber-100 border border-amber-200 transition-colors cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-amber-700" />
-                          <span>Preview Sample</span>
-                        </button>
-
-                        <button
-                          onClick={() => handleDirectUnlock(res)}
-                          disabled={isUnlockingId === res.id}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 transition-all shadow-md shadow-amber-500/25 active:scale-95 cursor-pointer"
-                        >
-                          {isUnlockingId === res.id ? (
-                            <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <Lock className="w-3.5 h-3.5 text-slate-950 fill-current" />
-                          )}
-                          <span>Unlock ₹{price}</span>
-                        </button>
-                      </>
-                    )}
+                  
+                  {/* Dynamic Icon right side */}
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-full flex items-center justify-center border shadow-inner ${
+                    res.category === 'm2-r5' ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100/50 text-purple-400' :
+                    res.category === 'm3-r5' ? 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100/50 text-blue-400' :
+                    res.category === 'm4-r5' ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100/50 text-amber-400' :
+                    res.category === 'ccc' ? 'bg-gradient-to-br from-rose-50 to-red-50 border-rose-100/50 text-rose-400' :
+                    'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-100/50 text-emerald-400'
+                  }`}>
+                     {res.category === 'm2-r5' ? <Code className="w-8 h-8 sm:w-10 sm:h-10" /> :
+                      res.category === 'm3-r5' ? <Code className="w-8 h-8 sm:w-10 sm:h-10" /> :
+                      res.category === 'm4-r5' ? <Lightning className="w-8 h-8 sm:w-10 sm:h-10" /> :
+                      res.category === 'ccc' ? <FileText className="w-8 h-8 sm:w-10 sm:h-10" /> :
+                      <FileText className="w-8 h-8 sm:w-10 sm:h-10" />}
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
 
-        {filteredResources.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-3xl border border-gray-200 space-y-3">
-            <FileText className="w-12 h-12 text-gray-300 mx-auto" />
-            <h4 className="text-base font-bold text-gray-900">No study notes found</h4>
-            <p className="text-xs text-gray-500">Try changing your search keywords or switching filter categories above.</p>
-          </div>
-        )}
-
-        {/* BOTTOM RESOURCES MONETIZATION BANNER */}
-        <div className="pt-6">
-          <AdBanner slotId="resources-grid-bottom" format="horizontal" fallbackType="notes" />
-        </div>
-
+              <div className="flex items-center gap-2 sm:gap-3 mt-6 pt-6 border-t border-gray-100">
+                {purchased || !res.isPaid ? (
+                  <>
+                    <button
+                      onClick={() => handleOpenPdf(res)}
+                      title="View PDF"
+                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                    >
+                      <Eye className="w-4 h-4" />
+                      <span>View PDF</span>
+                    </button>
+                    <button
+                      onClick={() => handleDownloadPdf(res)}
+                      title="Download PDF"
+                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handlePreviewSample(res)}
+                      title="Preview"
+                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                    >
+                      <Eye className="w-4 h-4" />
+                      <span>Preview</span>
+                    </button>
+                    <button
+                      onClick={() => handleDirectUnlock(res)}
+                      disabled={isUnlockingId === res.id}
+                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs sm:text-sm shadow-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                    >
+                      {isUnlockingId === res.id ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Lock className="w-4 h-4" />
+                      )}
+                      <span>Unlock ₹{price}</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
+
+      {filteredResources.length === 0 && (
+        <div className="text-center py-20 bg-white rounded-3xl border border-gray-200">
+          <Search className="w-10 h-10 text-gray-300 mx-auto mb-4" />
+          <h4 className="text-base font-bold text-gray-900">No study notes found</h4>
+          <p className="text-sm text-gray-500 mt-1">Try changing your search keywords or switching filters above.</p>
+        </div>
+      )}
+
+      {/* BOTTOM FEATURES BANNER */}
+      <div className="mt-12 bg-white border border-gray-200 rounded-3xl p-6 sm:p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4">
+             <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-6 h-6" />
+             </div>
+             <div>
+                <h4 className="font-bold text-gray-900 text-sm">100% Trusted</h4>
+                <p className="text-xs text-gray-500 mt-0.5">Quality notes you can rely on</p>
+             </div>
+          </div>
+          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4">
+             <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
+                <Bookmark className="w-6 h-6" />
+             </div>
+             <div>
+                <h4 className="font-bold text-gray-900 text-sm">Exam Focused</h4>
+                <p className="text-xs text-gray-500 mt-0.5">Curated for better results</p>
+             </div>
+          </div>
+          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4">
+             <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center shrink-0">
+                <Lightning className="w-6 h-6" />
+             </div>
+             <div>
+                <h4 className="font-bold text-gray-900 text-sm">Regular Updates</h4>
+                <p className="text-xs text-gray-500 mt-0.5">Fresh content every week</p>
+             </div>
+          </div>
+          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4">
+             <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+                <Cloud className="w-6 h-6" />
+             </div>
+             <div>
+                <h4 className="font-bold text-gray-900 text-sm">Download & Access</h4>
+                <p className="text-xs text-gray-500 mt-0.5">Study anytime, anywhere</p>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* BOTTOM RESOURCES MONETIZATION BANNER */}
+      <div className="pt-8">
+        <AdBanner slotId="resources-grid-bottom" format="horizontal" fallbackType="notes" />
+      </div>
+
+    </div>
+  </div>
+</main>
 
       {/* Student Auth Modal */}
       <StudentAuthModal
