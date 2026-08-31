@@ -22,7 +22,7 @@ import {
 import { SEO } from '../components/SEO';
 import { AdBanner } from '../components/AdBanner';
 import { DynamicResource, PurchasedResource } from '../types/database';
-import { resourceService } from '../services/resourceService';
+import { resourceService, formatDirectDownloadUrl } from '../services/resourceService';
 import { resourceCategories } from '../data/resources';
 import { ResourcePreviewModal } from '../components/ResourcePreviewModal';
 import { useAuth } from '../context/AuthContext';
@@ -105,13 +105,14 @@ export function Resources() {
 
   const handleFreeDownload = (res: DynamicResource) => {
     resourceService.recordDownload(res.id);
-    const url = res.directPdfUrl || res.downloadUrl;
-    if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/downloads/'))) {
+    const rawUrl = res.directPdfUrl || res.downloadUrl;
+    const downloadUrl = formatDirectDownloadUrl(rawUrl);
+    if (downloadUrl && (downloadUrl.startsWith('http://') || downloadUrl.startsWith('https://') || downloadUrl.startsWith('/downloads/'))) {
       const link = document.createElement('a');
-      link.href = url;
-      const downloadFileName = url.startsWith('/downloads/') 
-        ? url.split('/').pop() || `${res.id}.pdf`
-        : `${res.id}.pdf`;
+      link.href = downloadUrl;
+      const downloadFileName = downloadUrl.startsWith('/downloads/') 
+        ? downloadUrl.split('/').pop() || `${res.id}.pdf`
+        : `${res.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
       link.setAttribute('download', downloadFileName);
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noopener noreferrer');

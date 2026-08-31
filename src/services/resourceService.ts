@@ -26,17 +26,74 @@ export function formatDirectPdfUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
   
-  // Google Drive conversion
+  // Google Drive file link: /file/d/{ID}
   if (trimmed.includes('drive.google.com/file/d/')) {
-    const match = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const match = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (match && match[1]) {
       return `https://drive.google.com/file/d/${match[1]}/preview`;
+    }
+  }
+
+  // Google Drive open id link: drive.google.com/open?id={ID} or uc?id={ID}
+  if (trimmed.includes('drive.google.com') && (trimmed.includes('id=') || trimmed.includes('/open'))) {
+    const match = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/file/d/${match[1]}/preview`;
+    }
+  }
+
+  // Google Docs / Sheets / Slides
+  if (trimmed.includes('docs.google.com/document/d/')) {
+    const match = trimmed.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://docs.google.com/document/d/${match[1]}/preview`;
+    }
+  }
+  if (trimmed.includes('docs.google.com/presentation/d/')) {
+    const match = trimmed.match(/\/presentation\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://docs.google.com/presentation/d/${match[1]}/embed`;
+    }
+  }
+  if (trimmed.includes('docs.google.com/spreadsheets/d/')) {
+    const match = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://docs.google.com/spreadsheets/d/${match[1]}/preview`;
     }
   }
   
   // Dropbox conversion
   if (trimmed.includes('dropbox.com') && trimmed.includes('dl=0')) {
     return trimmed.replace('dl=0', 'raw=1');
+  }
+
+  return trimmed;
+}
+
+// Helper to convert Google Drive or Cloud links into direct download links
+export function formatDirectDownloadUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+
+  // Google Drive file link: /file/d/{ID}
+  if (trimmed.includes('drive.google.com/file/d/')) {
+    const match = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    }
+  }
+
+  // Google Drive open id link
+  if (trimmed.includes('drive.google.com') && trimmed.includes('id=')) {
+    const match = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    }
+  }
+
+  // Dropbox conversion
+  if (trimmed.includes('dropbox.com') && trimmed.includes('dl=0')) {
+    return trimmed.replace('dl=0', 'dl=1');
   }
 
   return trimmed;

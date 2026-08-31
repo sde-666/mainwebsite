@@ -23,7 +23,7 @@ import {
 import { SEO } from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
 import { paidCourseService } from '../services/paidCourseService';
-import { resourceService } from '../services/resourceService';
+import { resourceService, formatDirectDownloadUrl } from '../services/resourceService';
 import { CourseItem, CourseChapter, CourseLesson, CourseEnrollment } from '../types/paidCourse';
 import { PurchasedResource, DynamicResource } from '../types/database';
 import { StudentAuthModal } from '../components/auth/StudentAuthModal';
@@ -143,13 +143,14 @@ export function MyCourses() {
   );
 
   const handleDownloadPurchasedPdf = (note: PurchasedResource) => {
-    const url = note.directPdfUrl || note.downloadUrl;
-    if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/downloads/'))) {
+    const rawUrl = note.directPdfUrl || note.downloadUrl;
+    const downloadUrl = formatDirectDownloadUrl(rawUrl);
+    if (downloadUrl && (downloadUrl.startsWith('http://') || downloadUrl.startsWith('https://') || downloadUrl.startsWith('/downloads/'))) {
       const link = document.createElement('a');
-      link.href = url;
-      const downloadFileName = url.startsWith('/downloads/') 
-        ? url.split('/').pop() || `${note.resourceId}.pdf`
-        : `${note.resourceId}.pdf`;
+      link.href = downloadUrl;
+      const downloadFileName = downloadUrl.startsWith('/downloads/') 
+        ? downloadUrl.split('/').pop() || `${note.resourceId}.pdf`
+        : `${note.resourceTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
       link.setAttribute('download', downloadFileName);
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noopener noreferrer');
