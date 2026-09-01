@@ -134,9 +134,25 @@ export function MockTest() {
     return quizzes.filter(q => q.module === filterId).length;
   };
 
+  // Utility to shuffle an array (Fisher-Yates)
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   // Start a specific test
   const handleStartTest = (quiz: DynamicQuizTest) => {
-    setSelectedQuiz(quiz);
+    // Shuffle the questions before starting
+    const shuffledQuestions = shuffleArray(quiz.questions || []);
+
+    setSelectedQuiz({
+      ...quiz,
+      questions: shuffledQuestions
+    });
     setCurrentIndex(0);
     setUserAnswers({});
     setMarkedForReview({});

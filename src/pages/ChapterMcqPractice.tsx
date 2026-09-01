@@ -50,6 +50,16 @@ export function ChapterMcqPractice() {
   // End of chapter completion summary modal
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState<boolean>(false);
 
+  // Utility to shuffle an array (Fisher-Yates)
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   useEffect(() => {
     const pMeta = chapterMcqService.getPaperMeta(moduleId);
     setPaper(pMeta);
@@ -58,7 +68,7 @@ export function ChapterMcqPractice() {
     setChapterMeta(cMeta);
 
     const mcqs = chapterMcqService.getByChapter(moduleId, chapterNum);
-    setQuestions(mcqs);
+    setQuestions(shuffleArray(mcqs));
     setCurrentIndex(0);
     setUserAnswers({});
     setIsCompletedModalOpen(false);
@@ -66,7 +76,20 @@ export function ChapterMcqPractice() {
     // Subscribe to real-time changes from Firestore
     const unsub = chapterMcqService.subscribe(() => {
       const updatedMcqs = chapterMcqService.getByChapter(moduleId, chapterNum);
-      setQuestions(updatedMcqs);
+      
+      // Keep existing shuffled order but update contents, append any new questions
+      setQuestions(prevQuestions => {
+        const prevIds = prevQuestions.map(q => q.id);
+        const newMcqs = updatedMcqs.filter(q => !prevIds.includes(q.id));
+        
+        const updatedList = prevQuestions.map(prevQ => {
+           const found = updatedMcqs.find(q => q.id === prevQ.id);
+           return found || prevQ;
+        }).filter(q => updatedMcqs.some(uQ => uQ.id === q.id)); // Also remove deleted ones
+        
+        return [...updatedList, ...newMcqs];
+      });
+
       const updatedCMeta = chapterMcqService.getChapterMeta(moduleId, chapterNum);
       setChapterMeta(updatedCMeta);
       const updatedPMeta = chapterMcqService.getPaperMeta(moduleId);
@@ -127,6 +150,8 @@ export function ChapterMcqPractice() {
   // Reset entire chapter test
   const handleResetChapter = () => {
     if (window.confirm('Are you sure you want to reset all answers and re-practice this chapter?')) {
+      const mcqs = chapterMcqService.getByChapter(moduleId, chapterNum);
+      setQuestions(shuffleArray(mcqs));
       setUserAnswers({});
       setCurrentIndex(0);
       setIsCompletedModalOpen(false);
