@@ -121,21 +121,21 @@ export function ChapterCsvUploadModal({
       <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden animate-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
-        <div className="px-6 py-4 bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex items-center justify-between">
+        <div className="px-6 py-4 bg-white border-b border-slate-200 text-slate-900 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-600/50 rounded-lg border border-blue-400/30">
-              <FileSpreadsheet className="w-5 h-5 text-amber-400" />
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-200">
+              <FileSpreadsheet className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h3 className="text-base font-bold">Upload Chapter MCQs via CSV</h3>
-              <p className="text-xs text-blue-200">
-                Target: <strong>{moduleId.toUpperCase()}</strong> • Chapter <strong>{chapterNumber}</strong>
+              <h3 className="text-base font-bold text-slate-900">Upload Chapter MCQs via CSV</h3>
+              <p className="text-xs text-slate-600">
+                Target: <strong className="text-slate-900">{moduleId.toUpperCase()}</strong> • Chapter <strong className="text-slate-900">{chapterNumber}</strong>
               </p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="text-slate-300 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+            className="text-slate-500 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -173,7 +173,7 @@ export function ChapterCsvUploadModal({
               className={`py-2 px-4 border-b-2 transition-colors ${
                 activeTab === 'upload'
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
+                  : 'border-transparent text-slate-600 hover:text-slate-800'
               }`}
             >
               Upload File (.csv)
@@ -184,7 +184,7 @@ export function ChapterCsvUploadModal({
               className={`py-2 px-4 border-b-2 transition-colors ${
                 activeTab === 'paste'
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
+                  : 'border-transparent text-slate-600 hover:text-slate-800'
               }`}
             >
               Paste CSV Content Directly
@@ -219,7 +219,7 @@ export function ChapterCsvUploadModal({
                   <div className="flex flex-col items-center gap-2 text-emerald-700">
                     <CheckCircle2 className="w-10 h-10 text-emerald-600" />
                     <p className="font-bold text-sm">{fileName}</p>
-                    <p className="text-xs text-slate-500">Click or drag another file to replace</p>
+                    <p className="text-xs text-slate-600">Click or drag another file to replace</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-slate-600">
@@ -229,7 +229,7 @@ export function ChapterCsvUploadModal({
                     <p className="font-bold text-sm text-slate-800">
                       Drag & Drop your CSV file here, or <span className="text-blue-600 underline">Browse</span>
                     </p>
-                    <p className="text-xs text-slate-400">Supports standard UTF-8 CSV exported from Excel or Google Sheets</p>
+                    <p className="text-xs text-slate-600">Supports standard UTF-8 CSV exported from Excel or Google Sheets</p>
                   </div>
                 )}
               </div>
@@ -270,7 +270,7 @@ export function ChapterCsvUploadModal({
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-lg font-black text-slate-900 block">{parsedResult.totalRows}</span>
-                  <span className="text-[11px] font-semibold text-slate-500">Total Rows</span>
+                  <span className="text-[11px] font-semibold text-slate-600">Total Rows</span>
                 </div>
                 <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
                   <span className="text-lg font-black text-emerald-600 block">{parsedResult.validQuestions.length}</span>
@@ -350,7 +350,7 @@ export function ChapterCsvUploadModal({
             disabled={!parsedResult || parsedResult.validQuestions.length === 0 || isProcessing}
             className={`px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all ${
               !parsedResult || parsedResult.validQuestions.length === 0 || isProcessing
-                ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                ? 'bg-slate-300 text-slate-600 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
             }`}
           >

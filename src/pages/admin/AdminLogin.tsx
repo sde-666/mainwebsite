@@ -63,13 +63,13 @@ export function AdminLogin() {
           </div>
         </div>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
           <span>Restricted Admin Portal</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Educator Sign In
         </h2>
-        <p className="text-xs sm:text-sm text-slate-400">
+        <p className="text-xs sm:text-sm text-slate-600">
           Sign in with your pre-authorized administrator credentials.
         </p>
       </div>
@@ -78,8 +78,8 @@ export function AdminLogin() {
         <div className="bg-white border border-slate-200 py-8 px-6 shadow-2xl rounded-3xl sm:px-10">
           
           {error && (
-            <div className="mb-5 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+            <div className="mb-5 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-700 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
@@ -90,7 +90,7 @@ export function AdminLogin() {
                 Admin Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-600">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -99,7 +99,7 @@ export function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@skilldotpy.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-xs placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                 />
               </div>
             </div>
@@ -109,7 +109,7 @@ export function AdminLogin() {
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-600">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -118,7 +118,7 @@ export function AdminLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-xs placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                 />
               </div>
             </div>
@@ -141,13 +141,13 @@ export function AdminLogin() {
 
           {/* Security notice */}
           <div className="mt-6 pt-5 border-t border-slate-200 text-center space-y-3">
-            <p className="text-[11px] text-slate-500 leading-relaxed">
+            <p className="text-[11px] text-slate-600 leading-relaxed">
               🔒 Public account creation is disabled. Only user accounts created by the administrator directly inside the Firebase Console can access this portal.
             </p>
             <div>
               <a
                 href="/"
-                className="text-xs text-slate-500 hover:text-slate-900 transition-colors inline-flex items-center gap-1"
+                className="text-xs text-slate-600 hover:text-slate-900 transition-colors inline-flex items-center gap-1"
               >
                 ← Back to Main Website
               </a>

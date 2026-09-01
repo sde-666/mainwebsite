@@ -203,9 +203,9 @@ export function AdminChapterMcqPanel() {
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 animate-bounce">
           <div className={`p-4 rounded-xl shadow-2xl flex items-center gap-3 border text-xs font-bold ${
-            toast.type === 'success' ? 'bg-emerald-950 border-emerald-500 text-emerald-200' : 'bg-rose-950 border-rose-500 text-rose-200'
+            toast.type === 'success' ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-lg' : 'bg-rose-50 border-rose-300 text-rose-900 shadow-lg'
           }`}>
-            {toast.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : <AlertCircle className="w-5 h-5 text-rose-400" />}
+            {toast.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-700" /> : <AlertCircle className="w-5 h-5 text-rose-700" />}
             <span>{toast.msg}</span>
           </div>
         </div>
@@ -216,18 +216,18 @@ export function AdminChapterMcqPanel() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-700">
                 Chapter-Wise MCQ Management Portal
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-500/30">
                 <Cloud className="w-3 h-3" />
                 <span>Cloud Synced (Multi-Device Active)</span>
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
               NIELIT O Level & CCC Chapter MCQs
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-600 mt-1">
               Questions uploaded via Single Question or CSV are stored directly in Firebase Firestore and instantly accessible on mobile phones, tablets, and all student devices.
             </p>
           </div>
@@ -236,7 +236,7 @@ export function AdminChapterMcqPanel() {
             <button
               onClick={handleSyncAllToCloud}
               disabled={isSyncingCloud || isSaving}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
               title="Ensure all local and uploaded questions are synced to Firebase Cloud Firestore"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isSyncingCloud ? 'animate-spin' : ''}`} />
@@ -253,7 +253,7 @@ export function AdminChapterMcqPanel() {
 
             <button
               onClick={() => setIsCsvModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-100 rounded-xl text-xs font-bold shadow-md transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-md transition-colors cursor-pointer"
             >
               <Upload className="w-4 h-4" />
               <span>Upload CSV</span>
@@ -289,7 +289,7 @@ export function AdminChapterMcqPanel() {
                 className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                   isSelected 
                     ? 'bg-blue-600 border-blue-500 text-white shadow-lg' 
-                    : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-800 hover:border-slate-300'
                 }`}
               >
                 <span className="text-[10px] uppercase font-bold tracking-wider block opacity-80">
@@ -315,13 +315,13 @@ export function AdminChapterMcqPanel() {
           <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <div>
               <h3 className="text-sm font-bold text-slate-900">Syllabus Chapters</h3>
-              <span className="text-[11px] text-slate-500">Select chapter to manage questions</span>
+              <span className="text-[11px] text-slate-600">Select chapter to manage questions</span>
             </div>
             <a
               href={`/chapter-wise-mcq/${selectedModule}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1"
+              className="text-[10px] text-blue-700 hover:text-blue-700 font-bold flex items-center gap-1"
             >
               <span>Student View</span>
               <Eye className="w-3 h-3" />
@@ -339,26 +339,32 @@ export function AdminChapterMcqPanel() {
                   onClick={() => setSelectedChapter(ch.chapterNumber)}
                   className={`w-full p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                     isSelected
-                      ? 'bg-blue-600/20 border-blue-500 text-white font-bold'
-                      : 'bg-slate-50/60 border-slate-200 text-slate-700 hover:bg-slate-100/60'
+                      ? 'bg-blue-600 border-blue-600 text-white font-bold shadow-sm'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                   }`}
                 >
                   <div className="min-w-0 pr-2">
                     <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-blue-400 font-bold">
+                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                        isSelected ? 'bg-blue-700 text-white' : 'bg-slate-100 text-blue-700'
+                      }`}>
                         Ch {ch.chapterNumber}
                       </span>
                     </div>
-                    <span className="text-xs font-semibold block truncate">
+                    <span className={`text-xs block truncate ${isSelected ? 'text-white font-bold' : 'text-slate-900 font-semibold'}`}>
                       {ch.title}
                     </span>
-                    <span className="text-[10px] text-slate-500 block truncate">
+                    <span className={`text-[10px] block truncate ${isSelected ? 'text-blue-100' : 'text-slate-600'}`}>
                       {ch.hindiTitle}
                     </span>
                   </div>
 
                   <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full shrink-0 font-bold ${
-                    count > 0 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-100 text-slate-500'
+                    isSelected
+                      ? 'bg-blue-700 text-white border border-blue-400'
+                      : count > 0 
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                        : 'bg-slate-100 text-slate-600'
                   }`}>
                     {count} MCQs
                   </span>
@@ -375,17 +381,17 @@ export function AdminChapterMcqPanel() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono bg-blue-900 text-blue-300 px-2 py-0.5 rounded-md font-bold">
+                <span className="text-[10px] font-mono bg-blue-900 text-blue-700 px-2 py-0.5 rounded-md font-bold">
                   Chapter {selectedChapter}
                 </span>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-slate-600">
                   {selectedModule.toUpperCase()}
                 </span>
               </div>
               <h3 className="text-base font-bold text-slate-900 mt-1">
                 {curChapterMeta?.title}
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 {curChapterMeta?.hindiTitle}
               </p>
             </div>
@@ -405,7 +411,7 @@ export function AdminChapterMcqPanel() {
 
           {/* Search Bar */}
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-600 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search questions in this chapter..."
@@ -425,7 +431,7 @@ export function AdminChapterMcqPanel() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono text-blue-400 font-bold px-1.5 py-0.5 rounded bg-blue-950/60 border border-blue-800/40">
+                      <span className="text-[10px] font-mono text-blue-700 font-bold px-1.5 py-0.5 rounded bg-blue-950/60 border border-blue-800/40">
                         Q{idx + 1}
                       </span>
                       <span className="text-xs font-bold text-slate-900">
@@ -434,7 +440,7 @@ export function AdminChapterMcqPanel() {
                     </div>
 
                     {q.hindiQuestion && (
-                      <p className="text-[11px] text-slate-500 font-medium pl-6">
+                      <p className="text-[11px] text-slate-600 font-medium pl-6">
                         {q.hindiQuestion}
                       </p>
                     )}
@@ -452,7 +458,7 @@ export function AdminChapterMcqPanel() {
                     <button
                       onClick={() => handleDeleteItem(q.id)}
                       disabled={isSaving}
-                      className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-400 border border-rose-900/30 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors cursor-pointer"
                       title="Delete Question"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -471,23 +477,23 @@ export function AdminChapterMcqPanel() {
                         key={optIdx}
                         className={`p-2.5 rounded-xl border flex items-center gap-2.5 ${
                           isCorrect 
-                            ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-200' 
+                            ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-medium' 
                             : 'bg-white/60 border-slate-200 text-slate-700'
                         }`}
                       >
                         <span className={`w-5 h-5 rounded-lg font-mono font-bold text-[10px] flex items-center justify-center shrink-0 ${
-                          isCorrect ? 'bg-emerald-500 text-slate-100' : 'bg-slate-100 text-slate-500'
+                          isCorrect ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600'
                         }`}>
                           {String.fromCharCode(65 + optIdx)}
                         </span>
                         <div className="min-w-0 flex-1">
                           <span className="block truncate font-medium">{opt}</span>
                           {hindiOpt && (
-                            <span className="block truncate text-[10px] text-slate-500">{hindiOpt}</span>
+                            <span className="block truncate text-[10px] text-slate-600">{hindiOpt}</span>
                           )}
                         </div>
                         {isCorrect && (
-                          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <Check className="w-4 h-4 text-emerald-700 shrink-0" />
                         )}
                       </div>
                     );
@@ -496,8 +502,8 @@ export function AdminChapterMcqPanel() {
 
                 {/* Explanation */}
                 {(q.explanation || q.hindiExplanation) && (
-                  <div className="p-2.5 bg-white/40 rounded-xl border border-slate-200/80 text-[11px] text-slate-500 space-y-1">
-                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                  <div className="p-2.5 bg-white/40 rounded-xl border border-slate-200/80 text-[11px] text-slate-600 space-y-1">
+                    <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">
                       Explanation:
                     </span>
                     {q.explanation && <p>{q.explanation}</p>}
@@ -510,13 +516,13 @@ export function AdminChapterMcqPanel() {
             {filteredMcqs.length === 0 && (
               <div className="text-center py-12 bg-slate-50/40 rounded-2xl border border-slate-200/50 space-y-3">
                 <FileSpreadsheet className="w-10 h-10 text-slate-600 mx-auto" />
-                <p className="text-xs text-slate-500 font-medium">
+                <p className="text-xs text-slate-600 font-medium">
                   No MCQs found for this chapter yet.
                 </p>
                 <div className="flex items-center justify-center gap-2">
                   <button
                     onClick={() => setIsCsvModalOpen(true)}
-                    className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-100 font-bold rounded-xl text-xs"
+                    className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs"
                   >
                     Upload CSV for Ch {selectedChapter}
                   </button>
@@ -549,7 +555,7 @@ export function AdminChapterMcqPanel() {
           <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
-                <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">
+                <span className="text-[10px] text-blue-700 font-bold uppercase tracking-wider">
                   {selectedModule.toUpperCase()} • Chapter {selectedChapter}
                 </span>
                 <h3 className="text-base font-bold text-slate-900">
@@ -558,7 +564,7 @@ export function AdminChapterMcqPanel() {
               </div>
               <button 
                 onClick={() => setIsEditorModalOpen(false)}
-                className="text-slate-500 hover:text-slate-900"
+                className="text-slate-600 hover:text-slate-900"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -575,7 +581,7 @@ export function AdminChapterMcqPanel() {
                   placeholder="e.g. Which shortcut key is used to save a document in LibreOffice Writer?"
                   value={editingItem.question || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, question: e.target.value })}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -588,7 +594,7 @@ export function AdminChapterMcqPanel() {
                   placeholder="e.g. लिब्रे ऑफिस राइटर में डॉक्यूमेंट को सेव करने के लिए किस शॉर्टकट कुंजी का उपयोग किया जाता है?"
                   value={editingItem.hindiQuestion || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, hindiQuestion: e.target.value })}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -606,7 +612,7 @@ export function AdminChapterMcqPanel() {
                       className={`w-9 h-9 rounded-xl border font-black text-xs flex items-center justify-center shrink-0 cursor-pointer transition-all ${
                         editingItem.correctIndex === optIdx
                           ? 'bg-emerald-600 border-emerald-500 text-white shadow-xs scale-105'
-                          : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900'
+                          : 'bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900'
                       }`}
                       title="Click to mark as correct answer"
                     >
@@ -623,7 +629,7 @@ export function AdminChapterMcqPanel() {
                         newOpts[optIdx] = e.target.value;
                         setEditingItem({ ...editingItem, options: newOpts });
                       }}
-                      className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-white focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
 
                     <input
@@ -635,7 +641,7 @@ export function AdminChapterMcqPanel() {
                         newHindi[optIdx] = e.target.value;
                         setEditingItem({ ...editingItem, hindiOptions: newHindi });
                       }}
-                      className="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-white focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 ))}
@@ -652,7 +658,7 @@ export function AdminChapterMcqPanel() {
                     value={editingItem.explanation || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, explanation: e.target.value })}
                     placeholder="Brief explanation shown instantly after student selects answer..."
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -665,7 +671,7 @@ export function AdminChapterMcqPanel() {
                     value={editingItem.hindiExplanation || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, hindiExplanation: e.target.value })}
                     placeholder="विस्तृत व्याख्या जो उत्तर चुनने के तुरंत बाद दिखाई देगी..."
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -674,7 +680,7 @@ export function AdminChapterMcqPanel() {
                 <button
                   type="button"
                   onClick={() => setIsEditorModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900"
                 >
                   Cancel
                 </button>
