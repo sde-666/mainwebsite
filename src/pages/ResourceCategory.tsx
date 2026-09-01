@@ -166,6 +166,7 @@ export function ResourceCategory() {
       studentName: userProfile?.displayName || currentUser.displayName || 'Student',
       studentEmail: currentUser.email || 'student@skilldotpy.com',
       studentPhone: userProfile?.phoneNumber || '9876543210',
+      userId: currentUser.uid,
       onSuccess: async (paymentId, orderId) => {
         try {
           await resourceService.purchaseResource({

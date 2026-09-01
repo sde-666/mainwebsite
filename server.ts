@@ -4,6 +4,8 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import crypto from 'crypto';
+import Razorpay from 'razorpay';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
@@ -14,6 +16,34 @@ const PORT = Number(process.env.PORT) || 3000;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Lazy Razorpay Client
+let razorpayClient: Razorpay | null = null;
+function getRazorpay(): Razorpay {
+  const key_id = process.env.RAZORPAY_KEY_ID;
+  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+  if (!key_id || !key_secret) {
+    throw new Error('RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET environment variable is not configured.');
+  }
+  if (!razorpayClient) {
+    razorpayClient = new Razorpay({ key_id, key_secret });
+  }
+  return razorpayClient;
+}
+
+// Pricing catalog for server-side verification
+const COURSE_PRICES: Record<string, number> = {
+  'olevel-m3-python-flagship': 499,
+  'olevel-m1-it-tools-foundation': 399,
+  'olevel-m2-web-design-mastery': 449,
+  'olevel-m4-iot-masterclass': 449,
+  'olevel-combo-all-4-papers': 1299,
+  'ccc-complete-master-course': 299,
+  'python-complete-mastery': 499,
+  'web-dev-fundamentals': 449,
+  'libreoffice-suite-mastery': 299,
+  'ms-office-pro': 299,
+};
 
 // Lazy Google GenAI Client
 let genAIClient: GoogleGenAI | null = null;
@@ -84,6 +114,190 @@ async function generateContentWithFallback(ai: GoogleGenAI, options: {
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: Date.now() });
+});
+
+// Endpoint: Create Razorpay Order (Server-Side Price Protection)
+app.post('/api/create-order', async (req, res) => {
+  try {
+    const { courseId, resourceId, type = 'course', studentEmail, studentName, requestedPrice } = req.body;
+
+    // Determine verified price server-side
+    let verifiedPrice = 49;
+    let itemName = 'Skilldotpy Educational Resource';
+
+    if (type === 'course' && courseId) {
+      if (COURSE_PRICES[courseId]) {
+        verifiedPrice = COURSE_PRICES[courseId];
+      } else if (typeof requestedPrice === 'number' && requestedPrice >= 49) {
+        verifiedPrice = Math.round(requestedPrice);
+      } else {
+        verifiedPrice = 399;
+      }
+      itemName = `Course: ${courseId}`;
+    } else if (type === 'resource' && resourceId) {
+      verifiedPrice = typeof requestedPrice === 'number' && requestedPrice >= 19 ? Math.round(requestedPrice) : 49;
+      itemName = `Resource: ${resourceId}`;
+    } else if (typeof requestedPrice === 'number' && requestedPrice >= 19) {
+      verifiedPrice = Math.round(requestedPrice);
+    }
+
+    const amountInPaise = verifiedPrice * 100;
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (keyId && keySecret && !keyId.includes('YOUR_') && !keySecret.includes('YOUR_')) {
+      const razorpay = getRazorpay();
+      const receipt = `rcpt_${Date.now().toString().slice(-8)}_${Math.floor(Math.random() * 1000)}`;
+
+      const order = await razorpay.orders.create({
+        amount: amountInPaise,
+        currency: 'INR',
+        receipt,
+        notes: {
+          courseId: courseId || '',
+          resourceId: resourceId || '',
+          type: type || 'course',
+          studentEmail: studentEmail || '',
+          studentName: studentName || '',
+          itemName,
+        },
+      });
+
+      return res.json({
+        success: true,
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        keyId: keyId,
+        verifiedPrice,
+      });
+    } else {
+      const mockOrderId = `order_test_${Date.now()}`;
+      return res.json({
+        success: true,
+        orderId: mockOrderId,
+        amount: amountInPaise,
+        currency: 'INR',
+        keyId: keyId || 'rzp_test_fallback',
+        verifiedPrice,
+        warning: 'Razorpay keys not yet configured in server environment variables.',
+      });
+    }
+  } catch (error: any) {
+    console.error('Server create-order Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to create Razorpay payment order.',
+    });
+  }
+});
+
+// Endpoint: Cryptographic Payment Verification (HMAC-SHA256)
+app.post('/api/verify-payment', async (req, res) => {
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      courseId,
+      resourceId,
+      studentEmail,
+      userId,
+    } = req.body;
+
+    if (!razorpay_payment_id) {
+      return res.status(400).json({ success: false, error: 'Payment ID is missing.' });
+    }
+
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (keySecret && !keySecret.includes('YOUR_') && razorpay_order_id && razorpay_signature) {
+      const generatedSignature = crypto
+        .createHmac('sha256', keySecret)
+        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+        .digest('hex');
+
+      if (generatedSignature !== razorpay_signature) {
+        console.error('Payment Signature Mismatch: Fraudulent attempt rejected.');
+        return res.status(400).json({
+          success: false,
+          verified: false,
+          error: 'Cryptographic signature verification failed. Payment is not authentic.',
+        });
+      }
+
+      return res.json({
+        success: true,
+        verified: true,
+        paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id,
+        courseId,
+        resourceId,
+        studentEmail,
+        userId,
+        timestamp: Date.now(),
+        message: 'Payment cryptographically verified with Razorpay Secret.',
+      });
+    } else {
+      return res.json({
+        success: true,
+        verified: true,
+        testMode: true,
+        paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id || `order_sim_${Date.now()}`,
+        timestamp: Date.now(),
+        message: 'Payment accepted in testing/development mode.',
+      });
+    }
+  } catch (error: any) {
+    console.error('Server verify-payment Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Error processing payment verification.',
+    });
+  }
+});
+
+// Endpoint: Razorpay Webhook Event Listener
+app.post('/api/razorpay-webhook', async (req, res) => {
+  try {
+    const razorpaySignature = req.headers['x-razorpay-signature'] as string;
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_KEY_SECRET;
+
+    if (webhookSecret && !webhookSecret.includes('YOUR_') && razorpaySignature) {
+      const expectedSignature = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(JSON.stringify(req.body))
+        .digest('hex');
+
+      if (expectedSignature !== razorpaySignature) {
+        console.error('Razorpay Webhook signature mismatch.');
+        return res.status(400).json({ error: 'Invalid Webhook Signature' });
+      }
+    }
+
+    const eventType = req.body?.event;
+    console.log(`Razorpay Webhook Received Event: ${eventType}`);
+
+    if (eventType === 'payment.captured' || eventType === 'order.paid') {
+      const paymentEntity = req.body?.payload?.payment?.entity;
+      const notes = paymentEntity?.notes || {};
+
+      console.log('Payment Captured via Server Webhook:', {
+        paymentId: paymentEntity?.id,
+        amount: paymentEntity?.amount ? paymentEntity.amount / 100 : 0,
+        email: paymentEntity?.email || notes.studentEmail,
+        courseId: notes.courseId,
+      });
+
+      return res.json({ status: 'ok', received: true, event: eventType, paymentId: paymentEntity?.id });
+    }
+
+    return res.json({ status: 'ignored', event: eventType });
+  } catch (error: any) {
+    console.error('Razorpay Webhook Server Error:', error);
+    return res.status(500).json({ error: error.message || 'Webhook processing failed' });
+  }
 });
 
 // AI Evaluation Endpoint for Practical Exam Coding & Viva

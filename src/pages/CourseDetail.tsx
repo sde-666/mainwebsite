@@ -262,6 +262,7 @@ export function CourseDetail() {
       studentName: userProfile?.displayName || currentUser.displayName || 'Student',
       studentEmail: currentUser.email || 'student@skilldotpy.com',
       studentPhone: userProfile?.phoneNumber || '9876543210',
+      userId: currentUser.uid,
       onSuccess: async (paymentId, orderId) => {
         try {
           await paidCourseService.enrollStudent({
@@ -313,7 +314,7 @@ export function CourseDetail() {
   const activeChapterNotes = activeChapterLessons.filter(l => Boolean(l.pdfUrl));
 
   return (
-    <div className="bg-[#F8FAFC] min-h-screen text-slate-800 flex flex-col antialiased">
+    <div className="min-h-screen bg-[#f8fafc] pb-20 antialiased">
       <SEO
         title={`${course.title} - Video Lectures, DPPs & Handwritten Notes | Skilldotpy`}
         description={course.overview}
@@ -339,284 +340,277 @@ export function CourseDetail() {
       )}
 
       {/* =========================================================================
-          TOP COURSE HEADER BAR
+          TOP BANNER (MATCHING CHAPTER WISE MCQ & NOTES DARK BLUE HEADER)
          ========================================================================= */}
-      <header className="bg-white border-b border-slate-200/90 px-4 sm:px-6 lg:px-8 py-3.5 sticky top-0 z-30 shadow-2xs">
-        <div className="container mx-auto max-w-7xl flex items-center justify-between gap-4">
+      <section className="bg-[#1b365d] text-white pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-6xl text-center">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white">
+            {course.title}
+          </h1>
+
+          {course.hindiTitle && (
+            <p className="text-sm sm:text-base text-slate-300 font-medium mt-1">
+              {course.hindiTitle}
+            </p>
+          )}
+
+          {/* Breadcrumbs matching PaperChaptersList */}
+          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-300 mt-3 font-medium flex-wrap">
+            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <span className="text-slate-400">•</span>
+            <Link to="/courses" className="hover:text-white transition-colors">Courses</Link>
+            <span className="text-slate-400">•</span>
+            <span className="text-slate-200">{course.title}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          FLOATING WHITE CONTAINER (MATCHING PAPER CHAPTERS LIST ARCHETYPE)
+         ========================================================================= */}
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 -mt-10">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-md p-6 sm:p-8 lg:p-10">
           
-          {/* Left: Breadcrumb & Course Title */}
-          <div className="flex items-center gap-3 min-w-0">
+          {/* Back & Switcher Bar matching PaperChaptersList */}
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100 flex-wrap gap-3">
             <Link
               to="/courses"
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-blue-600 transition-colors shrink-0"
-              title="Back to All Courses"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4" /> Back to All Courses
             </Link>
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
-                  {course.category.toUpperCase()}
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+              <span>Course:</span>
+              <span className="bg-blue-50 text-blue-700 font-bold px-2.5 py-0.5 rounded border border-blue-100">
+                {course.category.toUpperCase()}
+              </span>
+              <span>• {chapters.length} Chapters</span>
+              <span>• {lessons.length} Lectures</span>
+
+              {isEnrolled ? (
+                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded font-bold text-xs ml-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Enrolled</span>
                 </span>
-                <h1 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
-                  {course.title}
-                </h1>
-              </div>
-              {course.hindiTitle && (
-                <p className="text-[11px] text-slate-500 truncate hidden md:block">
-                  {course.hindiTitle}
-                </p>
+              ) : (
+                <button
+                  onClick={handleEnrollClick}
+                  disabled={isEnrolling}
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer ml-1.5"
+                >
+                  <Sparkles className="w-3 h-3 text-amber-300" />
+                  <span>Enroll ₹{course.price}</span>
+                </button>
               )}
             </div>
           </div>
 
-          {/* Right: Enrollment Badge / Price CTA */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <button
-              onClick={() => setIsSidebarOpenMobile(true)}
-              className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-200"
-            >
-              <Menu className="w-3.5 h-3.5 text-blue-600" />
-              <span>Chapters</span>
-            </button>
+          {!selectedChapterId ? (
+            /* 3-Column Chapter Grid matching PaperChaptersList */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              {chapters.map((chapter) => {
+                const chLessonsOk = lessons.filter(l => l.chapterId === chapter.id || l.chapterNumber === chapter.chapterNumber);
+                const chNotesOknest = chLessonsOk.filter(l => Boolean(l.pdfUrl));
 
-            {isEnrolled ? (
-              <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full text-emerald-700 text-xs font-bold">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-600 fill-emerald-100" />
-                <span>Enrolled</span>
-              </div>
-            ) : (
-              <button
-                onClick={handleEnrollClick}
-                disabled={isEnrolling}
-                className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-black shadow-md shadow-blue-500/20 active:scale-95 transition-all cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>Enroll Now ₹{course.price}</span>
-              </button>
-            )}
-          </div>
-
-        </div>
-      </header>
-
-      {/* =========================================================================
-          DIRECT LEARNING VIEW: TABS (CHAPTERS & STUDY MATERIAL)
-         ========================================================================= */}
-      <div className="flex-1 container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex items-center gap-6 border-b border-slate-200 mb-6">
-          <button 
-            onClick={() => { setActiveTab('chapters'); setSelectedChapterId(null); }}
-            className={`pb-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === 'chapters' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-          >
-            Chapters
-          </button>
-          <button 
-            onClick={() => { setActiveTab('study-material'); setSelectedChapterId(null); }}
-            className={`pb-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === 'study-material' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-          >
-            Study Material
-          </button>
-        </div>
-
-        {activeTab === 'chapters' && (
-          <>
-            {!selectedChapterId ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {chapters.map(chapter => {
-                  const chLessons = lessons.filter(l => l.chapterId === chapter.id || l.chapterNumber === chapter.chapterNumber);
-                  const formattedChNumber = String(chapter.chapterNumber).padStart(2, '0');
-                  return (
-                    <button
-                      key={chapter.id}
-                      onClick={() => setSelectedChapterId(chapter.id)}
-                      className="bg-white border border-slate-200 hover:border-blue-300 rounded-2xl p-4 text-left shadow-2xs hover:shadow-md transition-all space-y-3 cursor-pointer group"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded uppercase">
-                          CH - {formattedChNumber}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
-                      </div>
-                      <h3 className="text-sm font-bold text-slate-900 line-clamp-2 leading-snug">
+                return (
+                  <div
+                    key={chapter.id}
+                    className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      {/* Chapter Title */}
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug line-clamp-2 min-h-[3.2rem]">
                         {chapter.title}
                       </h3>
-                      <div className="text-xs font-semibold text-slate-500">
-                        Lecture: {chLessons.length}
+
+                      {/* Green Dot Indicator & Lecture Count */}
+                      <div className="flex items-center gap-2 mt-4 text-xs font-semibold text-slate-700">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-2xs shrink-0"></span>
+                        <span>{chLessonsOk.length} Video Lectures {chNotesOknest.length > 0 ? `• ${chNotesOknest.length} Notes PDF` : ''}</span>
                       </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="space-y-4 max-w-4xl mx-auto">
+                    </div>
+
+                    {/* Bottom Row: Chapter Number & "View Lectures" Teal Button */}
+                    <div className="flex items-center justify-between pt-5 mt-4 border-t border-slate-100">
+                      <span className="text-xs font-medium text-slate-500">
+                        Chapter {chapter.chapterNumber}
+                      </span>
+
+                      <button
+                        onClick={() => setSelectedChapterId(chapter.id)}
+                        className="px-4 py-2 rounded-lg bg-[#0284c7] hover:bg-[#0369a1] active:bg-[#075985] text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
+                      >
+                        View Lectures
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* Chapter Lectures View */
+            <div className="space-y-6">
+              {/* Back button and Chapter Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 flex-wrap gap-3">
                 <button 
                   onClick={() => setSelectedChapterId(null)}
-                  className="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span>Back to Chapters</span>
                 </button>
-                
-                <div className="flex flex-wrap items-center gap-3 py-2 border-b border-slate-100">
-                  <span className="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded">CH - {String(activeChapter?.chapterNumber || 0).padStart(2, '0')}</span>
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900">{activeChapter?.title}</h2>
-                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-semibold">{activeChapterLessons.length} Lectures</span>
-                </div>
 
-                <div className="space-y-3.5">
-                  {activeChapterLessons.length === 0 ? (
-                    <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
-                      <Video className="w-10 h-10 text-slate-400 mx-auto" />
-                      <h3 className="text-sm font-bold text-slate-800">No lectures found for this chapter</h3>
-                      <p className="text-xs text-slate-500">Lectures will be uploaded soon by the admin.</p>
-                    </div>
-                  ) : (
-                    activeChapterLessons.map((lesson, idx) => {
-                      const globalIdx = lessons.findIndex(l => l.id === lesson.id);
-                      const unlocked = isLessonUnlocked(lesson, globalIdx);
-                      const isCompleted = completedLessonIds.includes(lesson.id);
-                      return (
-                        <div key={lesson.id} className="bg-white rounded-2xl border border-slate-200 hover:border-blue-300/80 shadow-2xs hover:shadow-sm transition-all overflow-hidden">
-                          <div className="p-4 sm:p-5 space-y-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex items-start gap-3.5 sm:gap-4 min-w-0">
-                                <div 
-                                  onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
-                                  className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200 cursor-pointer group"
-                                >
-                                  <img 
-                                    src={course.thumbnailUrl || 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&auto=format&fit=crop&q=60'} 
-                                    alt={lesson.title} 
-                                    referrerPolicy="no-referrer" 
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
-                                  />
-                                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="min-w-0 space-y-1">
-                                  <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                                    <span className="font-semibold text-slate-700">Lecture {lesson.lessonNumber || idx + 1}</span>
-                                    <span>•</span>
-                                    <span>{lesson.duration || '45m'}</span>
-                                    {lesson.isFreePreview || globalIdx < 2 ? (
-                                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">Free Demo</span>
-                                    ) : !isEnrolled ? (
-                                      <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded flex items-center gap-0.5">
-                                        <Lock className="w-2.5 h-2.5" />
-                                        <span>Locked</span>
-                                      </span>
-                                    ) : null}
-                                  </div>
-                                  <h3 
-                                    onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
-                                    className="text-sm sm:text-base font-bold text-slate-900 leading-snug hover:text-blue-600 transition-colors cursor-pointer"
-                                  >
-                                    {lesson.title}
-                                  </h3>
-                                  {lesson.hindiTitle && (
-                                    <p className="text-xs text-slate-500 font-medium line-clamp-1">{lesson.hindiTitle}</p>
-                                  )}
-                                </div>
-                              </div>
-                              <button 
-                                onClick={() => toggleLessonCompleted(lesson.id)}
-                                className={`p-1.5 rounded-full transition-colors shrink-0 cursor-pointer ${isCompleted ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' : 'text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200'}`}
-                                title={isCompleted ? 'Completed' : 'Mark as Completed'}
-                              >
-                                <CheckCircle2 className="w-5 h-5" />
-                              </button>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-3 pt-1">
-                              <button 
-                                onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
-                                className="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-2 transition-all active:scale-95 cursor-pointer shadow-md shadow-blue-500/20"
-                              >
-                                <Play className="w-3.5 h-3.5 fill-current text-white" />
-                                <span>{isCompleted ? 'Resume (Full Screen)' : 'Watch'}</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                  <span className="bg-blue-50 text-blue-700 font-bold px-2.5 py-0.5 rounded border border-blue-100 uppercase">
+                    Chapter {activeChapter?.chapterNumber}
+                  </span>
+                  <span>• {activeChapterLessons.length} Lectures</span>
                 </div>
               </div>
-            )}
-          </>
-        )}
 
-        {activeTab === 'study-material' && (
-          <div className="space-y-6 max-w-4xl mx-auto">
-            {chapters.length === 0 && (
-              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
-                <FolderOpen className="w-10 h-10 text-slate-400 mx-auto" />
-                <h3 className="text-sm font-bold text-slate-800">No study material found</h3>
-              </div>
-            )}
-            {chapters.map(chapter => {
-              const chNotes = lessons.filter(l => (l.chapterId === chapter.id || l.chapterNumber === chapter.chapterNumber) && !!l.pdfUrl);
-              if (chNotes.length === 0) return null;
-              return (
-                <div key={chapter.id} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 shadow-sm">
-                  <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-                    <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded uppercase shrink-0">
-                      CH - {String(chapter.chapterNumber).padStart(2, '0')}
-                    </span>
-                    <h3 className="text-sm font-bold text-slate-900 truncate">{chapter.title}</h3>
+              {/* 3-Column Lecture Cards List */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                {activeChapterLessons.length === 0 ? (
+                  <div className="col-span-full bg-slate-50 rounded-2xl p-12 text-center border border-slate-200 space-y-3">
+                    <Video className="w-10 h-10 text-slate-400 mx-auto" />
+                    <h3 className="text-sm font-bold text-slate-800">No lectures found for this chapter</h3>
+                    <p className="text-xs text-slate-500">Lectures will be uploaded soon by the instructor.</p>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {chNotes.map(note => {
-                      const globalIdx = lessons.findIndex(l => l.id === note.id);
-                      const unlocked = isLessonUnlocked(note, globalIdx);
-                      return (
-                        <div key={note.id} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between gap-3 group hover:border-blue-200 transition-colors">
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                              <FileText className="w-5 h-5" />
-                            </div>
-                            <div className="min-w-0">
-                              <h4 className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
-                                {note.pdfTitle || `${note.title} - Notes`}
-                              </h4>
-                              {note.duration && (
-                                <p className="text-[10px] text-slate-500 truncate">{note.duration}</p>
-                              )}
-                            </div>
+                ) : (
+                  activeChapterLessons.map((lesson, idx) => {
+                    const globalIdx = lessons.findIndex(l => l.id === lesson.id);
+                    const unlocked = isLessonUnlocked(lesson, globalIdx);
+                    const isCompletedEffective = completedLessonIds.includes(lesson.id);
+                    const isFree = lesson.isFreePreview || globalIdx < 2;
+
+                    return (
+                      <div
+                        key={lesson.id}
+                        className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between group"
+                      >
+                        <div>
+                          {/* Header: Lecture Number & Clear Status Tag */}
+                          <div className="flex items-center justify-between gap-2 mb-3">
+                            <span className="text-xs font-medium text-slate-500">
+                              Lecture {lesson.lessonNumber || idx + 1}
+                            </span>
+
+                            {isFree ? (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                                <Play className="w-3 h-3 fill-emerald-600 text-emerald-600" />
+                                <span>Free Demo</span>
+                              </span>
+                            ) : isEnrolled ? (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                                <CheckCircle className="w-3 h-3 text-emerald-600" />
+                                <span>Unlocked</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                                <Lock className="w-3 h-3 text-amber-600" />
+                                <span>Paid / Locked</span>
+                              </span>
+                            )}
                           </div>
-                          {unlocked ? (
-                            <a 
-                              href={note.pdfUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-lg shrink-0 transition-colors shadow-2xs"
-                              title="Download PDF"
-                            >
-                              <Download className="w-4 h-4" />
-                            </a>
-                          ) : (
-                            <button 
-                              onClick={handleEnrollClick} 
-                              className="w-8 h-8 flex items-center justify-center bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-lg shrink-0 transition-colors cursor-pointer"
-                              title="Locked"
-                            >
-                              <Lock className="w-4 h-4 text-amber-600" />
-                            </button>
+
+                          {/* Title */}
+                          <h3 
+                            onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
+                            className="text-base font-bold text-slate-900 leading-snug line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors cursor-pointer"
+                          >
+                            {lesson.title}
+                          </h3>
+
+                          {lesson.hindiTitle && (
+                            <p className="text-xs text-slate-500 font-medium line-clamp-1 mt-1">
+                              {lesson.hindiTitle}
+                            </p>
                           )}
+
+                          {/* Green Dot Indicator & Duration / Notes */}
+                          <div className="flex items-center gap-2 mt-4 text-xs font-semibold text-slate-700">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-2xs shrink-0"></span>
+                            <span>{lesson.duration || 'Full Video Class'} {lesson.pdfUrl ? '• PDF Notes Included' : ''}</span>
+                          </div>
                         </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              );
-            })}
+
+                        {/* Bottom Actions Row */}
+                        <div className="flex items-center justify-between pt-5 mt-4 border-t border-slate-100 gap-2">
+                          <div className="flex items-center gap-2">
+                            {unlocked ? (
+                              <button
+                                onClick={() => handleWatchLessonFullScreen(lesson, globalIdx)}
+                                className="px-4 py-2 rounded-lg bg-[#0284c7] hover:bg-[#0369a1] active:bg-[#075985] text-white font-bold text-xs shadow-xs transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                              >
+                                <Play className="w-3.5 h-3.5 fill-current" />
+                                <span>{isCompletedEffective ? 'Resume' : 'Watch'}</span>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={handleEnrollClick}
+                                className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-xs transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                              >
+                                <Lock className="w-3.5 h-3.5" />
+                                <span>Unlock ₹{course.price}</span>
+                              </button>
+                            )}
+
+                            {lesson.pdfUrl && (
+                              unlocked ? (
+                                <a
+                                  href={lesson.pdfUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="px-2.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors inline-flex items-center gap-1 cursor-pointer"
+                                  title="Download Attached Notes"
+                                >
+                                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                                  <span>Notes</span>
+                                </a>
+                              ) : (
+                                <button
+                                  onClick={handleEnrollClick}
+                                  className="px-2.5 py-2 rounded-lg bg-slate-100 text-slate-400 font-bold text-xs transition-colors inline-flex items-center gap-1 cursor-pointer"
+                                  title="Enroll to unlock Notes"
+                                >
+                                  <Lock className="w-3.5 h-3.5 text-amber-500" />
+                                  <span>Notes</span>
+                                </button>
+                              )
+                            )}
+                          </div>
+
+                          <button 
+                            onClick={() => toggleLessonCompleted(lesson.id)}
+                            className={`p-2 rounded-lg transition-colors shrink-0 cursor-pointer ${isCompletedEffective ? 'text-emerald-600 bg-emerald-50 border border-emerald-200' : 'text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200'}`}
+                            title={isCompletedEffective ? 'Completed' : 'Mark as Completed'}
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Bottom Guide Strip matching ChapterWiseMCQ / Notes */}
+          <div className="mt-10 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <p>
+              💡 <strong>Learning Tip:</strong> Watch lectures sequentially. Free demo lectures are available for everyone; full access requires course enrollment.
+            </p>
+            <Link
+              to="/courses"
+              className="font-bold text-blue-600 hover:underline shrink-0"
+            >
+              Explore All Batches →
+            </Link>
           </div>
-        )}
+
+        </div>
       </div>
 
       {/* =========================================================================
