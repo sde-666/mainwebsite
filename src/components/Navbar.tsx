@@ -180,47 +180,6 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
       
       {/* =========================================================================
-          SLIM TOP ANNOUNCEMENT STRIP (Clean & Subtle)
-         ========================================================================= */}
-      <div className="bg-slate-900 text-white text-xs border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1 flex items-center justify-between gap-3">
-          
-          <div className="flex items-center gap-2 overflow-hidden">
-            <div className="flex items-center gap-1.5 bg-white px-2 py-0.5 rounded shadow-2xs shrink-0">
-              <NielitLogo variant="full" size="xs" className="h-3.5" />
-              <span className="text-[10px] font-extrabold text-[#003366] tracking-tight border-l border-slate-200 pl-1">
-                R5.1 Official
-              </span>
-            </div>
-            <span className="hidden sm:inline text-slate-300 text-[11px] truncate">
-              NIELIT O Level & CCC Online Exam Portal by Skilldotpy
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0 text-[11px]">
-            <Link
-              to="/app"
-              className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 transition-colors"
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span>Get Android App</span>
-            </Link>
-
-            <span className="text-slate-600 hidden sm:inline">|</span>
-
-            <Link
-              to="/admin"
-              className="text-slate-400 hover:text-white flex items-center gap-1 bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded border border-slate-700 text-[10px] transition-colors"
-            >
-              <ShieldCheck className="w-3 h-3 text-amber-400" />
-              <span>Admin</span>
-            </Link>
-          </div>
-
-        </div>
-      </div>
-
-      {/* =========================================================================
           MAIN NAVIGATION BAR (Strictly Requested Tabs Only)
          ========================================================================= */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

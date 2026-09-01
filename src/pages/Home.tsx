@@ -142,26 +142,7 @@ export function Home() {
           
           <div className="flex flex-col items-center text-center space-y-4 sm:space-y-6">
 
-            {/* 1. TOP BRAND / ACCREDITATION PILL */}
-            <div className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-md px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-2xl shadow-xs border border-slate-200/90 hover:border-blue-300 transition-colors">
-              <div className="flex items-center gap-1.5 pr-2 sm:pr-3 border-r border-slate-200">
-                <img src="/skilldotpy-logo.svg" alt="Skilldotpy" className="h-5 w-5 object-contain" />
-                <span className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
-                  Skill<span className="text-blue-600">.</span><span className="text-rose-500 font-serif">py</span>
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5 px-1 sm:px-2 border-r border-slate-200">
-                <NielitLogo variant="full" size="xs" className="h-4 sm:h-4.5" />
-              </div>
-
-              <div className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-blue-700">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span>Accredited</span>
-              </div>
-            </div>
-
-            {/* 2. EYEBROW TAG */}
+            {/* 1. EYEBROW TAG */}
             <div className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-blue-50/90 border border-blue-200/90 text-blue-800 text-[11px] sm:text-xs font-extrabold shadow-2xs">
               <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <span>NIELIT O Level & CCC की तैयारी अब और आसान</span>
@@ -287,7 +268,7 @@ export function Home() {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl font-extrabold text-white text-xs sm:text-sm bg-[#e77979] hover:opacity-90 active:scale-95 shadow-md shadow-[#e77979]/25 transition-all cursor-pointer group"
               >
                 <Download className="w-4 h-4 sm:w-4.5 sm:h-4.5 group-hover:translate-y-0.5 transition-transform" />
-                <span>Study Material डाउनलोड  करे</span>
+                <span>Study Material डाउनलोड करें </span>
               </Link>
 
               <Link
