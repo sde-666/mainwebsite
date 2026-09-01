@@ -1200,15 +1200,6 @@ export function NotesReader() {
               {/* =============================================================== */}
               <div className="flex-1 min-w-0 max-w-6xl 2xl:max-w-7xl w-full space-y-6">
 
-                {/* Top In-Content Responsive Banner AdUnit */}
-                <div className="p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative">
-                  <div className="text-[10px] text-slate-400 font-semibold mb-1 flex items-center justify-between">
-                    <span>Sponsored Topic</span>
-                    <Info className="w-3 h-3 text-slate-400" />
-                  </div>
-                  <AdUnit format="horizontal" />
-                </div>
-
                 {/* Main Reading Card with Anti-Copy Protection */}
                 <article 
                   className={`p-6 sm:p-8 md:p-10 rounded-2xl border transition-colors select-none notes-protected-content ${themeClasses.cardBg}`}
