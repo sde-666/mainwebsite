@@ -100,14 +100,17 @@ export function Courses() {
   return (
     <div className="bg-slate-50 min-h-screen py-10">
       <SEO
-        title="NIELIT O Level & CCC Video Courses & Masterclasses"
-        description="Structured video courses for NIELIT O Level (M1-R5 to M4-R5) and CCC. Watch 2 free demo video lectures & download 2 free PDF notes per course. Instant enrollment with Razorpay."
+        title="O Level Paid Courses & Video Master Batches (M1, M2, M3, M4) | Skilldotpy"
+        description="Join NIELIT O Level paid video courses & master batches. Complete theory, chapter-wise notes, test series, practical lab sessions & 2 free demo lectures per module."
+        canonicalUrl="/courses"
         keywords={[
-          'Skilldotpy paid courses',
-          'NIELIT O Level video batch',
-          'O level python video course Hindi',
-          'CCC masterclass video lectures',
-          'O Level free demo lectures'
+          'o level paid course',
+          'o level paid batch in hindi',
+          'nielit o level video course',
+          'o level complete master batch m1 m2 m3 m4',
+          'o level python paid course',
+          'ccc masterclass video batch',
+          'skilldotpy paid courses'
         ]}
         schema={courseSchema}
         breadcrumbs={[

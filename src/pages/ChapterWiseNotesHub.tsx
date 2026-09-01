@@ -272,9 +272,24 @@ export function ChapterWiseNotesHub() {
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-20">
       <SEO
-        title="Chapter Wise Study Notes - NIELIT O Level & CCC | Skilldotpy"
-        description="Comprehensive chapter-wise study notes for NIELIT O Level (M1-R5.1, M2-R5.1, M3-R5.1, M4-R5.1) and CCC examinations in Hindi and English."
+        title="O Level Chapter Wise Notes (M1-R5, M2-R5, M3-R5, M4-R5) & CCC | Skilldotpy"
+        description="Comprehensive NIELIT O Level chapter wise notes in Hindi & English for M1-R5.1, M2-R5.1, M3-R5.1 Python, M4-R5.1 IoT, and CCC. Detailed theory, formulas, definitions, and code syntax."
         canonicalUrl="/chapter-wise-notes"
+        keywords={[
+          'o level chapter wise notes',
+          'o level chapter wise notes in hindi pdf',
+          'nielit o level notes m1 m2 m3 m4',
+          'o level m1-r5 chapter wise notes',
+          'o level m2-r5 web designing notes',
+          'o level m3-r5 python programming chapter notes',
+          'o level m4-r5 iot chapter notes',
+          'ccc chapter wise study material nielit',
+          'skilldotpy notes'
+        ]}
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Chapter Wise Notes', url: '/chapter-wise-notes' }
+        ]}
       />
 
       {/* =========================================================================

@@ -262,9 +262,24 @@ export function ChapterWiseMcqHub() {
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-16">
       <SEO
-        title="O Level Chapterwise MCQs | Skilldotpy"
-        description="Practice NIELIT O Level (M1-R5.1, M2-R5.1, M3-R5.1, M4-R5.1) and CCC MCQs chapter-by-chapter with instant answer verification, score tracker, and detailed explanations."
+        title="O Level Chapter Wise MCQ Online Practice & Solutions | Skilldotpy"
+        description="Practice NIELIT O Level (M1-R5.1, M2-R5.1, M3-R5.1 Python, M4-R5.1 IoT) and CCC MCQs chapter by chapter with instant answer verification, score tracker, and bilingual explanations."
         canonicalUrl="/chapter-wise-mcq"
+        keywords={[
+          'o level mcq',
+          'o level chapter wise mcq',
+          'o level online mcq test',
+          'o level m1 r5 chapter wise mcq test',
+          'o level m2 r5 chapter wise mcq test',
+          'o level m3 r5 python mcq practice',
+          'o level m4 r5 iot mcq test',
+          'ccc chapter wise mcq practice in hindi',
+          'nielit o level previous year solved mcq'
+        ]}
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Chapter Wise MCQs', url: '/chapter-wise-mcq' }
+        ]}
       />
 
       {/* Main Container */}

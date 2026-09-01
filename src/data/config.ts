@@ -2,9 +2,9 @@ export const siteConfig = {
   name: 'Skilldotpy',
   brandName: 'Skilldotpy',
   brandAlternates: ['Skill.py', 'Skill Dot Py', 'Skilldotpy NIELIT', 'Skilldotpy Academy', 'Skilldotpy Education'],
-  title: 'Skilldotpy - NIELIT O Level (M1, M2, M3, M4) & CCC Free Notes, Courses, Mock Tests & App',
+  title: 'Skilldotpy - NIELIT O Level (M1, M2, M3, M4) & CCC Chapter Wise Notes, MCQs & Paid Courses',
   tagline: 'India\'s #1 Learning Hub for NIELIT O Level (R5.1), CCC, Python & Practical Computer Education',
-  description: 'Free NIELIT O Level (M1-M4) & CCC exam prep - PDF notes, syllabus, mock tests, Python tutorials, LibreOffice shortcuts & Android app.',
+  description: 'Free & Paid NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5) & CCC exam preparation: Chapter-wise notes, instant MCQ practice, CBT mock tests, video masterclasses, practical coding & Android app.',
   url: 'https://skilldotpy.com',
   ogImage: 'https://skilldotpy.com/skilldotpy-logo.svg',
   teacher: {
@@ -17,7 +17,7 @@ export const siteConfig = {
     specialties: ['NIELIT O Level (M1-R5 to M4-R5)', 'NIELIT CCC Exam', 'Python Programming', 'Web Design (HTML5/CSS3/JavaScript)', 'LibreOffice & MS Office Suite', 'Arduino & IoT Embedded Systems']
   },
   keywords: [
-    // Brand Variations (Guarantees #1 Google Ranking on "skilldotpy")
+    // Brand Variations
     'Skilldotpy',
     'skilldotpy',
     'skill.py',
@@ -37,39 +37,59 @@ export const siteConfig = {
     'Aditya Pathak NIELIT',
     'Aditya Sir O level',
 
-    // NIELIT O Level (R5.1) Core Keywords
-    'NIELIT O Level free notes PDF',
-    'O Level M1-R5 IT Tools and Network Basics notes pdf',
-    'O Level M2-R5 Web Designing and Publishing notes pdf in Hindi',
-    'O Level M3-R5 Programming and Problem Solving through Python notes',
-    'O Level M4-R5 Internet of Things and its Applications IoT notes',
-    'O Level syllabus 2026 pdf download R5.1',
-    'O Level previous year solved question paper with answer key',
-    'O Level online CBT mock test free',
-    'O Level practical exam question paper solution',
-    'O Level Python practical code programs',
-    'O Level HTML CSS JS practical exam code',
-    'O Level IoT Arduino sketches and simulation',
-    'O Level project submission guide format synopsis',
-    'O Level admit card result exam date 2026',
+    // 1. O Level Chapter Wise Notes (Target Keyword)
+    'o level chapter wise notes',
+    'o level chapter wise notes in hindi pdf',
+    'nielit o level chapter wise notes free download',
+    'o level m1-r5 chapter wise notes pdf',
+    'o level m2-r5 chapter wise notes pdf',
+    'o level m3-r5 python chapter wise notes pdf',
+    'o level m4-r5 iot chapter wise notes pdf',
+    'o level it tools chapter wise notes',
+    'o level web designing chapter wise notes',
+    'o level python programming chapter wise notes',
+    'o level iot chapter wise notes in hindi',
+    'ccc chapter wise notes in hindi pdf',
+    'ccc chapter wise study material nielit',
 
-    // NIELIT CCC Core Keywords
-    'NIELIT CCC exam notes PDF free download',
-    'CCC free notes in Hindi and English',
-    'CCC syllabus 9 chapters full breakdown',
-    'CCC online mock test free 100 questions',
-    'LibreOffice shortcut keys PDF Writer Calc Impress',
-    'CCC previous year solved question paper',
-    'Course on Computer Concepts NIELIT study material',
-    'LibreOffice Calc formulas notes in Hindi',
-    'CCC admit card result certificate download 2026',
+    // 2. O Level MCQ & Chapter-Wise Practice (Target Keyword)
+    'o level mcq',
+    'o level chapter wise mcq',
+    'o level mcq practice online test',
+    'o level mcq questions in hindi and english',
+    'o level m1 r5 chapter wise mcq test',
+    'o level m2 r5 chapter wise mcq test',
+    'o level m3 r5 python chapter wise mcq test',
+    'o level m4 r5 iot chapter wise mcq test',
+    'o level online cbt mock test free',
+    'o level 100 questions mock test with timer',
+    'ccc chapter wise mcq test in hindi',
+    'ccc online mock test 100 questions nielit',
+    'nielit o level previous year solved mcq question paper',
 
-    // Practical & Technology Keywords
-    'Python programming course in Hindi free',
-    'Web development for beginners HTML CSS JS',
-    'Arduino Uno IoT embedded C programming',
-    'LibreOffice Writer Calc Impress practicals',
-    'Skilldotpy app download apk latest version'
+    // 3. O Level Paid Course & Video Masterclasses (Target Keyword)
+    'o level paid course',
+    'o level paid batch in hindi',
+    'nielit o level online coaching batch',
+    'o level complete 4 papers master batch m1 m2 m3 m4',
+    'o level m1 r5 paid video course',
+    'o level m2 r5 web design video course',
+    'o level m3 r5 python programming paid course',
+    'o level m4 r5 iot paid video course',
+    'ccc target grade s master course online',
+    'o level practical course and viva preparation',
+    'o level project submission guide and synopsis',
+
+    // 4. NIELIT O Level Syllabus, Calculator & Practical Exams
+    'o level syllabus 2026 pdf download r5.1',
+    'o level syllabus chapter wise marks distribution',
+    'o level result calculator theory practical pass marks',
+    'o level practical exam questions and code runner',
+    'o level python practical code programs',
+    'o level html css js practical solutions',
+    'o level iot arduino circuit practical code',
+    'libreoffice writer calc impress shortcut keys pdf',
+    'nielit o level admit card result date 2026'
   ],
   supportEmail: 'skilldotpy@gmail.com',
   links: {
