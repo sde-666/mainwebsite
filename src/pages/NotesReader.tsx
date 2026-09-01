@@ -1202,7 +1202,7 @@ export function NotesReader() {
 
                 {/* Main Reading Card with Anti-Copy Protection */}
                 <article 
-                  className={`p-6 sm:p-8 md:p-10 rounded-2xl border transition-colors select-none notes-protected-content ${themeClasses.cardBg}`}
+                  className={`p-4 sm:p-7 md:p-10 rounded-2xl border transition-colors select-none notes-protected-content ${themeClasses.cardBg}`}
                   onCopy={(e) => { e.preventDefault(); return false; }}
                   onCut={(e) => { e.preventDefault(); return false; }}
                   onContextMenu={(e) => { e.preventDefault(); return false; }}
@@ -1210,13 +1210,37 @@ export function NotesReader() {
                 >
 
                   {/* Topic Title & Blue Accent Bar */}
-                  <header className="space-y-3 pb-6">
+                  <header className="space-y-3 pb-6 border-b border-slate-100 dark:border-slate-800/80">
                     <div>
-                      <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                      <h1 
+                        id="notes-topic-heading"
+                        className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight transition-colors break-words ${
+                          readingTheme === 'dark' 
+                            ? 'text-white' 
+                            : readingTheme === 'sepia' 
+                              ? 'text-[#2E2221]' 
+                              : 'text-slate-900'
+                        }`}
+                      >
                         {activeTopic.title}
                       </h1>
+                      
+                      {activeTopic.hindiTitle && (
+                        <p 
+                          className={`text-sm sm:text-base md:text-lg font-semibold mt-1.5 transition-colors break-words ${
+                            readingTheme === 'dark'
+                              ? 'text-blue-300'
+                              : readingTheme === 'sepia'
+                                ? 'text-[#8A502E]'
+                                : 'text-blue-700'
+                          }`}
+                        >
+                          {activeTopic.hindiTitle}
+                        </p>
+                      )}
+
                       {/* Clean Blue Horizontal Accent Line */}
-                      <div className="w-12 h-1 bg-blue-600 rounded-full mt-3" />
+                      <div className="w-12 sm:w-16 h-1 sm:h-1.5 bg-blue-600 rounded-full mt-3 sm:mt-3.5" />
                     </div>
 
                     {/* Quick Tools Row (Share Button active, print and copy removed) */}
@@ -1239,7 +1263,13 @@ export function NotesReader() {
                         <button
                           id="notes-action-share-btn"
                           onClick={handleShare}
-                          className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer shadow-2xs"
+                          className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs ${
+                            readingTheme === 'dark'
+                              ? 'border-slate-700 text-slate-200 hover:bg-slate-800'
+                              : readingTheme === 'sepia'
+                                ? 'border-[#E2D5C3] text-[#4A3E3D] hover:bg-[#EFE5D3]'
+                                : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                          }`}
                           title="Share this note"
                           aria-label="Share note"
                         >

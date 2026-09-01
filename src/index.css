@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer utilities {
   .markdown-body {
     @apply text-gray-800 leading-relaxed;
@@ -327,11 +329,14 @@
 /* ========================================================================= */
 /* 🌟 DARK MODE STYLING OVERRIDES (Ultra High Contrast, Crisp Slate-100) */
 /* ========================================================================= */
+.notes-reader-theme-dark header h1,
+.notes-reader-theme-dark article header h1,
+.notes-reader-theme-dark #notes-topic-heading,
 .notes-reader-theme-dark .notes-body h1,
 .notes-reader-theme-dark .notes-body h2,
 .notes-reader-theme-dark .notes-body h3,
 .notes-reader-theme-dark .notes-body h4 {
-  color: #F8FAFC !important;
+  color: #FFFFFF !important;
 }
 
 .notes-reader-theme-dark .notes-body h2 {
@@ -487,6 +492,9 @@
 /* ========================================================================= */
 /* ☕ SEPIA MODE STYLING OVERRIDES (Warm Paper, Rich Umber #3D3231) */
 /* ========================================================================= */
+.notes-reader-theme-sepia header h1,
+.notes-reader-theme-sepia article header h1,
+.notes-reader-theme-sepia #notes-topic-heading,
 .notes-reader-theme-sepia .notes-body h1,
 .notes-reader-theme-sepia .notes-body h2,
 .notes-reader-theme-sepia .notes-body h3,
