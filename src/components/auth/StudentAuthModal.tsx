@@ -78,7 +78,7 @@ export function StudentAuthModal({
           setLoading(false);
           return;
         }
-        await signupStudent(email, password, name);
+        await signupStudent(name, email, password);
       } else {
         await loginStudent(email, password);
       }
@@ -95,7 +95,7 @@ export function StudentAuthModal({
       } else if (code === 'auth/weak-password') {
         msg = 'Password should be at least 6 characters.';
       } else if (code === 'auth/invalid-email') {
-        msg = 'Please provide a valid email address.';
+        msg = 'Please enter a valid email address.';
       }
       setError(msg);
     } finally {

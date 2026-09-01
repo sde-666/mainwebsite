@@ -58,7 +58,7 @@ export function Login() {
           setLoading(false);
           return;
         }
-        await signupStudent(email, password, name);
+        await signupStudent(name, email, password);
       } else {
         await loginStudent(email, password);
       }
@@ -73,6 +73,8 @@ export function Login() {
         msg = 'An account with this email already exists. Please Sign In.';
       } else if (code === 'auth/weak-password') {
         msg = 'Password should be at least 6 characters.';
+      } else if (code === 'auth/invalid-email') {
+        msg = 'Please enter a valid email address.';
       }
       setError(msg);
     } finally {
