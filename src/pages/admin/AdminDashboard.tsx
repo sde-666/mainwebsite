@@ -26,7 +26,9 @@ import {
   FileSpreadsheet,
   Upload,
   Edit3,
-  GraduationCap
+  GraduationCap,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { resourceService, formatDirectPdfUrl } from '../../services/resourceService';
@@ -86,6 +88,7 @@ export function AdminDashboard() {
   const [activeQuizForQuestions, setActiveQuizForQuestions] = useState<DynamicQuizTest | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<Partial<QuizQuestionItem> | null>(null);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [selectedQuizQuestionIds, setSelectedQuizQuestionIds] = useState<Set<string>>(new Set());
   
   // CSV Question Import State
   const [csvImportQuiz, setCsvImportQuiz] = useState<DynamicQuizTest | null>(null);
@@ -582,9 +585,110 @@ export function AdminDashboard() {
         ...quiz,
         questions: updatedQuestions
       });
+      setSelectedQuizQuestionIds(prev => {
+        const next = new Set(prev);
+        next.delete(qId);
+        return next;
+      });
       showNotification('success', 'Question removed from test');
     } catch (err: any) {
       showNotification('error', err.message || 'Failed to delete question');
+    }
+  };
+
+  const handleToggleSelectQuizQuestion = (qId: string) => {
+    setSelectedQuizQuestionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(qId)) {
+        next.delete(qId);
+      } else {
+        next.add(qId);
+      }
+      return next;
+    });
+  };
+
+  const handleToggleSelectAllQuizQuestions = (quiz: DynamicQuizTest) => {
+    const allIds = (quiz.questions || []).map((q, idx) => q.id || `q-${idx}`);
+    const allSelected = allIds.length > 0 && allIds.every((id) => selectedQuizQuestionIds.has(id));
+    if (allSelected) {
+      setSelectedQuizQuestionIds(new Set());
+    } else {
+      setSelectedQuizQuestionIds(new Set(allIds));
+    }
+  };
+
+  const handleBulkDeleteQuizQuestions = async (quiz: DynamicQuizTest) => {
+    const idsToDelete = Array.from(selectedQuizQuestionIds);
+    if (idsToDelete.length === 0) {
+      showNotification('error', 'Please select at least one question to delete');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to delete ${idsToDelete.length} selected question(s) from "${quiz.title}"?`)) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const idSet = new Set(idsToDelete);
+      const updatedQuestions = (quiz.questions || []).filter((q, idx) => {
+        const qId = q.id || `q-${idx}`;
+        return !idSet.has(qId) && !idSet.has(q.id);
+      });
+
+      const updatedTotalMarks = updatedQuestions.reduce((sum, q) => sum + (q.marks || 1), 0);
+
+      await quizService.updateQuiz(quiz.id, {
+        questions: updatedQuestions,
+        totalMarks: updatedTotalMarks
+      });
+
+      const updatedQuiz = {
+        ...quiz,
+        questions: updatedQuestions,
+        totalMarks: updatedTotalMarks
+      };
+
+      setActiveQuizForQuestions(updatedQuiz);
+      setSelectedQuizQuestionIds(new Set());
+      showNotification('success', `Deleted ${idsToDelete.length} question(s) from test!`);
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to delete selected questions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearAllQuizQuestions = async (quiz: DynamicQuizTest) => {
+    const count = quiz.questions?.length || 0;
+    if (count === 0) {
+      showNotification('error', 'This test has no questions to clear');
+      return;
+    }
+
+    if (!window.confirm(`⚠️ DANGER: Are you sure you want to DELETE ALL ${count} questions from "${quiz.title}"?`)) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await quizService.updateQuiz(quiz.id, {
+        questions: [],
+        totalMarks: 0
+      });
+
+      setActiveQuizForQuestions({
+        ...quiz,
+        questions: [],
+        totalMarks: 0
+      });
+      setSelectedQuizQuestionIds(new Set());
+      showNotification('success', `Cleared all questions from "${quiz.title}"!`);
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to clear questions');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -713,7 +817,7 @@ export function AdminDashboard() {
               title="Sync standard NIELIT materials into Firebase"
               className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 transition-colors"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-blue-400 ${isSeeding ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-blue-700 ${isSeeding ? 'animate-spin' : ''}`} />
               <span className="hidden md:inline">{isSeeding ? 'Syncing...' : 'Sync Standard Data'}</span>
             </button>
 
@@ -723,13 +827,13 @@ export function AdminDashboard() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 transition-colors"
             >
-              <Eye className="w-3.5 h-3.5 text-slate-500" />
+              <Eye className="w-3.5 h-3.5 text-slate-600" />
               <span className="hidden sm:inline">View Website</span>
             </a>
 
             <button
               onClick={() => logout()}
-              className="inline-flex items-center gap-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-500/30 transition-colors"
+              className="inline-flex items-center gap-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-500/30 transition-colors"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out</span>
@@ -743,10 +847,10 @@ export function AdminDashboard() {
         <div className="fixed bottom-6 right-6 z-50 animate-bounce">
           <div className={`p-4 rounded-xl shadow-2xl flex items-center gap-3 border text-xs font-bold ${
             notification.type === 'success' 
-              ? 'bg-emerald-950 border-emerald-500 text-emerald-200' 
-              : 'bg-rose-950 border-rose-500 text-rose-200'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-lg' 
+              : 'bg-rose-50 border-rose-300 text-rose-900 shadow-lg'
           }`}>
-            {notification.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : <AlertCircle className="w-5 h-5 text-rose-400" />}
+            {notification.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-700" /> : <AlertCircle className="w-5 h-5 text-rose-700" />}
             <span>{notification.msg}</span>
           </div>
         </div>
@@ -765,7 +869,7 @@ export function AdminDashboard() {
                 : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            <GraduationCap className="w-4 h-4 text-amber-400" />
+            <GraduationCap className="w-4 h-4 text-amber-700" />
             <span>Paid Courses CMS & Students</span>
           </button>
 
@@ -774,7 +878,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'resources'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -786,7 +890,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'quizzes'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <HelpCircle className="w-4 h-4" />
@@ -798,10 +902,10 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'chapter-mcqs'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-rose-400" />
+            <Sparkles className="w-4 h-4 text-rose-700" />
             <span>Chapter Wise MCQs</span>
           </button>
 
@@ -810,10 +914,10 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'chapter-notes'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            <BookOpen className="w-4 h-4 text-amber-400" />
+            <BookOpen className="w-4 h-4 text-amber-700" />
             <span>Chapter Notes CMS ({noteTopics.length})</span>
           </button>
 
@@ -822,10 +926,10 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'practicals'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            <Code className="w-4 h-4 text-emerald-400" />
+            <Code className="w-4 h-4 text-emerald-700" />
             <span>Practical Exam Sets ({practicalTests.length})</span>
           </button>
 
@@ -834,7 +938,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'overview'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <Database className="w-4 h-4" />
@@ -846,7 +950,7 @@ export function AdminDashboard() {
             className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all ${
               activeTab === 'tools'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             <LinkIcon className="w-4 h-4" />
@@ -871,7 +975,7 @@ export function AdminDashboard() {
                 <button
                   onClick={() => setSelectedCategory('all')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                    selectedCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-900'
+                    selectedCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   All ({resources.length})
@@ -881,7 +985,7 @@ export function AdminDashboard() {
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                      selectedCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-900'
+                      selectedCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     {cat.title.split(' ')[0]}
@@ -891,7 +995,7 @@ export function AdminDashboard() {
 
               <div className="flex items-center gap-3">
                 <div className="relative flex-1 sm:w-64">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
                   <input
                     type="text"
                     value={resourceSearch}
@@ -921,44 +1025,44 @@ export function AdminDashboard() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-400/30">
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded border border-blue-400/30">
                           {res.categoryLabel || res.category}
                         </span>
                         {res.isPaid ? (
-                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
                             PAID • ₹{res.price || 49}
                           </span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                             FREE
                           </span>
                         )}
                       </div>
                       {res.moduleCode && (
-                        <span className="text-[10px] font-semibold bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
                           {res.moduleCode}
                         </span>
                       )}
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-blue-400 transition-colors">
+                      <h4 className="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-blue-700 transition-colors">
                         {res.title}
                       </h4>
                       {res.hindiTitle && (
-                        <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
+                        <p className="text-xs text-slate-600 line-clamp-1 mt-0.5">
                           {res.hindiTitle}
                         </p>
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
                       {res.description}
                     </p>
 
                     <div className="flex flex-wrap gap-1 pt-1">
                       {res.tags?.slice(0, 3).map((tag, idx) => (
-                        <span key={idx} className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
+                        <span key={idx} className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
                           #{tag}
                         </span>
                       ))}
@@ -966,7 +1070,7 @@ export function AdminDashboard() {
                   </div>
 
                   <div className="pt-4 mt-4 border-t border-slate-200 flex items-center justify-between">
-                    <div className="text-[11px] text-slate-500">
+                    <div className="text-[11px] text-slate-600">
                       <span>{res.fileSize}</span> • <span>{res.downloadCount} downloads</span>
                     </div>
 
@@ -977,7 +1081,7 @@ export function AdminDashboard() {
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Open Preview Sample PDF in New Tab"
-                          className="px-2 py-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg transition-colors flex items-center gap-1"
+                          className="px-2 py-1 text-[10px] font-bold text-amber-700 bg-amber-500/10 hover:bg-amber-50 border border-amber-200 rounded-lg transition-colors flex items-center gap-1"
                         >
                           <span>Sample</span>
                           <ExternalLink className="w-3 h-3" />
@@ -989,7 +1093,7 @@ export function AdminDashboard() {
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Open Actual Full PDF in New Tab"
-                          className="px-2 py-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg transition-colors flex items-center gap-1"
+                          className="px-2 py-1 text-[10px] font-bold text-emerald-700 bg-emerald-500/10 hover:bg-emerald-50 border border-emerald-500/30 rounded-lg transition-colors flex items-center gap-1"
                         >
                           <span>{res.isPaid ? 'Full PDF' : 'PDF'}</span>
                           <ExternalLink className="w-3 h-3" />
@@ -998,14 +1102,14 @@ export function AdminDashboard() {
                       <button
                         onClick={() => handleOpenEditResource(res)}
                         title="Edit Card"
-                        className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-600 hover:text-blue-700 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteResource(res.id)}
                         title="Delete Card"
-                        className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-600 hover:text-rose-700 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1019,7 +1123,7 @@ export function AdminDashboard() {
               <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 space-y-3">
                 <FileText className="w-12 h-12 text-slate-600 mx-auto" />
                 <h4 className="text-base font-bold text-slate-900">No Notes Found</h4>
-                <p className="text-xs text-slate-500">Click "Add New PDF Note" or "Sync Standard Data" to populate.</p>
+                <p className="text-xs text-slate-600">Click "Add New PDF Note" or "Sync Standard Data" to populate.</p>
               </div>
             )}
 
@@ -1033,7 +1137,7 @@ export function AdminDashboard() {
             {/* Action Bar */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200">
               <div className="relative flex-1 sm:w-80">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
                 <input
                   type="text"
                   value={quizSearch}
@@ -1061,10 +1165,10 @@ export function AdminDashboard() {
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-400/30">
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 px-2 py-0.5 rounded border border-amber-400/30">
                         {quiz.moduleLabel || quiz.module}
                       </span>
-                      <span className="text-xs font-semibold text-slate-500">
+                      <span className="text-xs font-semibold text-slate-600">
                         {quiz.questions?.length || 0} Questions • {quiz.durationMinutes} Mins
                       </span>
                     </div>
@@ -1072,26 +1176,26 @@ export function AdminDashboard() {
                     <div>
                       <h4 className="text-base font-bold text-slate-900">{quiz.title}</h4>
                       {quiz.hindiTitle && (
-                        <p className="text-xs text-slate-500 mt-0.5">{quiz.hindiTitle}</p>
+                        <p className="text-xs text-slate-600 mt-0.5">{quiz.hindiTitle}</p>
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-xs text-slate-600 leading-relaxed">
                       {quiz.description}
                     </p>
 
                     <div className="grid grid-cols-3 gap-2 text-center text-[11px] pt-1">
                       <div className="bg-slate-50 p-2 rounded-xl border border-slate-200">
-                        <span className="text-slate-500 block text-[10px]">Total Marks</span>
+                        <span className="text-slate-600 block text-[10px]">Total Marks</span>
                         <span className="font-bold text-slate-900">{quiz.totalMarks}</span>
                       </div>
                       <div className="bg-slate-50 p-2 rounded-xl border border-slate-200">
-                        <span className="text-slate-500 block text-[10px]">Pass Marks</span>
-                        <span className="font-bold text-emerald-400">{quiz.passingMarks}</span>
+                        <span className="text-slate-600 block text-[10px]">Pass Marks</span>
+                        <span className="font-bold text-emerald-700">{quiz.passingMarks}</span>
                       </div>
                       <div className="bg-slate-50 p-2 rounded-xl border border-slate-200">
-                        <span className="text-slate-500 block text-[10px]">Attempts</span>
-                        <span className="font-bold text-blue-400">{quiz.totalAttempts || 0}</span>
+                        <span className="text-slate-600 block text-[10px]">Attempts</span>
+                        <span className="font-bold text-blue-700">{quiz.totalAttempts || 0}</span>
                       </div>
                     </div>
                   </div>
@@ -1100,7 +1204,7 @@ export function AdminDashboard() {
                   <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
                     <button
                       onClick={() => setActiveQuizForQuestions(activeQuizForQuestions?.id === quiz.id ? null : quiz)}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 hover:text-blue-700 transition-colors"
                     >
                       <span>{activeQuizForQuestions?.id === quiz.id ? '▲ Hide Questions' : `▼ Manage ${quiz.questions?.length || 0} Questions`}</span>
                     </button>
@@ -1108,28 +1212,28 @@ export function AdminDashboard() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleOpenCsvImport(quiz)}
-                        className="inline-flex items-center gap-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-blue-500/30 transition-colors shadow-2xs"
+                        className="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-blue-200 transition-colors shadow-2xs"
                         title="Upload Questions from CSV file"
                       >
-                        <FileSpreadsheet className="w-3.5 h-3.5 text-blue-400" />
+                        <FileSpreadsheet className="w-3.5 h-3.5 text-blue-700" />
                         <span>Attach CSV</span>
                       </button>
                       <button
                         onClick={() => handleOpenAddQuestion(quiz)}
-                        className="inline-flex items-center gap-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-emerald-500/30 transition-colors"
+                        className="inline-flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-emerald-500/30 transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add Question</span>
                       </button>
                       <button
                         onClick={() => handleOpenEditQuiz(quiz)}
-                        className="p-1.5 text-slate-500 hover:text-blue-400 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-600 hover:text-blue-700 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteQuiz(quiz.id)}
-                        className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-600 hover:text-rose-700 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1139,21 +1243,21 @@ export function AdminDashboard() {
                   {/* Inline Questions List Accordion */}
                   {activeQuizForQuestions?.id === quiz.id && (
                     <div className="mt-4 pt-4 border-t border-slate-200 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                           Questions inside this test ({quiz.questions?.length || 0})
                         </h5>
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => handleOpenCsvImport(quiz)}
-                            className="text-[11px] text-blue-400 hover:underline font-bold flex items-center gap-1"
+                            className="text-[11px] text-blue-700 hover:underline font-bold flex items-center gap-1 cursor-pointer"
                           >
                             <FileSpreadsheet className="w-3 h-3" />
                             <span>Upload CSV</span>
                           </button>
                           <button
                             onClick={() => handleOpenAddQuestion(quiz)}
-                            className="text-[11px] text-emerald-400 hover:underline font-bold flex items-center gap-1"
+                            className="text-[11px] text-emerald-700 hover:underline font-bold flex items-center gap-1 cursor-pointer"
                           >
                             <Plus className="w-3 h-3" />
                             <span>Add Question</span>
@@ -1161,56 +1265,143 @@ export function AdminDashboard() {
                         </div>
                       </div>
 
-                      {quiz.questions?.map((q, qIndex) => (
-                        <div key={q.id || qIndex} className="p-3 bg-white rounded-xl border border-slate-200 space-y-2">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <span className="text-[10px] font-mono text-blue-400 font-bold mr-1.5">
-                                Q{qIndex + 1}.
-                              </span>
-                              <span className="text-xs font-medium text-slate-900">{q.question}</span>
-                              {q.hindiQuestion && (
-                                <p className="text-[11px] text-slate-500 mt-0.5">{q.hindiQuestion}</p>
+                      {/* CBT Bulk Operations Bar */}
+                      {(quiz.questions?.length || 0) > 0 && (
+                        <div className="p-2.5 bg-white border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
+                          <div className="flex items-center gap-2.5">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleSelectAllQuizQuestions(quiz)}
+                              className="inline-flex items-center gap-1.5 font-bold text-slate-700 hover:text-blue-700 transition-colors cursor-pointer"
+                            >
+                              {(quiz.questions || []).length > 0 &&
+                              (quiz.questions || []).every((q, idx) =>
+                                selectedQuizQuestionIds.has(q.id || `q-${idx}`)
+                              ) ? (
+                                <CheckSquare className="w-4 h-4 text-blue-700" />
+                              ) : (
+                                <Square className="w-4 h-4 text-slate-600" />
                               )}
-                            </div>
-                            <div className="flex items-center gap-1 shrink-0">
-                              <button
-                                onClick={() => handleOpenEditQuestion(quiz, q)}
-                                className="p-1 text-slate-500 hover:text-blue-400"
-                              >
-                                <Edit className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteQuestion(quiz, q.id)}
-                                className="p-1 text-slate-500 hover:text-rose-400"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
+                              <span>
+                                {(quiz.questions || []).length > 0 &&
+                                (quiz.questions || []).every((q, idx) =>
+                                  selectedQuizQuestionIds.has(q.id || `q-${idx}`)
+                                )
+                                  ? 'Deselect All'
+                                  : 'Select All'}
+                              </span>
+                            </button>
+
+                            {selectedQuizQuestionIds.size > 0 && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                {selectedQuizQuestionIds.size} of {(quiz.questions || []).length} Selected
+                              </span>
+                            )}
                           </div>
 
-                          {/* Options preview */}
-                          <div className="grid grid-cols-2 gap-1.5 text-[11px] pt-1">
-                            {q.options?.map((opt, optIndex) => (
-                              <div
-                                key={optIndex}
-                                className={`px-2 py-1 rounded-md text-[10px] ${
-                                  optIndex === q.correctIndex
-                                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold'
-                                    : 'bg-slate-50 text-slate-500'
-                                }`}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {selectedQuizQuestionIds.size > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => handleBulkDeleteQuizQuestions(quiz)}
+                                disabled={loading}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white transition-colors cursor-pointer shadow-2xs"
                               >
-                                {String.fromCharCode(65 + optIndex)}. {opt} {optIndex === q.correctIndex && '✓'}
-                              </div>
-                            ))}
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Delete Selected ({selectedQuizQuestionIds.size})</span>
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => handleClearAllQuizQuestions(quiz)}
+                              disabled={loading}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-300 hover:border-rose-300 transition-colors cursor-pointer"
+                              title="Delete all questions in this test"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Clear All Questions</span>
+                            </button>
                           </div>
-                          {q.explanation && (
-                            <p className="text-[10px] text-slate-500 italic pt-1 border-t border-slate-200">
-                              Explanation: {q.explanation}
-                            </p>
-                          )}
                         </div>
-                      ))}
+                      )}
+
+                      {quiz.questions?.map((q, qIndex) => {
+                        const qId = q.id || `q-${qIndex}`;
+                        const isSelected = selectedQuizQuestionIds.has(qId);
+
+                        return (
+                          <div
+                            key={qId}
+                            className={`p-3 rounded-xl border space-y-2 transition-all ${
+                              isSelected
+                                ? 'bg-blue-50/50 border-blue-400 ring-1 ring-blue-400'
+                                : 'bg-white border-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-start gap-2 flex-1 min-w-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleSelectQuizQuestion(qId)}
+                                  className="mt-0.5 text-slate-600 hover:text-blue-700 cursor-pointer shrink-0"
+                                  title={isSelected ? 'Deselect' : 'Select'}
+                                >
+                                  {isSelected ? (
+                                    <CheckSquare className="w-4 h-4 text-blue-700" />
+                                  ) : (
+                                    <Square className="w-4 h-4 text-slate-600" />
+                                  )}
+                                </button>
+                                <div>
+                                  <span className="text-[10px] font-mono text-blue-700 font-bold mr-1.5">
+                                    Q{qIndex + 1}.
+                                  </span>
+                                  <span className="text-xs font-medium text-slate-900">{q.question}</span>
+                                  {q.hindiQuestion && (
+                                    <p className="text-[11px] text-slate-600 mt-0.5">{q.hindiQuestion}</p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  onClick={() => handleOpenEditQuestion(quiz, q)}
+                                  className="p-1 text-slate-600 hover:text-blue-700"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteQuestion(quiz, q.id)}
+                                  className="p-1 text-slate-600 hover:text-rose-700"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Options preview */}
+                            <div className="grid grid-cols-2 gap-1.5 text-[11px] pt-1">
+                              {q.options?.map((opt, optIndex) => (
+                                <div
+                                  key={optIndex}
+                                  className={`px-2 py-1 rounded-md text-[10px] ${
+                                    optIndex === q.correctIndex
+                                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold'
+                                      : 'bg-slate-50 text-slate-600'
+                                  }`}
+                                >
+                                  {String.fromCharCode(65 + optIndex)}. {opt} {optIndex === q.correctIndex && '✓'}
+                                </div>
+                              ))}
+                            </div>
+                            {q.explanation && (
+                              <p className="text-[10px] text-slate-600 italic pt-1 border-t border-slate-200">
+                                Explanation: {q.explanation}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 
@@ -1234,7 +1425,7 @@ export function AdminDashboard() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200">
               <div>
                 <h3 className="text-base font-bold text-slate-900">NIELIT O Level Practical Exam Sets</h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-600">
                   Manage Python (PR3), Web Design (PR2), IoT (PR4), and IT Tools (PR1) practical lab exams with coding tasks and Viva Voce.
                 </p>
               </div>
@@ -1272,26 +1463,26 @@ export function AdminDashboard() {
               {practicalTests.map((t) => (
                 <div key={t.id} className="bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-blue-400 bg-blue-950 px-2.5 py-0.5 rounded border border-blue-800/60">
+                    <span className="text-xs font-bold text-blue-700 bg-blue-950 px-2.5 py-0.5 rounded border border-blue-200">
                       {t.paperCode} • {t.module}
                     </span>
-                    <span className="text-xs text-slate-500 font-medium">{t.durationMinutes} Mins • 100 Marks</span>
+                    <span className="text-xs text-slate-600 font-medium">{t.durationMinutes} Mins • 100 Marks</span>
                   </div>
 
                   <div>
                     <h4 className="text-base font-bold text-slate-900">{t.title}</h4>
-                    <p className="text-xs text-slate-500 mt-1">{t.description}</p>
+                    <p className="text-xs text-slate-600 mt-1">{t.description}</p>
                   </div>
 
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1.5">
                     <span className="font-bold text-slate-700 block">Tasks ({t.questions.length}):</span>
                     {t.questions.map((q) => (
-                      <div key={q.id} className="text-slate-500 flex items-center gap-2">
-                        <span className="text-blue-400 font-bold">Q{q.number}.</span>
+                      <div key={q.id} className="text-slate-600 flex items-center gap-2">
+                        <span className="text-blue-700 font-bold">Q{q.number}.</span>
                         <span className="truncate">{q.title} ({q.language.toUpperCase()})</span>
                       </div>
                     ))}
-                    <div className="pt-1.5 border-t border-slate-200 text-[11px] text-amber-400">
+                    <div className="pt-1.5 border-t border-slate-200 text-[11px] text-amber-700">
                       + {t.vivaQuestions.length} Viva Voce Questions (20 Marks)
                     </div>
                   </div>
@@ -1307,7 +1498,7 @@ export function AdminDashboard() {
                       </button>
                       <button
                         onClick={() => handleDeletePractical(t.id)}
-                        className="text-[10px] bg-rose-950/40 hover:bg-rose-900/40 text-rose-400 border border-rose-900/30 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
+                        className="text-[10px] bg-rose-50 hover:bg-rose-900/40 text-rose-700 border border-rose-200 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
                       >
                         <Trash2 className="w-3 h-3" />
                         Delete
@@ -1317,7 +1508,7 @@ export function AdminDashboard() {
                       href={`/practical-practice/${t.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1"
+                      className="text-xs text-blue-700 hover:text-blue-700 font-bold flex items-center gap-1"
                     >
                       <span>Open Workspace Simulator</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -1330,25 +1521,25 @@ export function AdminDashboard() {
             {/* Submissions Section */}
             <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
               <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-emerald-400" />
+                <FileText className="w-4 h-4 text-emerald-700" />
                 <span>Recent Practical Exam Submissions ({practicalSubmissions.length})</span>
               </h4>
 
               {practicalSubmissions.length === 0 ? (
-                <p className="text-xs text-slate-500">No student submissions recorded yet. Take a test to see live submissions!</p>
+                <p className="text-xs text-slate-600">No student submissions recorded yet. Take a test to see live submissions!</p>
               ) : (
                 <div className="space-y-2">
                   {practicalSubmissions.map((sub, i) => (
                     <div key={sub.id || i} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
                       <div>
                         <span className="font-bold text-slate-900">{sub.studentName}</span>
-                        <span className="text-slate-500 ml-2">({sub.paperCode} - {sub.module})</span>
+                        <span className="text-slate-600 ml-2">({sub.paperCode} - {sub.module})</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-emerald-400 font-bold">
+                        <span className="text-emerald-700 font-bold">
                           Score: {sub.scorecard.totalScore}/100 (Grade {sub.scorecard.grade})
                         </span>
-                        <span className="text-slate-500 text-[11px]">
+                        <span className="text-slate-600 text-[11px]">
                           {new Date(sub.submittedAt).toLocaleDateString()}
                         </span>
                       </div>
@@ -1368,12 +1559,12 @@ export function AdminDashboard() {
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+                    <span className="p-1.5 rounded-lg bg-amber-50 text-amber-700">
                       <BookOpen className="w-4 h-4" />
                     </span>
                     <h3 className="text-base font-bold text-slate-900">Hierarchical Notes & Blog CMS</h3>
                   </div>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-600">
                     Create and publish rich Word-style study notes organized by Module &rarr; Chapter &rarr; Topic with Hindi/English bilingual formatting.
                   </p>
                 </div>
@@ -1382,7 +1573,7 @@ export function AdminDashboard() {
                   <button
                     onClick={handleClearAllNotes}
                     disabled={loading}
-                    className="inline-flex items-center gap-1.5 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 px-3.5 py-2 rounded-xl text-xs font-bold border border-rose-800/60 transition-colors"
+                    className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 px-3.5 py-2 rounded-xl text-xs font-bold border border-rose-200 transition-colors"
                     title="Delete all chapters and notes from cloud database to start fresh from 0"
                   >
                     <Trash2 className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -1393,7 +1584,7 @@ export function AdminDashboard() {
                     href={`/notes/${selectedNoteCourseId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 px-3.5 py-2 rounded-xl text-xs font-bold transition-colors"
+                    className="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-3.5 py-2 rounded-xl text-xs font-bold transition-colors"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>Preview in Notes Reader</span>
@@ -1429,13 +1620,13 @@ export function AdminDashboard() {
                       }}
                       className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                         isSelected
-                          ? 'bg-amber-500 text-slate-100 shadow-md font-extrabold'
+                          ? 'bg-amber-500 text-white shadow-md font-extrabold'
                           : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
                       }`}
                     >
                       <span>{c.label}</span>
                       <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                        isSelected ? 'bg-slate-50 text-amber-300' : 'bg-slate-50 text-slate-500'
+                        isSelected ? 'bg-slate-50 text-amber-700' : 'bg-slate-50 text-slate-600'
                       }`}>
                         {courseTopicsCount} Notes
                       </span>
@@ -1453,17 +1644,17 @@ export function AdminDashboard() {
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                   <div>
                     <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-blue-400" />
+                      <Layers className="w-4 h-4 text-blue-700" />
                       <span>Chapters</span>
                     </h4>
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-slate-600">
                       {noteChapters.filter(ch => ch.courseId === selectedNoteCourseId).length} Chapters in this Course
                     </span>
                   </div>
 
                   <button
                     onClick={handleOpenCreateChapter}
-                    className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-amber-300 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 transition-colors"
+                    className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-amber-700 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Chapter</span>
@@ -1506,10 +1697,10 @@ export function AdminDashboard() {
                               className="text-left flex-1 cursor-pointer"
                             >
                               <div className="flex items-center gap-1.5 mb-1">
-                                <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-extrabold text-[10px]">
+                                <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-700 font-extrabold text-[10px]">
                                   Ch {ch.chapterNumber}
                                 </span>
-                                <span className="text-[10px] text-slate-500">
+                                <span className="text-[10px] text-slate-600">
                                   {chapTopics.length} {chapTopics.length === 1 ? 'topic' : 'topics'}
                                 </span>
                               </div>
@@ -1517,7 +1708,7 @@ export function AdminDashboard() {
                                 {ch.title}
                               </h5>
                               {ch.hindiTitle && (
-                                <p className="text-[11px] text-slate-500 mt-0.5">
+                                <p className="text-[11px] text-slate-600 mt-0.5">
                                   {ch.hindiTitle}
                                 </p>
                               )}
@@ -1527,7 +1718,7 @@ export function AdminDashboard() {
                               <button
                                 onClick={() => handleOpenCreateNoteTopic(ch.id)}
                                 title="Add note in this chapter"
-                                className="p-1 rounded bg-blue-900/40 text-blue-300 hover:bg-blue-800/60"
+                                className="p-1 rounded bg-blue-900/40 text-blue-700 hover:bg-blue-800/60"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -1541,7 +1732,7 @@ export function AdminDashboard() {
                               <button
                                 onClick={() => handleDeleteChapter(ch.id, ch.title)}
                                 title="Delete chapter"
-                                className="p-1 rounded bg-rose-900/30 text-rose-300 hover:bg-rose-800/50"
+                                className="p-1 rounded bg-rose-900/30 text-rose-700 hover:bg-rose-800/50"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -1552,9 +1743,9 @@ export function AdminDashboard() {
                     })}
 
                   {noteChapters.filter(ch => ch.courseId === selectedNoteCourseId).length === 0 && (
-                    <div className="text-center py-8 text-slate-500 text-xs">
+                    <div className="text-center py-8 text-slate-600 text-xs">
                       No chapters defined for this course yet.<br />
-                      Click <strong className="text-blue-400">"Add Chapter"</strong> or <strong className="text-amber-400">"Sync Default Notes"</strong> above.
+                      Click <strong className="text-blue-700">"Add Chapter"</strong> or <strong className="text-amber-700">"Sync Default Notes"</strong> above.
                     </div>
                   )}
                 </div>
@@ -1567,10 +1758,10 @@ export function AdminDashboard() {
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                   <div>
                     <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-emerald-400" />
+                      <FileText className="w-4 h-4 text-emerald-700" />
                       <span>Note Articles & Blog Topics</span>
                     </h4>
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-slate-600">
                       {selectedNoteChapterId === 'all' 
                         ? 'Showing all topics in course'
                         : `Showing topics in ${noteChapters.find(c => c.id === selectedNoteChapterId)?.title || 'Chapter'}`}
@@ -1579,7 +1770,7 @@ export function AdminDashboard() {
 
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1 sm:w-64">
-                      <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <Search className="w-3.5 h-3.5 text-slate-600 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
                         placeholder="Search notes in course..."
@@ -1616,17 +1807,17 @@ export function AdminDashboard() {
                           <div className="space-y-1.5 flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
                               {parentChapter && (
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-700 border border-blue-500/20">
                                   Ch {parentChapter.chapterNumber}: {parentChapter.title}
                                 </span>
                               )}
                               {topic.readTime && (
-                                <span className="text-[10px] text-slate-500">
+                                <span className="text-[10px] text-slate-600">
                                   ⏱ {topic.readTime}
                                 </span>
                               )}
                               {topic.views !== undefined && (
-                                <span className="text-[10px] text-slate-500">
+                                <span className="text-[10px] text-slate-600">
                                   👁 {topic.views} views
                                 </span>
                               )}
@@ -1637,7 +1828,7 @@ export function AdminDashboard() {
                             </h5>
 
                             {topic.hindiTitle && (
-                              <p className="text-xs text-slate-500">
+                              <p className="text-xs text-slate-600">
                                 {topic.hindiTitle}
                               </p>
                             )}
@@ -1645,7 +1836,7 @@ export function AdminDashboard() {
                             {topic.tags && topic.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 pt-1">
                                 {topic.tags.map((tag, idx) => (
-                                  <span key={idx} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+                                  <span key={idx} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
                                     #{tag}
                                   </span>
                                 ))}
@@ -1658,7 +1849,7 @@ export function AdminDashboard() {
                               href={`/notes/${topic.courseId}/${topic.chapterId}/${topic.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-blue-300 text-xs font-semibold flex items-center gap-1 transition-colors"
+                              className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-blue-700 text-xs font-semibold flex items-center gap-1 transition-colors"
                             >
                               <Eye className="w-3.5 h-3.5" />
                               <span className="hidden sm:inline">View</span>
@@ -1666,7 +1857,7 @@ export function AdminDashboard() {
 
                             <button
                               onClick={() => handleOpenEditNoteTopic(topic)}
-                              className="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                              className="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
                             >
                               <Edit3 className="w-3.5 h-3.5" />
                               <span>Edit Word Note</span>
@@ -1674,7 +1865,7 @@ export function AdminDashboard() {
 
                             <button
                               onClick={() => handleDeleteNoteTopic(topic.id, topic.title)}
-                              className="p-1.5 rounded-lg bg-rose-900/30 hover:bg-rose-900/50 text-rose-300 border border-rose-500/20 transition-colors"
+                              className="p-1.5 rounded-lg bg-rose-900/30 hover:bg-rose-900/50 text-rose-700 border border-rose-500/20 transition-colors"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1686,7 +1877,7 @@ export function AdminDashboard() {
                   {noteTopics.filter(t => t.courseId === selectedNoteCourseId && (selectedNoteChapterId === 'all' || t.chapterId === selectedNoteChapterId)).length === 0 && (
                     <div className="text-center py-12 bg-slate-50/40 rounded-2xl border border-slate-200/50 space-y-3">
                       <BookOpen className="w-8 h-8 text-slate-600 mx-auto" />
-                      <p className="text-xs text-slate-500 font-medium">
+                      <p className="text-xs text-slate-600 font-medium">
                         No note articles created for this section yet.
                       </p>
                       <button
@@ -1709,26 +1900,26 @@ export function AdminDashboard() {
           <div className="pt-6 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
-                <span className="text-xs text-slate-500">Total PDF Notes</span>
+                <span className="text-xs text-slate-600">Total PDF Notes</span>
                 <span className="block text-3xl font-extrabold text-slate-900">{resources.length}</span>
-                <span className="text-[11px] text-blue-400">Published across 5 categories</span>
+                <span className="text-[11px] text-blue-700">Published across 5 categories</span>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
-                <span className="text-xs text-slate-500">Online MCQ Tests</span>
+                <span className="text-xs text-slate-600">Online MCQ Tests</span>
                 <span className="block text-3xl font-extrabold text-slate-900">{quizzes.length}</span>
-                <span className="text-[11px] text-emerald-400">O Level M1-M4 & CCC</span>
+                <span className="text-[11px] text-emerald-700">O Level M1-M4 & CCC</span>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
-                <span className="text-xs text-slate-500">Total Quiz Questions</span>
+                <span className="text-xs text-slate-600">Total Quiz Questions</span>
                 <span className="block text-3xl font-extrabold text-slate-900">
                   {quizzes.reduce((sum, q) => sum + (q.questions?.length || 0), 0)}
                 </span>
-                <span className="text-[11px] text-purple-400">With Hindi & English explanations</span>
+                <span className="text-[11px] text-purple-700">With Hindi & English explanations</span>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
-                <span className="text-xs text-slate-500">Database Engine</span>
-                <span className="block text-xl font-bold text-amber-400">Firebase Firestore</span>
-                <span className="text-[11px] text-slate-500">Serverless • Real-time Sync</span>
+                <span className="text-xs text-slate-600">Database Engine</span>
+                <span className="block text-xl font-bold text-amber-700">Firebase Firestore</span>
+                <span className="text-[11px] text-slate-600">Serverless • Real-time Sync</span>
               </div>
             </div>
 
@@ -1749,7 +1940,7 @@ export function AdminDashboard() {
             <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
               <div>
                 <h4 className="text-lg font-bold text-slate-900">Direct PDF Link Generator</h4>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-600 mt-1">
                   Paste any Google Drive sharing link, Dropbox link, or raw PDF link. This tool automatically converts it into a direct embedded preview URL so students can view the PDF directly on your website without redirection!
                 </p>
               </div>
@@ -1778,7 +1969,7 @@ export function AdminDashboard() {
 
                 {convertedUrl && (
                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                    <span className="text-xs text-emerald-400 font-bold block">Converted Direct URL:</span>
+                    <span className="text-xs text-emerald-700 font-bold block">Converted Direct URL:</span>
                     <code className="text-xs text-slate-700 font-mono break-all block bg-white p-2.5 rounded-lg border border-slate-200">
                       {convertedUrl}
                     </code>
@@ -1819,7 +2010,7 @@ export function AdminDashboard() {
               <h3 className="text-base font-bold text-slate-900">
                 {editingResource.id ? 'Edit Study Material / PDF Card' : 'Add New Study Material / PDF Card'}
               </h3>
-              <button onClick={() => setIsResourceModalOpen(false)} className="text-slate-500 hover:text-slate-900">
+              <button onClick={() => setIsResourceModalOpen(false)} className="text-slate-600 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1939,7 +2130,7 @@ export function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="font-bold text-slate-900 text-xs block">Pricing & Access Model</span>
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-slate-600">
                       Set this PDF notes card as 100% free or require payment to unlock.
                     </span>
                   </div>
@@ -1949,8 +2140,8 @@ export function AdminDashboard() {
                       onClick={() => setEditingResource({ ...editingResource, isPaid: false })}
                       className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                         !editingResource.isPaid 
-                          ? 'bg-emerald-500 text-slate-100 shadow-md font-black' 
-                          : 'bg-slate-100 text-slate-500 hover:text-slate-900'
+                          ? 'bg-emerald-500 text-white shadow-md font-black' 
+                          : 'bg-slate-100 text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       Free Note
@@ -1960,8 +2151,8 @@ export function AdminDashboard() {
                       onClick={() => setEditingResource({ ...editingResource, isPaid: true })}
                       className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                         editingResource.isPaid 
-                          ? 'bg-amber-500 text-slate-100 shadow-md font-black' 
-                          : 'bg-slate-100 text-slate-500 hover:text-slate-900'
+                          ? 'bg-amber-500 text-white shadow-md font-black' 
+                          : 'bg-slate-100 text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       Paid / Premium
@@ -1974,14 +2165,14 @@ export function AdminDashboard() {
                   <div className="pt-3 border-t border-slate-200 space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
-                        <label className="block font-semibold text-amber-300 mb-1 text-xs">Selling Price (₹)</label>
+                        <label className="block font-semibold text-amber-700 mb-1 text-xs">Selling Price (₹)</label>
                         <input
                           type="number"
                           min="1"
                           value={editingResource.price ?? 49}
                           onChange={(e) => setEditingResource({ ...editingResource, price: Number(e.target.value) })}
                           placeholder="49"
-                          className="w-full px-3 py-2 bg-white border border-amber-500/40 rounded-xl text-slate-900 font-bold focus:outline-none focus:border-amber-400 text-xs"
+                          className="w-full px-3 py-2 bg-white border border-amber-200 rounded-xl text-slate-900 font-bold focus:outline-none focus:border-amber-400 text-xs"
                         />
                       </div>
 
@@ -2010,13 +2201,13 @@ export function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-[11px] text-amber-200/90 leading-relaxed">
+                    <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-[11px] text-amber-900 font-medium leading-relaxed">
                       💡 <strong>Paid Notes Setup:</strong> Provide two separate PDF URLs below. Option 1 is a public sample PDF students can preview in a new window. Option 2 is the actual full notes PDF unlocked after Razorpay checkout.
                     </div>
                   </div>
                 ) : (
                   <div className="pt-2 border-t border-slate-200">
-                    <p className="text-[11px] text-emerald-400 font-medium">
+                    <p className="text-[11px] text-emerald-700 font-medium">
                       ✓ 100% Free Note: Students will directly view & download the actual PDF in a new window. No preview upload is required.
                     </p>
                   </div>
@@ -2029,9 +2220,9 @@ export function AdminDashboard() {
                 <div className="space-y-4 p-4 bg-slate-50/60 rounded-2xl border border-slate-200">
                   {/* OPTION 1: PREVIEW PDF */}
                   <div>
-                    <label className="block font-bold text-amber-300 text-xs mb-1 flex items-center justify-between">
+                    <label className="block font-bold text-amber-700 text-xs mb-1 flex items-center justify-between">
                       <span>Option 1: Preview / Sample Notes PDF URL (Demo)</span>
-                      <span className="text-[10px] text-amber-400/80 font-normal">Opens in New Window for Students</span>
+                      <span className="text-[10px] text-amber-700/80 font-normal">Opens in New Window for Students</span>
                     </label>
                     <input
                       type="text"
@@ -2041,18 +2232,18 @@ export function AdminDashboard() {
                         previewPdfUrl: e.target.value 
                       })}
                       placeholder="https://drive.google.com/file/d/... or sample-preview.pdf"
-                      className="w-full px-3 py-2 bg-white border border-amber-500/30 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-amber-400 font-mono"
+                      className="w-full px-3 py-2 bg-white border border-amber-200 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-amber-400 font-mono"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-slate-600 mt-1">
                       Upload/paste the link for the sample PDF (e.g. first 2-3 sample pages). When students click "Preview Sample", this opens directly in a new window.
                     </p>
                   </div>
 
                   {/* OPTION 2: ACTUAL FULL PDF */}
                   <div>
-                    <label className="block font-bold text-emerald-300 text-xs mb-1 flex items-center justify-between">
+                    <label className="block font-bold text-emerald-700 text-xs mb-1 flex items-center justify-between">
                       <span>Option 2: Actual / Full Notes PDF URL (Complete Document)</span>
-                      <span className="text-[10px] text-emerald-400/80 font-normal">Protected • Unlocked After Purchase</span>
+                      <span className="text-[10px] text-emerald-700/80 font-normal">Protected • Unlocked After Purchase</span>
                     </label>
                     <input
                       type="text"
@@ -2065,7 +2256,7 @@ export function AdminDashboard() {
                       placeholder="https://drive.google.com/file/d/... or full-complete-notes.pdf"
                       className="w-full px-3 py-2 bg-white border border-emerald-500/30 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-emerald-400 font-mono"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-slate-600 mt-1">
                       The complete master PDF. Kept locked and provided to students in a new window/download only after payment.
                     </p>
                   </div>
@@ -2087,7 +2278,7 @@ export function AdminDashboard() {
                     placeholder="https://drive.google.com/file/d/... or direct https://...pdf"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-blue-500 font-mono"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-slate-600 mt-1">
                     Paste Google Drive or direct link. Clicking "View PDF" or "Download" will open this complete PDF in a new window.
                   </p>
                 </div>
@@ -2137,7 +2328,7 @@ export function AdminDashboard() {
               <h3 className="text-base font-bold text-slate-900">
                 {editingQuiz.id ? 'Edit MCQ Test Series' : 'Create New Online MCQ Test'}
               </h3>
-              <button onClick={() => setIsQuizModalOpen(false)} className="text-slate-500 hover:text-slate-900">
+              <button onClick={() => setIsQuizModalOpen(false)} className="text-slate-600 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -2273,7 +2464,7 @@ export function AdminDashboard() {
               <h3 className="text-base font-bold text-slate-900">
                 {editingPractical.id?.startsWith('prac-') ? 'Create Practical Test' : 'Edit Practical Test'}
               </h3>
-              <button onClick={() => setIsPracticalModalOpen(false)} className="text-slate-500 hover:text-slate-900">
+              <button onClick={() => setIsPracticalModalOpen(false)} className="text-slate-600 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -2364,14 +2555,14 @@ export function AdminDashboard() {
                           newQs.splice(idx, 1);
                           setEditingPractical({ ...editingPractical, questions: newQs });
                         }}
-                        className="absolute top-3 right-3 text-rose-400 hover:text-rose-300"
+                        className="absolute top-3 right-3 text-rose-700 hover:text-rose-700"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                       
                       <div className="grid grid-cols-3 gap-3 pr-8">
                         <div className="col-span-2">
-                          <label className="block text-slate-500 text-[10px] mb-1">Task Title</label>
+                          <label className="block text-slate-700 font-semibold text-[10px] mb-1">Task Title</label>
                           <input
                             type="text"
                             required
@@ -2386,7 +2577,7 @@ export function AdminDashboard() {
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-500 text-[10px] mb-1">Language</label>
+                          <label className="block text-slate-700 font-semibold text-[10px] mb-1">Language</label>
                           <select
                             value={q.language}
                             onChange={(e) => {
@@ -2404,7 +2595,7 @@ export function AdminDashboard() {
                       </div>
                       
                       <div>
-                        <label className="block text-slate-500 text-[10px] mb-1">Full Description / Logic</label>
+                        <label className="block text-slate-700 font-semibold text-[10px] mb-1">Full Description / Logic</label>
                         <textarea
                           rows={2}
                           value={q.description}
@@ -2418,7 +2609,7 @@ export function AdminDashboard() {
                       </div>
                       
                       <div>
-                        <label className="block text-slate-500 text-[10px] mb-1">Starter Code (Main File)</label>
+                        <label className="block text-slate-700 font-semibold text-[10px] mb-1">Starter Code (Main File)</label>
                         <textarea
                           rows={3}
                           value={
@@ -2472,13 +2663,13 @@ export function AdminDashboard() {
                           newVs.splice(idx, 1);
                           setEditingPractical({ ...editingPractical, vivaQuestions: newVs });
                         }}
-                        className="absolute top-3 right-3 text-rose-400 hover:text-rose-300"
+                        className="absolute top-3 right-3 text-rose-700 hover:text-rose-700"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
 
                       <div className="pr-8">
-                        <label className="block text-slate-500 text-[10px] mb-1">Question</label>
+                        <label className="block text-slate-700 font-semibold text-[10px] mb-1">Question</label>
                         <input
                           type="text"
                           required
@@ -2493,7 +2684,7 @@ export function AdminDashboard() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-500 text-[10px] mb-1">Model Answer / Key Points</label>
+                        <label className="block text-slate-700 font-semibold text-[10px] mb-1">Model Answer / Key Points</label>
                         <textarea
                           rows={2}
                           value={vq.modelAnswer}
@@ -2537,12 +2728,12 @@ export function AdminDashboard() {
           <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
-                <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">
+                <span className="text-[10px] text-blue-700 font-bold uppercase tracking-wider">
                   {activeQuizForQuestions.title}
                 </span>
                 <h3 className="text-base font-bold text-slate-900">Add / Edit Question</h3>
               </div>
-              <button onClick={() => setIsQuestionModalOpen(false)} className="text-slate-500 hover:text-slate-900">
+              <button onClick={() => setIsQuestionModalOpen(false)} className="text-slate-600 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -2586,7 +2777,7 @@ export function AdminDashboard() {
                       onChange={() => setEditingQuestion({ ...editingQuestion, correctIndex: optIdx })}
                       className="w-4 h-4 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
                     />
-                    <span className="font-bold font-mono text-slate-500 w-4">
+                    <span className="font-bold font-mono text-slate-600 w-4">
                       {String.fromCharCode(65 + optIdx)}.
                     </span>
                     <input
@@ -2661,7 +2852,7 @@ export function AdminDashboard() {
           <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-lg space-y-4 shadow-2xl animate-in fade-in">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+                <span className="p-1.5 rounded-lg bg-amber-50 text-amber-700">
                   <Layers className="w-4 h-4" />
                 </span>
                 <h3 className="text-base font-bold text-slate-900">
@@ -2673,7 +2864,7 @@ export function AdminDashboard() {
                   setIsChapterModalOpen(false);
                   setEditingChapter(null);
                 }} 
-                className="text-slate-500 hover:text-slate-900"
+                className="text-slate-600 hover:text-slate-900"
               >
                 <X className="w-5 h-5" />
               </button>

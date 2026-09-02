@@ -344,6 +344,46 @@ class ChapterMcqService {
   }
 
   /**
+   * Delete multiple Chapter MCQs by IDs in bulk from Firestore & LocalStorage
+   */
+  public async bulkDelete(ids: string[]): Promise<number> {
+    if (!ids || ids.length === 0) return 0;
+    const idSet = new Set(ids);
+    const toDeleteCount = this.mcqs.filter(item => idSet.has(item.id)).length;
+    
+    // Remove locally
+    this.mcqs = this.mcqs.filter((item) => !idSet.has(item.id));
+    this.saveToStorage();
+
+    // Remove from Firestore in batch chunks
+    try {
+      for (let i = 0; i < ids.length; i += 400) {
+        const chunk = ids.slice(i, i + 400);
+        const delBatch = writeBatch(db);
+        chunk.forEach((id) => {
+          delBatch.delete(doc(db, COLLECTION_NAME, id));
+        });
+        await delBatch.commit();
+      }
+    } catch (err) {
+      console.error('Failed to bulk delete MCQs from Firestore:', err);
+    }
+
+    return toDeleteCount;
+  }
+
+  /**
+   * Clear all MCQs for a specific module and chapter
+   */
+  public async clearChapter(moduleId: string, chapterNumber: number): Promise<number> {
+    const targetItems = this.mcqs.filter(
+      (m) => m.moduleId === moduleId && m.chapterNumber === chapterNumber
+    );
+    const ids = targetItems.map((m) => m.id);
+    return await this.bulkDelete(ids);
+  }
+
+  /**
    * Bulk Import multiple Chapter MCQs (from CSV or batch generator) to Cloud Firestore
    */
   public async bulkImport(

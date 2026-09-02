@@ -16,7 +16,9 @@ import {
   Cloud,
   RefreshCw,
   Eye,
-  Check
+  Check,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 import { chapterMcqService } from '../../services/chapterMcqService';
 import { ChapterMcqItem, ChapterMeta, PaperMeta } from '../../types/chapterMcq';
@@ -32,6 +34,10 @@ export function AdminChapterMcqPanel() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isSyncingCloud, setIsSyncingCloud] = useState(false);
+  
+  // Selection State for Bulk Operations
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   
   // Modals
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
@@ -52,6 +58,7 @@ export function AdminChapterMcqPanel() {
 
     const chs = chapterMcqService.getModuleChapters(selectedModule);
     setChapterList(chs);
+    setSelectedIds(new Set());
 
     const unsub = chapterMcqService.subscribe(() => {
       const items = chapterMcqService.getByChapter(selectedModule, selectedChapter);
@@ -67,8 +74,84 @@ export function AdminChapterMcqPanel() {
   const handleModuleChange = (mod: 'm1-r5' | 'm2-r5' | 'm3-r5' | 'm4-r5' | 'ccc') => {
     setSelectedModule(mod);
     setSelectedChapter(1);
+    setSelectedIds(new Set());
     const chs = chapterMcqService.getModuleChapters(mod);
     setChapterList(chs);
+  };
+
+  // Toggle single MCQ selection
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  // Select all or clear selection for current filtered MCQs
+  const handleToggleSelectAll = () => {
+    const filteredIds = filteredMcqs.map((q) => q.id);
+    const allSelected = filteredIds.length > 0 && filteredIds.every((id) => selectedIds.has(id));
+
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredIds));
+    }
+  };
+
+  // Bulk Delete Selected MCQs
+  const handleBulkDeleteSelected = async () => {
+    const idsToDelete = Array.from(selectedIds);
+    if (idsToDelete.length === 0) {
+      showToast('Please select at least one MCQ to delete', 'error');
+      return;
+    }
+
+    const confirmMsg = `Are you sure you want to permanently delete ${idsToDelete.length} selected MCQ(s)? This will remove them from Cloud Firestore across all student devices.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setIsBulkDeleting(true);
+    setIsSaving(true);
+    try {
+      const count = await chapterMcqService.bulkDelete(idsToDelete);
+      setSelectedIds(new Set());
+      showToast(`Successfully deleted ${count} MCQs from Cloud Firestore!`);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to bulk delete MCQs', 'error');
+    } finally {
+      setIsBulkDeleting(false);
+      setIsSaving(false);
+    }
+  };
+
+  // Clear Entire Chapter MCQs
+  const handleClearEntireChapter = async () => {
+    const chapterMcqs = chapterMcqService.getByChapter(selectedModule, selectedChapter);
+    if (chapterMcqs.length === 0) {
+      showToast('This chapter has no MCQs to clear', 'error');
+      return;
+    }
+
+    const confirmMsg = `⚠️ DANGER: You are about to DELETE ALL ${chapterMcqs.length} MCQs in ${selectedModule.toUpperCase()} Chapter ${selectedChapter}!\n\nAre you sure you want to clear the entire chapter?`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setIsBulkDeleting(true);
+    setIsSaving(true);
+    try {
+      const count = await chapterMcqService.clearChapter(selectedModule, selectedChapter);
+      setSelectedIds(new Set());
+      showToast(`Cleared entire Chapter ${selectedChapter} (${count} MCQs deleted)`);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to clear chapter', 'error');
+    } finally {
+      setIsBulkDeleting(false);
+      setIsSaving(false);
+    }
   };
 
   // Open Create Modal
@@ -409,62 +492,142 @@ export function AdminChapterMcqPanel() {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="w-4 h-4 text-slate-600 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search questions in this chapter..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-            />
+          {/* Search & Bulk Operations Toolbar */}
+          <div className="space-y-2.5">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-600 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search questions in this chapter..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            {/* Selection & Batch Action Toolbar */}
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleToggleSelectAll}
+                  disabled={filteredMcqs.length === 0 || isSaving || isBulkDeleting}
+                  className="inline-flex items-center gap-1.5 font-bold text-slate-700 hover:text-blue-700 transition-colors cursor-pointer"
+                >
+                  {filteredMcqs.length > 0 && filteredMcqs.every((q) => selectedIds.has(q.id)) ? (
+                    <CheckSquare className="w-4 h-4 text-blue-700" />
+                  ) : (
+                    <Square className="w-4 h-4 text-slate-600" />
+                  )}
+                  <span>
+                    {filteredMcqs.length > 0 && filteredMcqs.every((q) => selectedIds.has(q.id))
+                      ? 'Deselect All'
+                      : 'Select All'}
+                  </span>
+                </button>
+
+                {selectedIds.size > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                    {selectedIds.size} of {filteredMcqs.length} Selected
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                {selectedIds.size > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleBulkDeleteSelected}
+                    disabled={isSaving || isBulkDeleting}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-xs transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Selected ({selectedIds.size})</span>
+                  </button>
+                )}
+
+                {mcqList.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearEntireChapter}
+                    disabled={isSaving || isBulkDeleting}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-300 hover:border-rose-300 transition-colors cursor-pointer"
+                    title="Delete all questions in this chapter"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Clear Entire Chapter ({mcqList.length})</span>
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Questions List */}
           <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
-            {filteredMcqs.map((q, idx) => (
-              <div
-                key={q.id || idx}
-                className="p-4 bg-slate-50 rounded-2xl border border-slate-200 hover:border-slate-300 transition-all space-y-3 group"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1 flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono text-blue-700 font-bold px-1.5 py-0.5 rounded bg-blue-950/60 border border-blue-800/40">
-                        Q{idx + 1}
-                      </span>
-                      <span className="text-xs font-bold text-slate-900">
-                        {q.question}
-                      </span>
+            {filteredMcqs.map((q, idx) => {
+              const isSelected = selectedIds.has(q.id);
+
+              return (
+                <div
+                  key={q.id || idx}
+                  className={`p-4 rounded-2xl border transition-all space-y-3 group ${
+                    isSelected
+                      ? 'bg-blue-50/50 border-blue-400 ring-1 ring-blue-400'
+                      : 'bg-slate-50 border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSelect(q.id)}
+                        className="mt-0.5 text-slate-600 hover:text-blue-700 cursor-pointer shrink-0"
+                        title={isSelected ? 'Deselect' : 'Select'}
+                      >
+                        {isSelected ? (
+                          <CheckSquare className="w-4 h-4 text-blue-700" />
+                        ) : (
+                          <Square className="w-4 h-4 text-slate-600" />
+                        )}
+                      </button>
+
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono text-blue-700 font-bold px-1.5 py-0.5 rounded bg-blue-950/60 border border-blue-800/40">
+                            Q{idx + 1}
+                          </span>
+                          <span className="text-xs font-bold text-slate-900">
+                            {q.question}
+                          </span>
+                        </div>
+
+                        {q.hindiQuestion && (
+                          <p className="text-[11px] text-slate-600 font-medium pl-6">
+                            {q.hindiQuestion}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
-                    {q.hindiQuestion && (
-                      <p className="text-[11px] text-slate-600 font-medium pl-6">
-                        {q.hindiQuestion}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => handleOpenEdit(q)}
+                        disabled={isSaving}
+                        className="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+                        title="Edit Question"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteItem(q.id)}
+                        disabled={isSaving}
+                        className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors cursor-pointer"
+                        title="Delete Question"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => handleOpenEdit(q)}
-                      disabled={isSaving}
-                      className="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
-                      title="Edit Question"
-                    >
-                      <Edit className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteItem(q.id)}
-                      disabled={isSaving}
-                      className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors cursor-pointer"
-                      title="Delete Question"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
 
                 {/* 4 Options Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
@@ -511,7 +674,8 @@ export function AdminChapterMcqPanel() {
                   </div>
                 )}
               </div>
-            ))}
+            );
+          })}
 
             {filteredMcqs.length === 0 && (
               <div className="text-center py-12 bg-slate-50/40 rounded-2xl border border-slate-200/50 space-y-3">
