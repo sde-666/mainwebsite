@@ -371,133 +371,141 @@ export function Resources() {
           const totalPages = res.totalPages || 45;
 
           const isLockedPremium = res.isPaid && !purchased;
+          const tier: 'unlocked' | 'premium' | 'free' = purchased ? 'unlocked' : res.isPaid ? 'premium' : 'free';
+
+          const bannerBg =
+            tier === 'premium'
+              ? 'bg-[linear-gradient(135deg,#4c1d95_0%,#6d28d9_45%,#9333ea_100%)]'
+              : tier === 'unlocked'
+              ? 'bg-[linear-gradient(135deg,#0f766e_0%,#059669_100%)]'
+              : 'bg-[linear-gradient(135deg,#0d9488_0%,#10b981_100%)]';
+
+          const iconRingColor =
+            res.category === 'm2-r5' ? 'text-fuchsia-500 bg-fuchsia-50 ring-fuchsia-100' :
+            res.category === 'm3-r5' ? 'text-sky-500 bg-sky-50 ring-sky-100' :
+            res.category === 'm4-r5' ? 'text-orange-500 bg-orange-50 ring-orange-100' :
+            res.category === 'ccc' ? 'text-rose-500 bg-rose-50 ring-rose-100' :
+            'text-teal-500 bg-teal-50 ring-teal-100';
 
           return (
             <div
               key={res.id}
-              className={`group relative flex flex-col justify-between rounded-3xl border p-5 sm:p-6 pt-6 sm:pt-7 transition-all duration-300 hover:-translate-y-1 ${
-                isLockedPremium
-                  ? 'bg-gradient-to-b from-amber-50/70 via-white to-white border-amber-200/70 shadow-[0_1px_2px_rgba(217,119,6,0.06)] hover:border-amber-300 hover:shadow-[0_18px_30px_-14px_rgba(217,119,6,0.28)]'
-                  : 'bg-white border-gray-200 shadow-sm hover:border-emerald-200 hover:shadow-[0_18px_30px_-16px_rgba(16,185,129,0.22)]'
+              className={`group relative flex flex-col justify-between rounded-[28px] overflow-hidden bg-white transition-all duration-300 hover:-translate-y-1.5 ${
+                tier === 'premium'
+                  ? 'shadow-[0_2px_10px_rgba(109,40,217,0.12)] ring-1 ring-violet-100 hover:shadow-[0_22px_40px_-16px_rgba(109,40,217,0.35)]'
+                  : 'shadow-[0_2px_10px_rgba(15,118,110,0.10)] ring-1 ring-emerald-100 hover:shadow-[0_22px_40px_-16px_rgba(5,150,105,0.28)]'
               }`}
             >
-              {/* Tier accent rail */}
-              <div
-                className={`absolute inset-x-0 top-0 h-[3px] rounded-t-3xl ${
-                  isLockedPremium
-                    ? 'bg-gradient-to-r from-amber-300 via-amber-500 to-amber-300'
-                    : 'bg-gradient-to-r from-emerald-300 via-emerald-500 to-emerald-300'
-                }`}
-              />
+              {/* Colored banner */}
+              <div className={`relative h-24 sm:h-28 px-4 sm:px-5 pt-4 ${bannerBg}`}>
+                {tier === 'premium' && (
+                  <div className="absolute inset-0 opacity-[0.14] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:14px_14px]" />
+                )}
+                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/10 blur-xl" />
 
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  {/* Free / Premium Badge */}
-                  {purchased ? (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full ring-1 ring-emerald-200/70">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Unlocked
+                <div className="relative flex items-center justify-between">
+                  {tier === 'unlocked' ? (
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-white/20 text-white backdrop-blur-sm px-3 py-1 rounded-full ring-1 ring-white/30">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Unlocked
                     </span>
-                  ) : res.isPaid ? (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-gradient-to-r from-amber-500 to-amber-600 text-white px-3 py-1 rounded-full shadow-sm shadow-amber-500/20">
-                      <Crown className="w-3.5 h-3.5 text-amber-100" /> Premium
+                  ) : tier === 'premium' ? (
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-white text-violet-700 px-3 py-1 rounded-full shadow-sm">
+                      <Crown className="w-3.5 h-3.5 text-amber-500" /> Premium
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full ring-1 ring-emerald-100">
-                      <Gift className="w-3.5 h-3.5 text-emerald-500" /> Free
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-white/20 text-white backdrop-blur-sm px-3 py-1 rounded-full ring-1 ring-white/30">
+                      <Gift className="w-3.5 h-3.5" /> Free
                     </span>
                   )}
 
-                  {/* Category / Pages */}
-                  <span className={`text-[11px] sm:text-xs font-semibold ${isLockedPremium ? 'text-amber-600/80' : 'text-gray-400'}`}>
+                  <span className="text-[11px] sm:text-xs font-bold text-white/85">
                     {res.isPaid ? `${totalPages} Pages` : (res.categoryLabel || res.category || "NIELIT O Level")}
                   </span>
                 </div>
-
-                {/* Title & Icon Layout */}
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-base sm:text-lg font-extrabold text-gray-900 leading-snug line-clamp-3">
-                      {res.title}
-                    </h3>
-                    {res.hindiTitle && (
-                      <p className="text-xs text-gray-500 font-medium line-clamp-1 mt-1">
-                        {res.hindiTitle}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-1.5 mt-3 text-xs font-semibold text-gray-500">
-                      <FileText className={`w-4 h-4 ${isLockedPremium ? 'text-amber-500' : 'text-emerald-500'}`} />
-                      <span>{res.fileType || 'PDF'} • {res.fileSize || '850 KB'}</span>
-                    </div>
-                  </div>
-                  
-                  {/* Dynamic Icon right side */}
-                  <div className={`relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-full flex items-center justify-center border shadow-inner ${
-                    isLockedPremium ? 'ring-2 ring-amber-200/60 ring-offset-2 ring-offset-white' : ''
-                  } ${
-                    res.category === 'm2-r5' ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100/50 text-purple-400' :
-                    res.category === 'm3-r5' ? 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100/50 text-blue-400' :
-                    res.category === 'm4-r5' ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100/50 text-amber-400' :
-                    res.category === 'ccc' ? 'bg-gradient-to-br from-rose-50 to-red-50 border-rose-100/50 text-rose-400' :
-                    'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-100/50 text-emerald-400'
-                  }`}>
-                     {res.category === 'm2-r5' ? <Code className="w-8 h-8 sm:w-10 sm:h-10" /> :
-                      res.category === 'm3-r5' ? <Code className="w-8 h-8 sm:w-10 sm:h-10" /> :
-                      res.category === 'm4-r5' ? <Lightning className="w-8 h-8 sm:w-10 sm:h-10" /> :
-                      res.category === 'ccc' ? <FileText className="w-8 h-8 sm:w-10 sm:h-10" /> :
-                      <FileText className="w-8 h-8 sm:w-10 sm:h-10" />}
-                    {isLockedPremium && (
-                      <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-sm ring-2 ring-white">
-                        <Lock className="w-3 h-3" />
-                      </span>
-                    )}
-                  </div>
-                </div>
               </div>
 
-              <div className={`flex items-center gap-2 sm:gap-3 mt-6 pt-6 border-t ${isLockedPremium ? 'border-amber-100' : 'border-gray-100'}`}>
-                {purchased || !res.isPaid ? (
-                  <>
-                    <button
-                      onClick={() => handleOpenPdf(res)}
-                      title="View PDF"
-                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
-                    >
-                      <Eye className="w-4 h-4" />
-                      <span>View PDF</span>
-                    </button>
-                    <button
-                      onClick={() => handleDownloadPdf(res)}
-                      title="Download PDF"
-                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-sm shadow-emerald-600/20 transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Download</span>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => handlePreviewSample(res)}
-                      title="Preview"
-                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-white hover:bg-amber-50 text-gray-700 font-bold text-xs sm:text-sm border border-gray-200 hover:border-amber-200 transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
-                    >
-                      <Eye className="w-4 h-4" />
-                      <span>Preview</span>
-                    </button>
-                    <button
-                      onClick={() => handleDirectUnlock(res)}
-                      disabled={isUnlockingId === res.id}
-                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold text-xs sm:text-sm shadow-sm shadow-amber-600/25 transition-all cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
-                    >
-                      {isUnlockingId === res.id ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Unlock className="w-4 h-4" />
-                      )}
-                      <span>Unlock ₹{price}</span>
-                    </button>
-                  </>
+              {/* Icon medallion, overlapping banner + body */}
+              <div className={`absolute right-5 top-16 sm:top-[4.7rem] w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl flex items-center justify-center ring-4 ring-white shadow-md ${iconRingColor}`}>
+                {res.category === 'm2-r5' ? <Code className="w-8 h-8" /> :
+                 res.category === 'm3-r5' ? <Code className="w-8 h-8" /> :
+                 res.category === 'm4-r5' ? <Lightning className="w-8 h-8" /> :
+                 res.category === 'ccc' ? <FileText className="w-8 h-8" /> :
+                 <FileText className="w-8 h-8" />}
+                {isLockedPremium && (
+                  <span className="absolute -bottom-1.5 -left-1.5 w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-sm ring-2 ring-white">
+                    <Lock className="w-3 h-3" />
+                  </span>
                 )}
+              </div>
+
+              {/* Body */}
+              <div className="px-5 sm:px-6 pt-5 pb-5 sm:pb-6 flex-1 flex flex-col">
+                <div className="pr-16 sm:pr-20">
+                  <h3 className="text-base sm:text-lg font-extrabold text-gray-900 leading-snug line-clamp-3">
+                    {res.title}
+                  </h3>
+                  {res.hindiTitle && (
+                    <p className="text-xs text-gray-500 font-medium line-clamp-1 mt-1">
+                      {res.hindiTitle}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 mt-4">
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg ${tier === 'premium' ? 'bg-violet-50 text-violet-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                    <FileText className="w-3.5 h-3.5" />
+                    {res.fileType || 'PDF'}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-gray-50 text-gray-500">
+                    {res.fileSize || '850 KB'}
+                  </span>
+                </div>
+
+                <div className={`flex items-center gap-2 sm:gap-3 mt-auto pt-5 border-t border-dashed ${tier === 'premium' ? 'border-violet-100' : 'border-emerald-100'}`}>
+                  {purchased || !res.isPaid ? (
+                    <>
+                      <button
+                        onClick={() => handleOpenPdf(res)}
+                        title="View PDF"
+                        className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>View PDF</span>
+                      </button>
+                      <button
+                        onClick={() => handleDownloadPdf(res)}
+                        title="Download PDF"
+                        className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-sm shadow-emerald-600/25 transition-all cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handlePreviewSample(res)}
+                        title="Preview"
+                        className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-white hover:bg-violet-50 text-gray-700 font-bold text-xs sm:text-sm border border-gray-200 hover:border-violet-200 transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>Preview</span>
+                      </button>
+                      <button
+                        onClick={() => handleDirectUnlock(res)}
+                        disabled={isUnlockingId === res.id}
+                        className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-xs sm:text-sm shadow-sm shadow-violet-600/30 transition-all cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                      >
+                        {isUnlockingId === res.id ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Unlock className="w-4 h-4" />
+                        )}
+                        <span>Unlock ₹{price}</span>
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           );
