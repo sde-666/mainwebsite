@@ -370,30 +370,45 @@ export function Resources() {
           const price = res.price || 49;
           const totalPages = res.totalPages || 45;
 
+          const isLockedPremium = res.isPaid && !purchased;
+
           return (
             <div
               key={res.id}
-              className="bg-white border border-gray-200 rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+              className={`group relative flex flex-col justify-between rounded-3xl border p-5 sm:p-6 pt-6 sm:pt-7 transition-all duration-300 hover:-translate-y-1 ${
+                isLockedPremium
+                  ? 'bg-gradient-to-b from-amber-50/70 via-white to-white border-amber-200/70 shadow-[0_1px_2px_rgba(217,119,6,0.06)] hover:border-amber-300 hover:shadow-[0_18px_30px_-14px_rgba(217,119,6,0.28)]'
+                  : 'bg-white border-gray-200 shadow-sm hover:border-emerald-200 hover:shadow-[0_18px_30px_-16px_rgba(16,185,129,0.22)]'
+              }`}
             >
+              {/* Tier accent rail */}
+              <div
+                className={`absolute inset-x-0 top-0 h-[3px] rounded-t-3xl ${
+                  isLockedPremium
+                    ? 'bg-gradient-to-r from-amber-300 via-amber-500 to-amber-300'
+                    : 'bg-gradient-to-r from-emerald-300 via-emerald-500 to-emerald-300'
+                }`}
+              />
+
               <div>
                 <div className="flex items-center justify-between mb-4">
                   {/* Free / Premium Badge */}
                   {purchased ? (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wide bg-emerald-50 text-emerald-600 px-3 py-1 rounded-md">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> UNLOCKED
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full ring-1 ring-emerald-200/70">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Unlocked
                     </span>
                   ) : res.isPaid ? (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wide bg-amber-50 text-amber-600 px-3 py-1 rounded-md">
-                      <Crown className="w-3.5 h-3.5 text-amber-500" /> PREMIUM
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-gradient-to-r from-amber-500 to-amber-600 text-white px-3 py-1 rounded-full shadow-sm shadow-amber-500/20">
+                      <Crown className="w-3.5 h-3.5 text-amber-100" /> Premium
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-wide bg-emerald-50 text-emerald-600 px-3 py-1 rounded-md">
-                      <Gift className="w-3.5 h-3.5 text-emerald-500" /> FREE
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full ring-1 ring-emerald-100">
+                      <Gift className="w-3.5 h-3.5 text-emerald-500" /> Free
                     </span>
                   )}
 
                   {/* Category / Pages */}
-                  <span className="text-[11px] sm:text-xs font-semibold text-gray-400">
+                  <span className={`text-[11px] sm:text-xs font-semibold ${isLockedPremium ? 'text-amber-600/80' : 'text-gray-400'}`}>
                     {res.isPaid ? `${totalPages} Pages` : (res.categoryLabel || res.category || "NIELIT O Level")}
                   </span>
                 </div>
@@ -410,13 +425,15 @@ export function Resources() {
                       </p>
                     )}
                     <div className="flex items-center gap-1.5 mt-3 text-xs font-semibold text-gray-500">
-                      <FileText className="w-4 h-4 text-emerald-500" />
+                      <FileText className={`w-4 h-4 ${isLockedPremium ? 'text-amber-500' : 'text-emerald-500'}`} />
                       <span>{res.fileType || 'PDF'} • {res.fileSize || '850 KB'}</span>
                     </div>
                   </div>
                   
                   {/* Dynamic Icon right side */}
-                  <div className={`w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-full flex items-center justify-center border shadow-inner ${
+                  <div className={`relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-full flex items-center justify-center border shadow-inner ${
+                    isLockedPremium ? 'ring-2 ring-amber-200/60 ring-offset-2 ring-offset-white' : ''
+                  } ${
                     res.category === 'm2-r5' ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100/50 text-purple-400' :
                     res.category === 'm3-r5' ? 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100/50 text-blue-400' :
                     res.category === 'm4-r5' ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100/50 text-amber-400' :
@@ -428,11 +445,16 @@ export function Resources() {
                       res.category === 'm4-r5' ? <Lightning className="w-8 h-8 sm:w-10 sm:h-10" /> :
                       res.category === 'ccc' ? <FileText className="w-8 h-8 sm:w-10 sm:h-10" /> :
                       <FileText className="w-8 h-8 sm:w-10 sm:h-10" />}
+                    {isLockedPremium && (
+                      <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-sm ring-2 ring-white">
+                        <Lock className="w-3 h-3" />
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 sm:gap-3 mt-6 pt-6 border-t border-gray-100">
+              <div className={`flex items-center gap-2 sm:gap-3 mt-6 pt-6 border-t ${isLockedPremium ? 'border-amber-100' : 'border-gray-100'}`}>
                 {purchased || !res.isPaid ? (
                   <>
                     <button
@@ -446,7 +468,7 @@ export function Resources() {
                     <button
                       onClick={() => handleDownloadPdf(res)}
                       title="Download PDF"
-                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-sm shadow-emerald-600/20 transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
                     >
                       <Download className="w-4 h-4" />
                       <span>Download</span>
@@ -457,7 +479,7 @@ export function Resources() {
                     <button
                       onClick={() => handlePreviewSample(res)}
                       title="Preview"
-                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-white hover:bg-amber-50 text-gray-700 font-bold text-xs sm:text-sm border border-gray-200 hover:border-amber-200 transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
                     >
                       <Eye className="w-4 h-4" />
                       <span>Preview</span>
@@ -465,12 +487,12 @@ export function Resources() {
                     <button
                       onClick={() => handleDirectUnlock(res)}
                       disabled={isUnlockingId === res.id}
-                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs sm:text-sm shadow-sm transition-colors cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
+                      className="flex-1 px-2 sm:px-3 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold text-xs sm:text-sm shadow-sm shadow-amber-600/25 transition-all cursor-pointer inline-flex justify-center items-center gap-1.5 sm:gap-2"
                     >
                       {isUnlockingId === res.id ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       ) : (
-                        <Lock className="w-4 h-4" />
+                        <Unlock className="w-4 h-4" />
                       )}
                       <span>Unlock ₹{price}</span>
                     </button>
