@@ -11,7 +11,6 @@ import {
   Eye,
   ExternalLink,
   Tag,
-  Lock,
   Unlock,
   CreditCard,
   Star,
@@ -381,21 +380,13 @@ export function Resources() {
       </div>
 
       {/* Resources Grid */}
-      <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2 xl:grid-cols-3 sm:gap-6">
+      <div className="grid grid-cols-1 gap-4 pt-2 lg:grid-cols-2 sm:gap-5">
         {filteredResources.map((res) => {
           const purchased = isResourcePurchased(res.id);
           const price = res.price || 49;
           const totalPages = res.totalPages || 45;
 
-          const isLockedPremium = res.isPaid && !purchased;
           const tier: 'unlocked' | 'premium' | 'free' = purchased ? 'unlocked' : res.isPaid ? 'premium' : 'free';
-
-          const bannerBg =
-            tier === 'premium'
-              ? 'bg-[linear-gradient(135deg,#4c1d95_0%,#6d28d9_45%,#9333ea_100%)]'
-              : tier === 'unlocked'
-              ? 'bg-[linear-gradient(135deg,#0f766e_0%,#059669_100%)]'
-              : 'bg-[linear-gradient(135deg,#0d9488_0%,#10b981_100%)]';
 
           const iconRingColor =
             res.category === 'm2-r5' ? 'text-fuchsia-500 bg-fuchsia-50 ring-fuchsia-100' :
@@ -407,59 +398,41 @@ export function Resources() {
           return (
             <div
               key={res.id}
-              className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white transition-all duration-300 hover:-translate-y-1 ${
+              className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border bg-white transition-all duration-200 hover:-translate-y-0.5 ${
                 tier === 'premium'
-                  ? 'shadow-[0_2px_10px_rgba(109,40,217,0.12)] ring-1 ring-violet-100 hover:shadow-[0_22px_40px_-16px_rgba(109,40,217,0.35)]'
-                  : 'shadow-[0_2px_10px_rgba(15,118,110,0.10)] ring-1 ring-emerald-100 hover:shadow-[0_22px_40px_-16px_rgba(5,150,105,0.28)]'
+                  ? 'border-amber-200/80 shadow-[0_4px_18px_rgba(120,53,15,0.07)] hover:border-amber-300 hover:shadow-[0_12px_28px_rgba(120,53,15,0.12)]'
+                  : 'border-slate-200 shadow-[0_4px_18px_rgba(15,23,42,0.06)] hover:border-teal-300 hover:shadow-[0_12px_28px_rgba(15,118,110,0.12)]'
               }`}
             >
-              {/* Colored banner */}
-              <div className={`relative h-24 px-4 pt-4 sm:h-28 sm:px-5 ${bannerBg}`}>
-                {tier === 'premium' && (
-                  <div className="absolute inset-0 opacity-[0.14] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:14px_14px]" />
-                )}
-                <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/10 blur-xl" />
-
-                <div className="relative flex items-center justify-between">
+              <div className={`flex items-center justify-between border-b px-5 py-3 sm:px-6 ${tier === 'premium' ? 'border-amber-100 bg-amber-50/50' : 'border-slate-100 bg-slate-50/70'}`}>
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${iconRingColor}`}>
+                    {res.category === 'm4-r5' ? <Lightning className="h-5 w-5" /> : res.category === 'm2-r5' || res.category === 'm3-r5' ? <Code className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+                  </div>
                   {tier === 'unlocked' ? (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-white/20 text-white backdrop-blur-sm px-3 py-1 rounded-full ring-1 ring-white/30">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Unlocked
+                    <span className="inline-flex items-center gap-1 rounded-full bg-teal-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-teal-700">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Unlocked
                     </span>
                   ) : tier === 'premium' ? (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-white text-violet-700 px-3 py-1 rounded-full shadow-sm">
-                      <Crown className="w-3.5 h-3.5 text-amber-500" /> Premium
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-800">
+                      <Crown className="h-3.5 w-3.5 text-amber-600" /> Premium
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide bg-white/20 text-white backdrop-blur-sm px-3 py-1 rounded-full ring-1 ring-white/30">
-                      <Gift className="w-3.5 h-3.5" /> Free
+                    <span className="inline-flex items-center gap-1 rounded-full bg-teal-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-teal-700">
+                      <Gift className="h-3.5 w-3.5" /> Free
                     </span>
                   )}
-
-                  <span className="text-[11px] sm:text-xs font-bold text-white/85">
-                    {res.isPaid ? `${totalPages} Pages` : (res.categoryLabel || res.category || "NIELIT O Level")}
-                  </span>
                 </div>
-              </div>
-
-              {/* Icon medallion, overlapping banner + body */}
-              <div className={`absolute right-5 top-16 sm:top-[4.7rem] w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl flex items-center justify-center ring-4 ring-white shadow-md ${iconRingColor}`}>
-                {res.category === 'm2-r5' ? <Code className="w-8 h-8" /> :
-                 res.category === 'm3-r5' ? <Code className="w-8 h-8" /> :
-                 res.category === 'm4-r5' ? <Lightning className="w-8 h-8" /> :
-                 res.category === 'ccc' ? <FileText className="w-8 h-8" /> :
-                 <FileText className="w-8 h-8" />}
-                {isLockedPremium && (
-                  <span className="absolute -bottom-1.5 -left-1.5 w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-sm ring-2 ring-white">
-                    <Lock className="w-3 h-3" />
-                  </span>
-                )}
+                <span className="shrink-0 text-[10px] font-bold text-slate-500 sm:text-xs">
+                  {res.isPaid ? `${totalPages} pages` : (res.categoryLabel || res.category || 'NIELIT O Level')}
+                </span>
               </div>
 
               {/* Body */}
-              <div className="flex flex-1 flex-col px-5 pb-5 pt-5 sm:px-6 sm:pb-6">
-                <div className="pr-16 sm:pr-20">
+              <div className="flex flex-1 flex-col border-l-4 border-transparent px-5 pb-5 pt-4 sm:px-6 sm:pb-6" style={{ borderLeftColor: tier === 'premium' ? '#d97706' : '#0f766e' }}>
+                <div>
                   <p className="mb-1 text-[10px] font-black uppercase tracking-[.14em] text-slate-400">{res.moduleCode || res.categoryLabel}</p>
-                  <h2 className="text-base font-extrabold leading-snug text-gray-900 sm:text-lg">
+                  <h2 className="line-clamp-2 text-base font-extrabold leading-snug text-gray-900 sm:text-lg">
                     {res.title}
                   </h2>
                   {res.hindiTitle && (
@@ -469,15 +442,15 @@ export function Resources() {
                   )}
                 </div>
 
-                <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{res.description}</p>
+                <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-600 sm:text-sm">{res.description}</p>
 
                 {res.sampleHighlights && res.sampleHighlights.length > 0 && (
-                  <ul className="mt-3 space-y-1.5 text-xs font-medium text-slate-600">
-                    {res.sampleHighlights.slice(0, 2).map((highlight) => <li key={highlight} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" /> <span className="line-clamp-1">{highlight}</span></li>)}
+                  <ul className="mt-2 space-y-1 text-xs font-medium text-slate-600">
+                    {res.sampleHighlights.slice(0, 1).map((highlight) => <li key={highlight} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" /> <span className="line-clamp-1">{highlight}</span></li>)}
                   </ul>
                 )}
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg ${tier === 'premium' ? 'bg-violet-50 text-violet-600' : 'bg-emerald-50 text-emerald-600'}`}>
                     <FileText className="w-3.5 h-3.5" />
                     {res.fileType || 'PDF'}
@@ -487,7 +460,7 @@ export function Resources() {
                   </span>
                 </div>
 
-                <div className={`flex items-center gap-2 sm:gap-3 mt-auto pt-5 border-t border-dashed ${tier === 'premium' ? 'border-violet-100' : 'border-emerald-100'}`}>
+                <div className={`flex items-center gap-2 sm:gap-3 mt-4 pt-3 border-t border-dashed ${tier === 'premium' ? 'border-violet-100' : 'border-emerald-100'}`}>
                   {purchased || !res.isPaid ? (
                     <>
                       <button
