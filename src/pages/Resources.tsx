@@ -10,7 +10,6 @@ import {
   CheckCircle2, 
   Eye,
   ExternalLink,
-  ShieldCheck,
   Tag,
   Lock,
   Unlock,
@@ -26,6 +25,26 @@ import { resourceCategories } from '../data/resources';
 import { useAuth } from '../context/AuthContext';
 import { openResourceRazorpayCheckout } from '../utils/razorpay';
 import { StudentAuthModal } from '../components/auth/StudentAuthModal';
+
+const resourceCollectionSchema = {
+  '@type': 'CollectionPage',
+  '@id': 'https://skilldotpy.com/resources#notes-library',
+  name: 'Free O Level Notes and Premium NIELIT Study Material',
+  url: 'https://skilldotpy.com/resources',
+  description: 'Free O Level notes, NIELIT O Level M1 to M4 study material, CCC notes, solved papers, practical code and premium handwritten PDF notes.',
+  isPartOf: { '@id': 'https://skilldotpy.com/#website' },
+  about: [
+    { '@type': 'Thing', name: 'NIELIT O Level notes' },
+    { '@type': 'Thing', name: 'Free O Level notes PDF' },
+    { '@type': 'Thing', name: 'CCC study material' }
+  ],
+  hasPart: resourceCategories.map((category) => ({
+    '@type': 'CollectionPage',
+    name: `${category.title} notes and study material`,
+    description: category.description,
+    url: `https://skilldotpy.com/resources#${category.id}`
+  }))
+};
 
 export function Resources() {
   const { currentUser, userProfile, isAdmin } = useAuth();
@@ -191,8 +210,8 @@ export function Resources() {
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
       <SEO
-        title="NIELIT O Level & CCC Study Notes (Free & Paid PDF) 2026"
-        description="Download free and premium NIELIT O Level (M1-R5.1, M2-R5.1, M3-R5.1, M4-R5.1) and CCC handwritten PDF notes, solved papers, practical code files & formula sheets."
+        title="Free O Level Notes PDF | NIELIT M1-M4 Study Material"
+        description="Download free O Level notes PDF for NIELIT M1, M2, M3 and M4, plus CCC notes, solved papers, practical code and premium handwritten study material."
         keywords={[
           'O Level free notes pdf download',
           'O Level paid handwritten notes pdf',
@@ -203,6 +222,7 @@ export function Resources() {
           'NIELIT solved practical questions 2026',
           'Skilldotpy study resources'
         ]}
+        schema={resourceCollectionSchema}
         breadcrumbs={[
           { name: 'Home', url: '/' },
           { name: 'Study Notes & PDFs', url: '/resources' }
@@ -222,37 +242,34 @@ export function Resources() {
       {/* =========================================================================
           HERO BANNER (MATCHING CHAPTER WISE MCQ HUB LAYOUT)
          ========================================================================= */}
-      <section className="bg-slate-900 text-white pt-10 sm:pt-14 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-
-        <div className="container mx-auto max-w-6xl text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 text-xs font-black px-3.5 py-1.5 rounded-full mb-4 border border-blue-400/30 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span>Official Study Portal • Free & Premium PDF Library</span>
+      <section className="relative overflow-hidden border-b border-slate-800 bg-[#102a43] px-4 pb-12 pt-10 text-white sm:px-6 sm:pb-16 sm:pt-14 lg:px-8">
+        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(14,116,144,.35),transparent_52%,rgba(15,23,42,.65))]" />
+        <div className="absolute -right-24 top-10 h-72 w-72 rounded-full border border-cyan-200/10" />
+        <div className="relative z-10 mx-auto grid max-w-6xl items-end gap-8 lg:grid-cols-[1.35fr_.65fr]">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3.5 py-1.5 text-xs font-black text-cyan-100">
+              <Sparkles className="h-3.5 w-3.5 text-cyan-300" />
+              <span>Skilldotpy Notes Library - Updated for R5.1</span>
+            </div>
+            <h1 className="max-w-3xl text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
+              Free O Level Notes and NIELIT Study Material
+            </h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">
+              Find clear, exam-focused notes for NIELIT O Level M1, M2, M3 and M4. Download free O Level notes, solved papers and practical files, or preview premium handwritten PDF notes before unlocking them.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs font-bold text-slate-200">
+              <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-300" /> Free PDFs and downloads</span>
+              <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-cyan-300" /> Exam-focused content</span>
+              <span className="inline-flex items-center gap-2"><Eye className="h-4 w-4 text-amber-300" /> Preview premium notes</span>
+            </div>
           </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-            NIELIT Study Notes & PDF Hub
-          </h1>
-          
-          <p className="text-sm sm:text-base text-slate-300 mt-3 max-w-2xl mx-auto leading-relaxed">
-            Access free official syllabuses, practical scripts, and high-scoring handwritten master notes. Read sample pages before unlocking, with 100% lifetime access in your student library.
-          </p>
-
-          {/* Quick Access Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-6 text-xs">
-            <div className="flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-3 py-1.5 rounded-full font-bold">
-              <CheckCircle2 className="w-3.5 h-3.5" /> 100% Free Official Syllabuses
+          <div className="border-l border-white/15 pl-6 lg:pb-1">
+            <p className="text-xs font-black uppercase tracking-[.18em] text-cyan-200">Choose your study path</p>
+            <div className="mt-3 grid grid-cols-2 gap-3 text-sm font-bold">
+              <button onClick={() => setPriceFilter('free')} className="rounded-xl border border-emerald-200/25 bg-emerald-300/10 px-3 py-3 text-left text-emerald-100 transition hover:bg-emerald-300/20">Free notes <span className="mt-1 block text-xs font-medium text-emerald-200/75">{resourcesList.filter(r => !r.isPaid).length} resources</span></button>
+              <button onClick={() => setPriceFilter('paid')} className="rounded-xl border border-amber-200/25 bg-amber-300/10 px-3 py-3 text-left text-amber-100 transition hover:bg-amber-300/20">Premium notes <span className="mt-1 block text-xs font-medium text-amber-200/75">{resourcesList.filter(r => r.isPaid).length} resources</span></button>
             </div>
-            <div className="flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-400/30 px-3 py-1.5 rounded-full font-bold">
-              <Star className="w-3.5 h-3.5 text-amber-400" /> Premium Handwritten Notes
-            </div>
-            <Link
-              to="/my-courses"
-              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white border border-blue-500 px-4 py-1.5 rounded-full font-bold transition-colors"
-            >
-              <GraduationCap className="w-3.5 h-3.5" /> My Purchased Notes ({purchasedList.length})
-            </Link>
+            <Link to="/my-courses" className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white"><GraduationCap className="h-4 w-4" /> My purchased notes ({purchasedList.length})</Link>
           </div>
           
           {isAdmin && (
@@ -269,7 +286,7 @@ export function Resources() {
         </div>
       </section>
 
-      <main className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4 sm:mt-8 mb-16">
+      <main className="container mx-auto mb-16 mt-4 max-w-7xl px-4 sm:mt-8 sm:px-6 lg:px-8">
   <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
     
     {/* Sidebar Navigation */}
@@ -364,7 +381,7 @@ export function Resources() {
       </div>
 
       {/* Resources Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 pt-2">
+      <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2 xl:grid-cols-3 sm:gap-6">
         {filteredResources.map((res) => {
           const purchased = isResourcePurchased(res.id);
           const price = res.price || 49;
@@ -390,14 +407,14 @@ export function Resources() {
           return (
             <div
               key={res.id}
-              className={`group relative flex flex-col justify-between rounded-[28px] overflow-hidden bg-white transition-all duration-300 hover:-translate-y-1.5 ${
+              className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white transition-all duration-300 hover:-translate-y-1 ${
                 tier === 'premium'
                   ? 'shadow-[0_2px_10px_rgba(109,40,217,0.12)] ring-1 ring-violet-100 hover:shadow-[0_22px_40px_-16px_rgba(109,40,217,0.35)]'
                   : 'shadow-[0_2px_10px_rgba(15,118,110,0.10)] ring-1 ring-emerald-100 hover:shadow-[0_22px_40px_-16px_rgba(5,150,105,0.28)]'
               }`}
             >
               {/* Colored banner */}
-              <div className={`relative h-24 sm:h-28 px-4 sm:px-5 pt-4 ${bannerBg}`}>
+              <div className={`relative h-24 px-4 pt-4 sm:h-28 sm:px-5 ${bannerBg}`}>
                 {tier === 'premium' && (
                   <div className="absolute inset-0 opacity-[0.14] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:14px_14px]" />
                 )}
@@ -439,11 +456,12 @@ export function Resources() {
               </div>
 
               {/* Body */}
-              <div className="px-5 sm:px-6 pt-5 pb-5 sm:pb-6 flex-1 flex flex-col">
+              <div className="flex flex-1 flex-col px-5 pb-5 pt-5 sm:px-6 sm:pb-6">
                 <div className="pr-16 sm:pr-20">
-                  <h3 className="text-base sm:text-lg font-extrabold text-gray-900 leading-snug line-clamp-3">
+                  <p className="mb-1 text-[10px] font-black uppercase tracking-[.14em] text-slate-400">{res.moduleCode || res.categoryLabel}</p>
+                  <h2 className="text-base font-extrabold leading-snug text-gray-900 sm:text-lg">
                     {res.title}
-                  </h3>
+                  </h2>
                   {res.hindiTitle && (
                     <p className="text-xs text-gray-500 font-medium line-clamp-1 mt-1">
                       {res.hindiTitle}
@@ -451,7 +469,15 @@ export function Resources() {
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 mt-4">
+                <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{res.description}</p>
+
+                {res.sampleHighlights && res.sampleHighlights.length > 0 && (
+                  <ul className="mt-3 space-y-1.5 text-xs font-medium text-slate-600">
+                    {res.sampleHighlights.slice(0, 2).map((highlight) => <li key={highlight} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" /> <span className="line-clamp-1">{highlight}</span></li>)}
+                  </ul>
+                )}
+
+                <div className="mt-4 flex flex-wrap items-center gap-2">
                   <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg ${tier === 'premium' ? 'bg-violet-50 text-violet-600' : 'bg-emerald-50 text-emerald-600'}`}>
                     <FileText className="w-3.5 h-3.5" />
                     {res.fileType || 'PDF'}
