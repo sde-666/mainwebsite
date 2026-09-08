@@ -17,9 +17,9 @@ const CHAPTERS_COLLECTION = 'notes_chapters';
 const TOPICS_COLLECTION = 'notes_topics';
 
 const STORAGE_KEYS = {
-  COURSES: 'skilldotpy_notes_courses_v4',
-  CHAPTERS: 'skilldotpy_notes_chapters_v4',
-  TOPICS: 'skilldotpy_notes_topics_v4'
+  COURSES: 'skilldotpy_notes_courses_v5',
+  CHAPTERS: 'skilldotpy_notes_chapters_v5',
+  TOPICS: 'skilldotpy_notes_topics_v5'
 };
 
 const SYNC_EVENT_NAME = 'skilldotpy_notes_changed';
