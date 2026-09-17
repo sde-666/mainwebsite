@@ -2,43 +2,41 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   Clock,
-  Maximize2,
-  Minimize2,
-  CheckCircle2,
-  AlertCircle,
-  HelpCircle,
-  ArrowRight,
-  ArrowLeft,
-  Bookmark,
   RotateCcw,
   Sparkles,
   Award,
   Send,
   Loader2,
-  BookOpen,
-  FileCheck,
   ChevronRight,
+  ChevronLeft,
   Printer,
   Eye,
-  EyeOff,
-  Columns,
-  Maximize,
-  Minimize,
   PanelLeftClose,
   PanelLeftOpen,
-  FileText
+  Info,
+  Image as ImageIcon,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  AlertTriangle,
+  Bot,
+  PanelRightClose,
+  PanelRightOpen,
+  Save,
+  Check
 } from 'lucide-react';
 import { getPracticalTestById, evaluatePracticalExam, submitPracticalExam } from '../services/practicalService';
 import { PracticalTestSet, PracticalScorecard } from '../types/practical';
 import { PythonEditor } from '../components/practical/PythonEditor';
 import { WebEditor } from '../components/practical/WebEditor';
 import { ArduinoEditor } from '../components/practical/ArduinoEditor';
-import { GeneralEditor } from '../components/practical/GeneralEditor';
+import { NielitOnlyOfficeEditor } from '../components/practical/NielitOnlyOfficeEditor';
+import { NielitGalleryModal } from '../components/practical/NielitGalleryModal';
+import { NielitInstructionModal } from '../components/practical/NielitInstructionModal';
+import { NielitQuestionPalette } from '../components/practical/NielitQuestionPalette';
 import { AiCodeAssistantModal } from '../components/practical/AiCodeAssistantModal';
 import { NielitLogo } from '../components/NielitLogo';
-import { Bot } from 'lucide-react';
-
-type QuestionPanelSize = 'hidden' | 'compact' | 'normal' | 'wide';
 
 export const PracticalExamWorkspace: React.FC = () => {
   const { testId } = useParams<{ testId: string }>();
@@ -53,29 +51,43 @@ export const PracticalExamWorkspace: React.FC = () => {
   // Active coding question index (0, 1, 2)
   const [currentQIndex, setCurrentQIndex] = useState(0);
 
-  // Question Sidebar Sizing & Visibility State
-  const [questionPanelSize, setQuestionPanelSize] = useState<QuestionPanelSize>('normal');
-
   // Student Answers & Code per Question
   const [questionFiles, setQuestionFiles] = useState<{ [qId: string]: { [filename: string]: string } }>({});
+  const [savedQuestionFiles, setSavedQuestionFiles] = useState<{ [qId: string]: { [filename: string]: string } }>({});
   const [questionLogs, setQuestionLogs] = useState<{ [qId: string]: string }>({});
   const [reviewedQuestions, setReviewedQuestions] = useState<{ [qId: string]: boolean }>({});
+
+  // Navigation Confirmation & Save States
+  const [isSaveSwitchModalOpen, setIsSaveSwitchModalOpen] = useState(false);
+  const [pendingTargetIndex, setPendingTargetIndex] = useState<number | null>(null);
+  const [saveToast, setSaveToast] = useState<string | null>(null);
 
   // Viva Voce typed answers
   const [vivaAnswers, setVivaAnswers] = useState<{ [vId: string]: string }>({});
 
   // Student details
-  const [studentName, setStudentName] = useState('NIELIT Candidate');
+  const [studentName, setStudentName] = useState('Aditya pathak');
 
   // Timer State (50 minutes default in seconds)
   const [secondsRemaining, setSecondsRemaining] = useState(50 * 60);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Modals & Drawers
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [isInstructionOpen, setIsInstructionOpen] = useState(false);
+  const [isQuestionWindowOpen, setIsQuestionWindowOpen] = useState(true);
+  const [isPaletteOpen, setIsPaletteOpen] = useState(true);
+  const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
+
+  // Editor Appearance & Zoom
+  const [editorTheme, setEditorTheme] = useState<'light' | 'dark'>('light');
+  const [fontScale, setFontScale] = useState(100); // 100% default
+  const [runTrigger, setRunTrigger] = useState(0);
 
   // AI Evaluation State
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [scorecard, setScorecard] = useState<PracticalScorecard | null>(null);
-  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
 
   // Load Practical Test
   useEffect(() => {
@@ -93,6 +105,7 @@ export const PracticalExamWorkspace: React.FC = () => {
           initFiles[q.id] = { ...q.starterCode };
         });
         setQuestionFiles(initFiles);
+        setSavedQuestionFiles(initFiles);
 
         // Initialize empty viva answers
         const initViva: { [vId: string]: string } = {};
@@ -106,11 +119,10 @@ export const PracticalExamWorkspace: React.FC = () => {
     loadTest();
   }, [testId]);
 
-  // Set the browser tab title directly (native API — cannot duplicate,
-  // unlike routing this through react-helmet-async on React 19).
+  // Set browser tab title
   useEffect(() => {
     if (test) {
-      document.title = `${test.paperCode} Practical Exam | ${test.title}`;
+      document.title = `${test.paperCode} Practical Examination | NIELIT O Level`;
     }
   }, [test]);
 
@@ -132,17 +144,6 @@ export const PracticalExamWorkspace: React.FC = () => {
     return () => clearInterval(interval);
   }, [isTimerRunning, examStep]);
 
-  // Fullscreen Toggle
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen().catch(() => {});
-      setIsFullscreen(false);
-    }
-  };
-
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -152,7 +153,7 @@ export const PracticalExamWorkspace: React.FC = () => {
   if (loading || !test) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-800">
-        <Loader2 className="w-10 h-10 animate-spin text-[#e65100] mb-4" />
+        <Loader2 className="w-10 h-10 animate-spin text-[#2B56C6] mb-4" />
         <p className="text-sm text-slate-600 font-semibold">Initializing NIELIT Practical Lab Workspace...</p>
       </div>
     );
@@ -161,16 +162,20 @@ export const PracticalExamWorkspace: React.FC = () => {
   const currentQ = test.questions[currentQIndex];
   const currentFiles = questionFiles[currentQ.id] || currentQ.starterCode;
 
-  // Check if current question has been modified / attempted
-  const isQuestionAttempted = (qId: string, starter: { [k: string]: string }) => {
+  // Check if question has been modified / attempted
+  const isQuestionAttempted = (qId: string) => {
+    const q = test.questions.find((item) => item.id === qId);
+    if (!q) return false;
     const active = questionFiles[qId];
     if (!active) return false;
-    const starterStr = Object.values(starter).join('').trim();
+    const starterStr = Object.values(q.starterCode).join('').trim();
     const activeStr = Object.values(active).join('').trim();
     return activeStr.length > 5 && (activeStr !== starterStr || (questionLogs[qId] && questionLogs[qId].length > 0));
   };
 
-  const attemptedCount = test.questions.filter((q) => isQuestionAttempted(q.id, q.starterCode)).length;
+  const attemptedCount = test.questions.filter((q) => isQuestionAttempted(q.id)).length;
+  const reviewCount = test.questions.filter((q) => reviewedQuestions[q.id]).length;
+  const unattemptedCount = test.questions.length - attemptedCount;
 
   const handleFilesChange = (newFiles: { [filename: string]: string }) => {
     setQuestionFiles((prev) => ({
@@ -186,22 +191,70 @@ export const PracticalExamWorkspace: React.FC = () => {
     }));
   };
 
+  // Switch Question with Save Confirmation Dialog
+  const requestQuestionChange = (targetIndex: number) => {
+    if (targetIndex === currentQIndex || targetIndex < 0 || targetIndex >= test.questions.length) {
+      return;
+    }
+    setPendingTargetIndex(targetIndex);
+    setIsSaveSwitchModalOpen(true);
+  };
+
+  const handleConfirmSaveAndSwitch = () => {
+    if (pendingTargetIndex === null) return;
+    const activeWork = questionFiles[currentQ.id] || currentQ.starterCode;
+
+    // 1. Commit and save to state
+    setSavedQuestionFiles((prev) => ({
+      ...prev,
+      [currentQ.id]: { ...activeWork }
+    }));
+    setQuestionFiles((prev) => ({
+      ...prev,
+      [currentQ.id]: { ...activeWork }
+    }));
+
+    const savedQNum = currentQ.number;
+    setCurrentQIndex(pendingTargetIndex);
+    setIsSaveSwitchModalOpen(false);
+    setPendingTargetIndex(null);
+
+    setSaveToast(`Question No.${savedQNum} work saved successfully.`);
+    setTimeout(() => setSaveToast(null), 3000);
+  };
+
+  const handleConfirmDiscardAndSwitch = () => {
+    if (pendingTargetIndex === null) return;
+
+    // Revert uncommitted changes back to last saved state
+    const lastSaved = savedQuestionFiles[currentQ.id] || currentQ.starterCode;
+    setQuestionFiles((prev) => ({
+      ...prev,
+      [currentQ.id]: { ...lastSaved }
+    }));
+
+    setCurrentQIndex(pendingTargetIndex);
+    setIsSaveSwitchModalOpen(false);
+    setPendingTargetIndex(null);
+  };
+
+  const handleManualSave = () => {
+    const activeWork = questionFiles[currentQ.id] || currentQ.starterCode;
+    setSavedQuestionFiles((prev) => ({
+      ...prev,
+      [currentQ.id]: { ...activeWork }
+    }));
+    setSaveToast(`Question No.${currentQ.number} work saved.`);
+    setTimeout(() => setSaveToast(null), 3000);
+  };
+
   const handleResetCode = () => {
-    if (window.confirm('Reset code for this question back to original starter boilerplate?')) {
+    if (window.confirm('Reset this question back to original starter template?')) {
       setQuestionFiles((prev) => ({
         ...prev,
         [currentQ.id]: { ...currentQ.starterCode }
       }));
     }
-  };
-
-  const handleApplyAiFix = (fixedCode: string) => {
-    const fileKeys = Object.keys(currentFiles);
-    const mainKey = fileKeys[0] || (currentQ.language === 'python' ? 'solution.py' : 'main');
-    handleFilesChange({
-      ...currentFiles,
-      [mainKey]: fixedCode
-    });
   };
 
   const toggleMarkForReview = () => {
@@ -211,8 +264,13 @@ export const PracticalExamWorkspace: React.FC = () => {
     }));
   };
 
+  const handleRunCodeClick = () => {
+    setRunTrigger((prev) => prev + 1);
+  };
+
   // Final Submit Handler
   const handleFinalSubmit = async () => {
+    setIsSubmitConfirmOpen(false);
     setIsEvaluating(true);
 
     const attemptedQuestionsPayload = test.questions.map((q) => ({
@@ -257,435 +315,446 @@ export const PracticalExamWorkspace: React.FC = () => {
     }
   };
 
-  // Render appropriate IDE
+  // Render appropriate workspace editor
   const renderEditor = () => {
-    switch (currentQ.language) {
-      case 'python':
-        return (
-          <PythonEditor
-            files={currentFiles}
-            onChange={handleFilesChange}
-            onRunComplete={handleRunComplete}
-          />
-        );
-      case 'html':
-        return (
-          <WebEditor
-            files={currentFiles}
-            onChange={handleFilesChange}
-            onRunComplete={handleRunComplete}
-          />
-        );
-      case 'arduino':
-        return (
-          <ArduinoEditor
-            files={currentFiles}
-            onChange={handleFilesChange}
-            onRunComplete={handleRunComplete}
-            wokwiDiagramJson={currentQ.wokwiDiagramJson}
-          />
-        );
-      default:
-        return (
-          <GeneralEditor
-            files={currentFiles}
-            onChange={handleFilesChange}
-            onRunComplete={handleRunComplete}
-          />
-        );
+    // PR1 / M1-R5 uses OnlyOffice suite (Writer / Calc / Impress)
+    if (test.module === 'M1-R5' || currentQ.language === 'general') {
+      return (
+        <NielitOnlyOfficeEditor
+          files={currentFiles}
+          onChange={handleFilesChange}
+          onRunComplete={handleRunComplete}
+          questionTitle={currentQ.title}
+          paperCode={test.paperCode}
+          questionNumber={currentQ.number}
+          theme={editorTheme}
+          runTrigger={runTrigger}
+        />
+      );
     }
-  };
 
-  // Layout widths based on questionPanelSize
-  const getQuestionColumnClass = () => {
-    switch (questionPanelSize) {
-      case 'hidden':
-        return 'hidden';
-      case 'compact':
-        return 'lg:col-span-3'; // 25% width
-      case 'wide':
-        return 'lg:col-span-5'; // ~42% width
-      case 'normal':
-      default:
-        return 'lg:col-span-4'; // ~33% width
+    if (currentQ.language === 'python') {
+      return (
+        <PythonEditor
+          files={currentFiles}
+          onChange={handleFilesChange}
+          onRunComplete={handleRunComplete}
+          theme={editorTheme}
+          runTrigger={runTrigger}
+        />
+      );
     }
-  };
 
-  const getEditorColumnClass = () => {
-    switch (questionPanelSize) {
-      case 'hidden':
-        return 'lg:col-span-11'; // Takes all remaining space beside palette
-      case 'compact':
-        return 'lg:col-span-8';
-      case 'wide':
-        return 'lg:col-span-6';
-      case 'normal':
-      default:
-        return 'lg:col-span-7';
+    if (currentQ.language === 'html') {
+      return (
+        <WebEditor
+          files={currentFiles}
+          onChange={handleFilesChange}
+          onRunComplete={handleRunComplete}
+          theme={editorTheme}
+          runTrigger={runTrigger}
+        />
+      );
     }
+
+    if (currentQ.language === 'arduino') {
+      return (
+        <ArduinoEditor
+          files={currentFiles}
+          onChange={handleFilesChange}
+          onRunComplete={handleRunComplete}
+          theme={editorTheme}
+          runTrigger={runTrigger}
+        />
+      );
+    }
+
+    return (
+      <NielitOnlyOfficeEditor
+        files={currentFiles}
+        onChange={handleFilesChange}
+        onRunComplete={handleRunComplete}
+        questionTitle={currentQ.title}
+        paperCode={test.paperCode}
+        questionNumber={currentQ.number}
+      />
+    );
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col font-sans">
-      {/* Same react-helmet-async React-19 duplicate-tag bug as SEO.tsx would
-          apply here too — this page isn't in the sitemap/prerendered, so
-          there's no static tag to conflict with, but for consistency we
-          just set document.title directly instead of routing through
-          Helmet at all. */}
-
-      {/* Top NIELIT Signature Header Bar */}
-      <header className="bg-[#e65100] text-white px-4 py-2.5 flex items-center justify-between shadow-md select-none shrink-0">
+    <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans select-none">
+      {/* 1. Official NIELIT Practical Top Header Bar matching all 8 screenshots */}
+      <header className="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between select-none shrink-0">
+        {/* Left: Emblem + रा.इ.सू.प्रौ.सं / NIELIT + PR1 B4 */}
         <div className="flex items-center gap-3">
-          <div className="bg-white px-2.5 py-0.5 rounded-md shadow-xs flex items-center gap-1.5">
-            <NielitLogo size="xs" className="h-5" />
-            <span className="text-xs font-black text-slate-900 tracking-wider uppercase">
-              {test.paperCode}
-            </span>
+          <div className="flex items-center gap-2">
+            <img
+              src="/nielit-emblem.svg"
+              alt="NIELIT"
+              className="h-9 w-9 object-contain"
+            />
+            <div className="flex flex-col leading-none">
+              <span className="text-[11px] font-bold text-slate-800 tracking-tight">
+                रा.इ.सू.प्रौ.सं
+              </span>
+              <span className="text-xs font-black text-slate-900 tracking-wider">
+                NIELIT
+              </span>
+            </div>
           </div>
-          <span className="text-xs sm:text-sm font-extrabold hidden md:inline truncate max-w-md">
-            {test.title}
+
+          <div className="h-6 w-[1px] bg-slate-200 mx-1" />
+
+          {/* Paper / Batch Code (e.g. PR1 B4, PR2 B3, PR3 B2, PR4 B1) */}
+          <span className="text-lg font-extrabold text-slate-900 tracking-tight">
+            {test.paperCode || 'PR1 B4'}
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Live Digital Countdown Timer */}
+        {/* Right: Clock + Instruction + Gallery + Candidate Profile */}
+        <div className="flex items-center gap-4 sm:gap-6">
+          {/* Countdown Timer with Clock Icon matching screenshot: '43 min : 42 sec' */}
           {examStep !== 'scorecard' && (
-            <div
-              className={`flex items-center gap-2 px-3 py-1 rounded-lg font-mono font-bold text-xs sm:text-sm shadow-inner transition-colors ${
-                secondsRemaining < 300
-                  ? 'bg-rose-900 text-rose-100 animate-pulse border border-rose-400'
-                  : 'bg-black/30 text-white border border-white/20'
-              }`}
-            >
-              <Clock className="w-4 h-4" />
+            <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-xs sm:text-sm">
+              <Clock className="w-4 h-4 text-slate-600" />
               <span>{formatTimer(secondsRemaining)}</span>
             </div>
           )}
 
-          {/* Fullscreen Button */}
+          {/* Instruction Button */}
           <button
-            onClick={toggleFullscreen}
-            className="p-1.5 hover:bg-white/20 rounded-md text-white text-xs transition-colors cursor-pointer"
-            title="Toggle Fullscreen"
+            onClick={() => setIsInstructionOpen(true)}
+            className="flex flex-col sm:flex-row items-center gap-1 text-slate-700 hover:text-blue-600 transition-colors cursor-pointer text-xs font-medium"
           >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            <Info className="w-4 h-4 text-slate-600" />
+            <span className="text-[11px] sm:text-xs">Instruction</span>
           </button>
+
+          {/* Gallery Button - only visible for ITN (PR1 / M1-R5) and WDP (PR2 / M2-R5) exams */}
+          {(test.module === 'M1-R5' ||
+            test.module === 'M2-R5' ||
+            test.paperCode?.toUpperCase().includes('PR1') ||
+            test.paperCode?.toUpperCase().includes('PR2') ||
+            test.module?.toLowerCase().includes('it') ||
+            test.module?.toLowerCase().includes('web')) && (
+            <button
+              onClick={() => setIsGalleryOpen(true)}
+              className="flex flex-col sm:flex-row items-center gap-1 text-slate-700 hover:text-blue-600 transition-colors cursor-pointer text-xs font-medium"
+            >
+              <ImageIcon className="w-4 h-4 text-slate-600" />
+              <span className="text-[11px] sm:text-xs">Gallery</span>
+            </button>
+          )}
+
+          {/* Candidate Profile Widget matching Screenshot */}
+          <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 overflow-hidden">
+              <User className="w-5 h-5" />
+            </div>
+            <div className="flex flex-col leading-tight text-left">
+              <span className="text-xs font-bold text-slate-900 truncate max-w-[120px]">
+                {studentName}
+              </span>
+              <span className="text-[10px] text-slate-400">
+                null
+              </span>
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Main Workspace Body */}
       {examStep === 'coding' && (
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Sub Navigation Strip */}
-          <div className="bg-white px-4 py-2 border-b border-slate-200 flex items-center justify-between text-xs flex-wrap gap-2 shadow-2xs">
+        <div className="flex-1 flex flex-col overflow-hidden bg-slate-100">
+          {/* 2. Subheader Bar matching Screenshots 2, 3, 4, 6 */}
+          <div className="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between select-none shrink-0 gap-2">
+            {/* Left: Question No.1 + Refresh (↺) + Zoom (A+, A-) */}
             <div className="flex items-center gap-3">
-              {/* Question Sidebar Toggle & Resizer */}
-              <div className="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5">
-                <button
-                  onClick={() =>
-                    setQuestionPanelSize((prev) => (prev === 'hidden' ? 'normal' : 'hidden'))
-                  }
-                  className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    questionPanelSize === 'hidden'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-700 hover:text-slate-900 hover:bg-white'
-                  }`}
-                  title="Toggle Question Panel Visibility to maximize code workspace"
-                >
-                  {questionPanelSize === 'hidden' ? (
-                    <>
-                      <PanelLeftOpen className="w-3.5 h-3.5" />
-                      <span>Show Question</span>
-                    </>
-                  ) : (
-                    <>
-                      <PanelLeftClose className="w-3.5 h-3.5" />
-                      <span>Hide Question</span>
-                    </>
-                  )}
-                </button>
-
-                {questionPanelSize !== 'hidden' && (
-                  <div className="hidden sm:flex items-center gap-0.5 pl-1 border-l border-slate-300 ml-1">
-                    <button
-                      onClick={() => setQuestionPanelSize('compact')}
-                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                        questionPanelSize === 'compact' ? 'bg-white text-blue-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
-                      }`}
-                      title="Compact Question Panel (25% width)"
-                    >
-                      25%
-                    </button>
-                    <button
-                      onClick={() => setQuestionPanelSize('normal')}
-                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                        questionPanelSize === 'normal' ? 'bg-white text-blue-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
-                      }`}
-                      title="Standard Question Panel (33% width)"
-                    >
-                      33%
-                    </button>
-                    <button
-                      onClick={() => setQuestionPanelSize('wide')}
-                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                        questionPanelSize === 'wide' ? 'bg-white text-blue-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
-                      }`}
-                      title="Expanded Question Panel (42% width)"
-                    >
-                      42%
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-800">
-                  Question {currentQ.number} of {test.questions.length}
-                </span>
-                <span className="text-slate-300">•</span>
-                <span className="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  Attempted: {attemptedCount} / {test.requiredQuestionsCount} Required
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-[11px] text-slate-500 hidden sm:inline">
-                Part A: 80 Marks (Solve Any 2) • Part B: 20 Marks (Viva)
-              </span>
-              <button
-                onClick={() => setExamStep('viva')}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-              >
-                <span>Proceed to Viva Voce (Step 2)</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Three-Column Coding Workspace Grid */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden bg-slate-100">
-            {/* Left Column: Problem Statement & Requirements (Resizable / Collapsible) */}
-            {questionPanelSize !== 'hidden' && (
-              <div
-                className={`${getQuestionColumnClass()} bg-white border-r border-slate-200 p-4 sm:p-5 overflow-y-auto flex flex-col justify-between shadow-2xs`}
-              >
-                <div className="space-y-4">
-                  {/* Question Header */}
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                    <div className="flex items-center gap-2">
-                      <span className="w-7 h-7 rounded-lg bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
-                        {currentQ.number}
-                      </span>
-                      <div>
-                        <h2 className="text-sm sm:text-base font-extrabold text-slate-900">
-                          Question No. {currentQ.number}
-                        </h2>
-                        <span className="text-[10px] text-slate-500 font-semibold uppercase">
-                          {test.paperCode} • {currentQ.language.toUpperCase()}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
-                        {currentQ.marks} Marks
-                      </span>
-                      <button
-                        onClick={() => setQuestionPanelSize('hidden')}
-                        className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors"
-                        title="Collapse Question Panel"
-                      >
-                        <PanelLeftClose className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Problem Statement */}
-                  <div className="space-y-2">
-                    <p className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">
-                      {currentQ.title}
-                    </p>
-                    <div className="text-xs text-slate-700 whitespace-pre-wrap leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-                      {currentQ.description}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Left Column Bottom Status */}
-                <div className="pt-3 border-t border-slate-200 mt-4 flex items-center justify-between text-xs text-slate-500">
-                  <span>Language: <strong className="text-slate-800">{currentQ.language.toUpperCase()}</strong></span>
-                  <span
-                    className={`font-semibold ${
-                      isQuestionAttempted(currentQ.id, currentQ.starterCode)
-                        ? 'text-emerald-700'
-                        : 'text-slate-400'
-                    }`}
-                  >
-                    {isQuestionAttempted(currentQ.id, currentQ.starterCode)
-                      ? '● Attempted'
-                      : '○ Not Attempted'}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Center Column: Full Interactive Editor */}
-            <div className={`${getEditorColumnClass()} bg-slate-100 p-2 overflow-hidden flex flex-col`}>
-              {renderEditor()}
-            </div>
-
-            {/* Right Column: Question Switcher Palette (1, 2, 3) */}
-            <div className="lg:col-span-1 bg-white border-l border-slate-200 p-2.5 flex flex-col items-center justify-between shadow-2xs">
-              <div className="space-y-3 w-full">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block text-center">
-                  Questions
-                </span>
-
-                <div className="flex flex-col gap-2">
-                  {test.questions.map((q, idx) => {
-                    const attempted = isQuestionAttempted(q.id, q.starterCode);
-                    const marked = reviewedQuestions[q.id];
-                    const isCurrent = currentQIndex === idx;
-
-                    return (
-                      <button
-                        key={q.id}
-                        onClick={() => setCurrentQIndex(idx)}
-                        className={`w-full py-2.5 rounded-lg font-bold text-xs flex flex-col items-center justify-center transition-all cursor-pointer border ${
-                          isCurrent
-                            ? 'bg-blue-600 text-white border-blue-700 shadow-md ring-2 ring-blue-400/40'
-                            : marked
-                            ? 'bg-amber-500 text-white border-amber-600'
-                            : attempted
-                            ? 'bg-emerald-600 text-white border-emerald-700'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                        }`}
-                      >
-                        <span className="text-sm font-extrabold">{q.number}</span>
-                        <span className="text-[9px] font-medium opacity-90">
-                          {attempted ? 'Done' : '40M'}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Legend */}
-              <div className="space-y-1.5 text-[9px] text-slate-600 w-full pt-3 border-t border-slate-200">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded bg-emerald-600"></span> Attempted
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded bg-amber-500"></span> Review
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded bg-slate-200 border border-slate-300"></span> Unsolved
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Action Footer Bar */}
-          <div className="bg-white px-4 py-2.5 border-t border-slate-200 flex items-center justify-between flex-wrap gap-2 shrink-0 shadow-2xs">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentQIndex((prev) => Math.max(0, prev - 1))}
-                disabled={currentQIndex === 0}
-                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer border border-slate-200"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" /> Previous
-              </button>
-
-              <button
-                onClick={() => setCurrentQIndex((prev) => Math.min(test.questions.length - 1, prev + 1))}
-                disabled={currentQIndex === test.questions.length - 1}
-                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer border border-slate-200"
-              >
-                Next <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setIsAiAssistantOpen(true)}
-                className="px-3.5 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95"
-                title="AI Code Assistant: Explain logic, fix bugs, or get viva tips"
-              >
-                <Bot className="w-3.5 h-3.5 text-amber-300" />
-                <span>AI Code Helper</span>
-              </button>
+              <h2 className="text-sm sm:text-base font-bold text-slate-900">
+                Question No.{currentQ.number}
+              </h2>
 
               <button
                 onClick={handleResetCode}
-                className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 flex items-center gap-1 transition-colors cursor-pointer"
-                title="Reset this question to starter boilerplate"
+                className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                title="Reset question code"
               >
-                <RotateCcw className="w-3.5 h-3.5" /> Reset Starter Code
+                <RotateCcw className="w-4 h-4" />
               </button>
 
+              <div className="flex items-center gap-1 text-xs font-semibold text-slate-700">
+                <button
+                  onClick={() => setFontScale((s) => Math.min(130, s + 10))}
+                  className="px-1.5 py-0.5 border border-slate-300 rounded hover:bg-slate-50 cursor-pointer"
+                  title="Increase font size"
+                >
+                  A+
+                </button>
+                <button
+                  onClick={() => setFontScale((s) => Math.max(80, s - 10))}
+                  className="px-1.5 py-0.5 border border-slate-300 rounded hover:bg-slate-50 cursor-pointer"
+                  title="Decrease font size"
+                >
+                  A-
+                </button>
+              </div>
+
+              {/* Question Window Show / Hide Button */}
               <button
-                onClick={toggleMarkForReview}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border ${
-                  reviewedQuestions[currentQ.id]
-                    ? 'bg-amber-50 text-amber-800 border-amber-300'
-                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                onClick={() => setIsQuestionWindowOpen((prev) => !prev)}
+                className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors border cursor-pointer ${
+                  isQuestionWindowOpen
+                    ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                    : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
                 }`}
+                title={isQuestionWindowOpen ? 'Hide Question Window' : 'Show Question Window'}
               >
-                <Bookmark className="w-3.5 h-3.5 text-amber-500" />
-                {reviewedQuestions[currentQ.id] ? 'Marked for Review' : 'Mark for Review'}
+                {isQuestionWindowOpen ? <PanelLeftClose className="w-3.5 h-3.5" /> : <PanelLeftOpen className="w-3.5 h-3.5" />}
+                <span className="hidden sm:inline">{isQuestionWindowOpen ? 'Hide Question' : 'Show Question'}</span>
               </button>
 
+              {/* Question Palette Show / Hide Button */}
               <button
-                onClick={() => setExamStep('viva')}
-                className="bg-[#e65100] hover:bg-[#ef6c00] text-white font-bold text-xs px-5 py-2 rounded-lg shadow-sm flex items-center gap-2 transition-all cursor-pointer"
+                onClick={() => setIsPaletteOpen((prev) => !prev)}
+                className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors border cursor-pointer ${
+                  isPaletteOpen
+                    ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                    : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+                }`}
+                title={isPaletteOpen ? 'Hide Question Palette' : 'Show Question Palette'}
               >
-                <span>Save Code & Go to Viva Voce</span>
-                <ChevronRight className="w-4 h-4" />
+                {isPaletteOpen ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
+                <span className="hidden sm:inline">{isPaletteOpen ? 'Hide Palette' : 'Show Palette'}</span>
               </button>
             </div>
+
+            {/* Right: Language Dropdown + Blue 'Run Code' button + Theme Toggle Circle */}
+            <div className="flex items-center gap-3">
+              {/* Language Selector Dropdown */}
+              <div className="relative">
+                <select
+                  disabled
+                  className="bg-white border border-slate-300 rounded px-3 py-1 text-xs font-semibold text-slate-800 shadow-2xs cursor-default appearance-none pr-7"
+                  value={
+                    currentQ.language === 'python'
+                      ? 'Python (3.8.1)'
+                      : currentQ.language === 'html'
+                      ? 'HTML'
+                      : currentQ.language === 'arduino'
+                      ? 'Arduino C++'
+                      : 'LibreOffice / ONLYOFFICE'
+                  }
+                >
+                  <option>Python (3.8.1)</option>
+                  <option>HTML</option>
+                  <option>Arduino C++</option>
+                  <option>LibreOffice / ONLYOFFICE</option>
+                </select>
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-[10px]">
+                  ▼
+                </span>
+              </div>
+
+              {/* Blue 'Run Code' button matching Screenshots 2, 3, 4 */}
+              <button
+                onClick={handleRunCodeClick}
+                className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold text-xs px-4 py-1.5 rounded shadow-xs transition-colors cursor-pointer"
+              >
+                Run Code
+              </button>
+
+              {/* Theme Toggle Icon: Half Black / Half White Circle */}
+              <button
+                onClick={() => setEditorTheme((t) => (t === 'light' ? 'dark' : 'light'))}
+                className="w-6 h-6 rounded-full border border-slate-400 overflow-hidden relative cursor-pointer shadow-2xs"
+                title="Toggle Light / Dark Editor Theme"
+              >
+                <div className="absolute inset-0 bg-white" />
+                <div className="absolute top-0 bottom-0 left-0 w-1/2 bg-slate-800" />
+              </button>
+            </div>
+          </div>
+
+          {/* 3. Middle Area: Left Sliding Question Window ↔ Right Editor Pane ↔ Slide-out Palette */}
+          <div className="flex-1 flex overflow-hidden relative">
+            {/* Left Sliding Question Window */}
+            <div className="relative flex items-stretch z-20 select-none">
+              {/* Slide-out Question Panel */}
+              {isQuestionWindowOpen && (
+                <div
+                  className="w-72 sm:w-80 md:w-[340px] lg:w-[380px] bg-white border-r border-slate-300 p-4 sm:p-5 overflow-y-auto flex flex-col justify-between shrink-0 shadow-sm animate-in slide-in-from-left duration-200"
+                  style={{ fontSize: `${fontScale}%` }}
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                      <span className="font-bold text-slate-800 text-xs uppercase tracking-wider">
+                        Question Statement
+                      </span>
+                      <button
+                        onClick={() => setIsQuestionWindowOpen(false)}
+                        className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors cursor-pointer"
+                        title="Hide Question Window"
+                      >
+                        <PanelLeftClose className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* Question Statement - Title Only */}
+                    <div className="space-y-2">
+                      <h3 className="font-bold text-slate-900 leading-snug text-sm sm:text-base">
+                        {currentQ.number}. {currentQ.title}
+                      </h3>
+                    </div>
+
+                    {/* Practical Marks Badge */}
+                    <div className="pt-2">
+                      <span className="inline-block bg-slate-100 border border-slate-300 text-slate-700 text-xs px-2.5 py-1 rounded font-semibold">
+                        Marks: {currentQ.marks}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-200 mt-6 text-[11px] text-slate-500">
+                    <span>Solve ANY TWO practical questions. Click 'Submit Test' when finished.</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Edge Handle Tab for expanding or collapsing Question Window */}
+              {!isQuestionWindowOpen ? (
+                <button
+                  onClick={() => setIsQuestionWindowOpen(true)}
+                  className="self-center bg-white border border-slate-300 border-l-0 rounded-r-md shadow-md py-3 px-1.5 flex flex-col items-center gap-1.5 text-slate-700 hover:text-blue-700 hover:bg-slate-50 transition-all cursor-pointer z-30 group"
+                  title="Show Question Window"
+                  aria-label="Show Question Window"
+                >
+                  <ChevronRight className="w-4 h-4 text-blue-600 group-hover:translate-x-0.5 transition-transform" />
+                  <span className="text-[10px] font-bold writing-mode-vertical [writing-mode:vertical-rl] tracking-wider text-slate-700 uppercase">
+                    Question
+                  </span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsQuestionWindowOpen(false)}
+                  className="self-center -mr-3 bg-white border border-slate-300 rounded-full shadow-md w-6 h-6 flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-transform cursor-pointer z-30"
+                  title="Hide Question Window"
+                  aria-label="Hide Question Window"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Middle Working Area */}
+            <div className="flex-1 flex flex-col overflow-hidden bg-slate-100 p-2">
+              {renderEditor()}
+            </div>
+
+            {/* Right Slide-out Question Palette Drawer */}
+            <NielitQuestionPalette
+              questions={test.questions}
+              currentIndex={currentQIndex}
+              onSelectQuestion={(idx) => requestQuestionChange(idx)}
+              isOpen={isPaletteOpen}
+              onToggle={() => setIsPaletteOpen((prev) => !prev)}
+              isAttempted={(qId) => isQuestionAttempted(qId)}
+              isReviewed={(qId) => Boolean(reviewedQuestions[qId])}
+            />
+          </div>
+
+          {/* 4. Bottom Action Footer Bar matching Screenshot */}
+          <div className="bg-white border-t border-slate-300 px-4 py-2.5 flex items-center justify-between select-none shrink-0 gap-2">
+            {/* Left: Previous Question / Next Question Buttons + Save Button */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => requestQuestionChange(currentQIndex - 1)}
+                disabled={currentQIndex === 0}
+                className="bg-[#1E3A8A] hover:bg-[#172554] disabled:opacity-40 text-white font-semibold text-xs px-5 py-2 rounded shadow-xs transition-colors cursor-pointer"
+              >
+                Previous Question
+              </button>
+
+              <button
+                onClick={() => requestQuestionChange(currentQIndex + 1)}
+                disabled={currentQIndex === test.questions.length - 1}
+                className="bg-[#1E3A8A] hover:bg-[#172554] disabled:opacity-40 text-white font-semibold text-xs px-5 py-2 rounded shadow-xs transition-colors cursor-pointer"
+              >
+                Next Question
+              </button>
+
+              <button
+                onClick={handleManualSave}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs px-4 py-2 rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer ml-1"
+                title="Save work for this question"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save Work</span>
+              </button>
+            </div>
+
+            {/* Right: Review Checkbox + Submit Test Button */}
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={Boolean(reviewedQuestions[currentQ.id])}
+                  onChange={toggleMarkForReview}
+                  className="w-4 h-4 rounded border-slate-300 text-[#2563EB] focus:ring-0 cursor-pointer"
+                />
+                <span>Review</span>
+              </label>
+
+              <button
+                onClick={() => setIsSubmitConfirmOpen(true)}
+                className="bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold text-xs px-6 py-2 rounded shadow-xs transition-colors cursor-pointer"
+              >
+                Submit Test
+              </button>
+            </div>
+          </div>
+
+          {/* 5. Official ThinkExam Copyright Footer matching Screenshot */}
+          <div className="bg-[#f8fafc] border-t border-slate-200 py-1.5 px-4 text-center text-[10px] text-slate-500 select-none shrink-0">
+            Copyright © 2025 Ginger Webs Pvt Ltd. All rights reserved. | Powered by thinkexam.com | Last updated:26-04-2023 | Version:TE_7.0.0.0
           </div>
         </div>
       )}
 
-      {/* Step 2: Viva Voce Round (Light Mode) */}
+      {/* Step 2: Viva Voce Round */}
       {examStep === 'viva' && (
         <div className="flex-1 bg-slate-50 p-4 sm:p-8 overflow-y-auto">
           <div className="max-w-4xl mx-auto space-y-6">
-            {/* Header Card */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="bg-white p-6 rounded-lg border border-slate-300 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                <span className="text-xs font-bold text-blue-800 bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
                   Part B: Viva Voce (20 Marks)
                 </span>
-                <h2 className="text-2xl font-black text-slate-900 mt-2">
+                <h2 className="text-xl font-extrabold text-slate-900 mt-2">
                   Official Viva Voce Examination ({test.paperCode})
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600 mt-1">
-                  Type your clear, concise conceptual explanations for the questions below. Evaluated automatically via AI rubrics.
+                <p className="text-xs text-slate-600 mt-1">
+                  Answer the conceptual questions below. Answers will be evaluated via AI rubrics according to NIELIT standards.
                 </p>
               </div>
 
               <button
                 onClick={() => setExamStep('coding')}
-                className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 px-4 py-2 rounded-xl text-xs font-bold transition-colors self-start sm:self-auto cursor-pointer"
+                className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-4 py-2 rounded text-xs font-bold transition-colors cursor-pointer"
               >
-                <ArrowLeft className="w-3.5 h-3.5" /> Back to Coding
+                <ArrowLeft className="w-3.5 h-3.5" /> Back to Practical Editor
               </button>
             </div>
 
-            {/* Viva Questions List */}
+            {/* Viva Questions */}
             <div className="space-y-4">
               {test.vivaQuestions.map((vq, index) => (
                 <div
                   key={vq.id}
-                  className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3"
+                  className="bg-white p-5 rounded-lg border border-slate-300 shadow-xs space-y-3"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <span className="w-6 h-6 rounded-md bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-6 h-6 rounded bg-[#2B56C6] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                         {index + 1}
                       </span>
                       <div>
@@ -699,7 +768,7 @@ export const PracticalExamWorkspace: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 shrink-0">
+                    <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 shrink-0">
                       {vq.marks} Marks
                     </span>
                   </div>
@@ -713,29 +782,29 @@ export const PracticalExamWorkspace: React.FC = () => {
                       }))
                     }
                     rows={4}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 resize-y leading-relaxed"
-                    placeholder="Type your structured answer here (definitions, key differences, syntax)..."
+                    className="w-full bg-slate-50 border border-slate-300 rounded p-3 text-xs text-slate-800 focus:outline-none focus:border-blue-600 resize-y leading-relaxed"
+                    placeholder="Type your answer here..."
                   />
                 </div>
               ))}
             </div>
 
-            {/* Student Name & Submission Bar */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {/* Candidate Submission Bar */}
+            <div className="bg-white p-5 rounded-lg border border-slate-300 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <label className="text-xs font-semibold text-slate-700">Candidate Name:</label>
                 <input
                   type="text"
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500"
+                  className="bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <button
                 onClick={handleFinalSubmit}
                 disabled={isEvaluating}
-                className="inline-flex items-center justify-center gap-2 bg-[#e65100] hover:bg-[#ef6c00] disabled:opacity-50 text-white font-extrabold text-sm px-7 py-3 rounded-xl shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 bg-[#DC2626] hover:bg-[#B91C1C] disabled:opacity-50 text-white font-bold text-sm px-6 py-2.5 rounded shadow-xs transition-colors cursor-pointer"
               >
                 {isEvaluating ? (
                   <>
@@ -754,22 +823,21 @@ export const PracticalExamWorkspace: React.FC = () => {
         </div>
       )}
 
-      {/* Step 3: AI Evaluated Scorecard (Light Mode) */}
+      {/* Step 3: AI Evaluated Scorecard */}
       {examStep === 'scorecard' && scorecard && (
         <div className="flex-1 bg-slate-100 p-4 sm:p-8 overflow-y-auto text-slate-900">
           <div className="max-w-4xl mx-auto space-y-6">
-            {/* Printable Scorecard Container */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-slate-200 space-y-6">
+            <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm border border-slate-300 space-y-6">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-200 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-200 gap-4">
                 <div className="flex items-center gap-3">
-                  <NielitLogo size="sm" className="h-8" />
+                  <img src="/nielit-emblem.svg" alt="NIELIT" className="h-10 w-10 object-contain" />
                   <div>
-                    <h2 className="text-xl font-extrabold text-slate-900">
+                    <h2 className="text-lg font-bold text-slate-900">
                       NIELIT O Level Practical Examination Result
                     </h2>
                     <p className="text-xs text-slate-500">
-                      Revision 5.1 Assessment • Paper: {test.paperCode} ({test.module})
+                      Assessment Result • Paper: {test.paperCode} ({test.module}) • Candidate: {studentName}
                     </p>
                   </div>
                 </div>
@@ -777,171 +845,234 @@ export const PracticalExamWorkspace: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => window.print()}
-                    className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3.5 py-2 rounded-lg transition-colors cursor-pointer border border-slate-200"
+                    className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3 py-1.5 rounded transition-colors cursor-pointer border border-slate-300"
                   >
                     <Printer className="w-3.5 h-3.5" /> Print Result
                   </button>
                   <Link
                     to="/practical-practice"
-                    className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors shadow-xs"
+                    className="inline-flex items-center gap-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold px-4 py-1.5 rounded transition-colors shadow-xs"
                   >
-                    Practice Another Test
+                    Practice Another Paper
                   </Link>
                 </div>
               </div>
 
-              {/* Main Scorecard Gauge Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
-                <div className="text-center sm:border-r border-slate-200 pb-3 sm:pb-0">
+              {/* Total Score Banner */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 bg-slate-50 rounded border border-slate-200">
+                <div className="text-center sm:border-r border-slate-200 pb-2 sm:pb-0">
                   <span className="text-xs text-slate-500 font-semibold block">Total Score</span>
-                  <span className="text-3xl font-black text-slate-900">
-                    {scorecard.totalScore} <span className="text-sm font-normal text-slate-500">/ 100</span>
+                  <span className="text-2xl font-black text-slate-900">
+                    {scorecard.totalScore} <span className="text-xs font-normal text-slate-500">/ 100</span>
                   </span>
                 </div>
 
-                <div className="text-center sm:border-r border-slate-200 pb-3 sm:pb-0">
-                  <span className="text-xs text-slate-500 font-semibold block">Official Grade</span>
+                <div className="text-center sm:border-r border-slate-200 pb-2 sm:pb-0">
+                  <span className="text-xs text-slate-500 font-semibold block">Part A: Coding</span>
+                  <span className="text-2xl font-bold text-blue-700">
+                    {scorecard.codingScore} <span className="text-xs font-normal text-slate-500">/ 80</span>
+                  </span>
+                </div>
+
+                <div className="text-center sm:border-r border-slate-200 pb-2 sm:pb-0">
+                  <span className="text-xs text-slate-500 font-semibold block">Part B: Viva</span>
+                  <span className="text-2xl font-bold text-indigo-700">
+                    {scorecard.vivaScore} <span className="text-xs font-normal text-slate-500">/ 20</span>
+                  </span>
+                </div>
+
+                <div className="text-center flex flex-col items-center justify-center">
+                  <span className="text-xs text-slate-500 font-semibold block">Result Status</span>
                   <span
-                    className={`text-3xl font-black ${
-                      scorecard.grade === 'S' || scorecard.grade === 'A'
-                        ? 'text-emerald-600'
-                        : scorecard.grade === 'F'
-                        ? 'text-rose-600'
-                        : 'text-blue-600'
+                    className={`inline-block px-3 py-0.5 rounded text-xs font-extrabold ${
+                      scorecard.passed
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-rose-100 text-rose-800'
                     }`}
                   >
-                    Grade {scorecard.grade}
-                  </span>
-                </div>
-
-                <div className="text-center sm:border-r border-slate-200 pb-3 sm:pb-0">
-                  <span className="text-xs text-slate-500 font-semibold block">Part A: Coding (80M)</span>
-                  <span className="text-2xl font-extrabold text-emerald-700">
-                    {scorecard.codingScore} / 80
-                  </span>
-                </div>
-
-                <div className="text-center">
-                  <span className="text-xs text-slate-500 font-semibold block">Part B: Viva (20M)</span>
-                  <span className="text-2xl font-extrabold text-amber-700">
-                    {scorecard.vivaScore} / 20
+                    {scorecard.passed ? 'PASSED' : 'NEEDS PRACTICE'}
                   </span>
                 </div>
               </div>
 
-              {/* Overall Feedback Banner */}
-              <div className="p-4 bg-blue-50/80 border border-blue-200 rounded-xl space-y-1">
-                <span className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-blue-600" /> Examiner Evaluation Summary:
-                </span>
-                <p className="text-xs text-blue-950 leading-relaxed">
-                  {scorecard.overallFeedback}
-                </p>
+              {/* Overall Feedback */}
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded text-xs text-blue-900 space-y-1">
+                <span className="font-bold block text-sm">Examiner AI Evaluation Summary:</span>
+                <p className="leading-relaxed">{scorecard.overallFeedback}</p>
               </div>
 
-              {/* Question-wise Coding Breakdown */}
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <FileCheck className="w-5 h-5 text-blue-600" /> Part A: Practical Coding Evaluation (80 Marks)
+              {/* Breakdown Per Question */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Question Breakdown
                 </h3>
-
-                <div className="space-y-3">
-                  {scorecard.questionEvaluations.map((qe) => (
-                    <div
-                      key={qe.questionNumber}
-                      className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2.5"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs sm:text-sm text-slate-900">
-                          Question {qe.questionNumber}: {qe.questionTitle}
-                        </span>
-                        <span className="text-xs font-extrabold text-blue-700 bg-blue-100 px-2.5 py-1 rounded-md">
-                          {qe.marksAwarded} / {qe.maxMarks} Marks
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-slate-700 leading-relaxed">
-                        <strong>Feedback:</strong> {qe.examinerRemarks}
-                      </p>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        {qe.strengths && qe.strengths.length > 0 && (
-                          <div className="p-2.5 bg-emerald-50 rounded-lg text-emerald-900 border border-emerald-200">
-                            <strong>Strengths:</strong>
-                            <ul className="list-disc pl-4 mt-1 space-y-0.5">
-                              {qe.strengths.map((s, i) => (
-                                <li key={i}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {qe.mistakes && qe.mistakes.length > 0 && (
-                          <div className="p-2.5 bg-amber-50 rounded-lg text-amber-900 border border-amber-200">
-                            <strong>Areas for Improvement:</strong>
-                            <ul className="list-disc pl-4 mt-1 space-y-0.5">
-                              {qe.mistakes.map((m, i) => (
-                                <li key={i}>{m}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
+                {scorecard.questionEvaluations.map((qb) => (
+                  <div key={qb.questionNumber} className="border border-slate-200 rounded p-4 space-y-2 bg-white">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-sm text-slate-900">
+                        Question {qb.questionNumber}: {qb.questionTitle}
+                      </span>
+                      <span className="font-bold text-xs text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        {qb.marksAwarded} / {qb.maxMarks} Marks
+                      </span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Viva Voce Breakdown */}
-              <div className="space-y-4 pt-4 border-t border-slate-200">
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-600" /> Part B: Viva Voce Evaluation (20 Marks)
-                </h3>
-
-                <div className="space-y-3">
-                  {scorecard.vivaEvaluations.map((ve, i) => (
-                    <div
-                      key={i}
-                      className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-slate-900">Q{i + 1}: {ve.question}</span>
-                        <span className="font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
-                          {ve.marksAwarded} / {ve.maxMarks} Marks
-                        </span>
-                      </div>
-                      <p className="text-slate-600">
-                        <strong>Your Answer:</strong> {ve.studentAnswer}
-                      </p>
-                      <p className="text-slate-800">
-                        <strong>Teacher Remarks:</strong> {ve.feedback}
-                      </p>
-                      {ve.idealAnswerSnippet && (
-                        <div className="p-2 bg-slate-100 rounded text-slate-700">
-                          <strong>Model Solution:</strong> {ve.idealAnswerSnippet}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                    <p className="text-xs text-slate-600">{qb.examinerRemarks}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* AI Code Assistant & Viva Tips Modal */}
-      {currentQ && (
-        <AiCodeAssistantModal
-          isOpen={isAiAssistantOpen}
-          onClose={() => setIsAiAssistantOpen(false)}
-          code={Object.values(currentFiles || {}).join('\n')}
-          language={currentQ.language || 'python'}
-          questionTitle={`Question ${currentQ.number}: ${currentQ.title}`}
-          questionDescription={currentQ.description}
-          onApplyFix={handleApplyAiFix}
-        />
+      {/* Submit Test Confirmation Dialog */}
+      {isSubmitConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-[#2B56C6] flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Confirm Exam Submission</h3>
+                <p className="text-xs text-slate-500">Summary of your current attempt</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded p-3 text-xs space-y-2 text-slate-700">
+              <div className="flex justify-between">
+                <span>Attempted Questions:</span>
+                <strong className="text-blue-700">{attemptedCount} / {test.questions.length}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span>Marked for Review:</span>
+                <strong className="text-purple-700">{reviewCount}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span>Unattempted Questions:</span>
+                <strong className="text-slate-600">{unattemptedCount}</strong>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Would you like to proceed to <strong>Viva Voce (Part B)</strong> before generating your final scorecard, or submit the test directly?
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-2 pt-2 border-t border-slate-200">
+              <button
+                onClick={() => setIsSubmitConfirmOpen(false)}
+                className="w-full sm:w-auto px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded border border-slate-300 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setIsSubmitConfirmOpen(false);
+                  setExamStep('viva');
+                }}
+                className="w-full sm:w-auto px-4 py-1.5 text-xs font-bold text-white bg-[#2563EB] hover:bg-[#1D4ED8] rounded shadow-xs cursor-pointer"
+              >
+                Proceed to Viva Voce
+              </button>
+              <button
+                onClick={handleFinalSubmit}
+                className="w-full sm:w-auto px-4 py-1.5 text-xs font-bold text-white bg-[#DC2626] hover:bg-[#B91C1C] rounded shadow-xs cursor-pointer"
+              >
+                Submit Exam Directly
+              </button>
+            </div>
+          </div>
+        </div>
       )}
+
+      {/* Save & Switch Question Confirmation Dialog */}
+      {isSaveSwitchModalOpen && pendingTargetIndex !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-[#1E3A8A] flex items-center justify-center shrink-0">
+                <Save className="w-5 h-5 text-blue-700" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Save Your Work?</h3>
+                <p className="text-xs text-slate-500">
+                  Moving from Question No.{currentQ.number} to Question No.{test.questions[pendingTargetIndex].number}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded p-3 text-xs space-y-1 text-slate-700">
+              <p className="font-semibold text-slate-800">
+                Do you want to save the code / work done on Question No.{currentQ.number}?
+              </p>
+              <p className="text-slate-500 text-[11px] pt-1">
+                If you choose <strong className="text-blue-700">Save & Proceed</strong>, your code will be preserved and will be available whenever you return to this question.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-2 pt-2 border-t border-slate-200">
+              <button
+                onClick={() => {
+                  setIsSaveSwitchModalOpen(false);
+                  setPendingTargetIndex(null);
+                }}
+                className="w-full sm:w-auto px-3.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded border border-slate-300 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDiscardAndSwitch}
+                className="w-full sm:w-auto px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded border border-slate-300 cursor-pointer"
+              >
+                Don't Save
+              </button>
+              <button
+                onClick={handleConfirmSaveAndSwitch}
+                className="w-full sm:w-auto px-4 py-1.5 text-xs font-bold text-white bg-[#2563EB] hover:bg-[#1D4ED8] rounded shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>Save & Proceed</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Save Notification Toast */}
+      {saveToast && (
+        <div className="fixed bottom-14 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 backdrop-blur-xs text-white px-4 py-2 rounded-full shadow-lg text-xs font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{saveToast}</span>
+        </div>
+      )}
+
+      {/* Gallery Modal */}
+      <NielitGalleryModal
+        isOpen={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+      />
+
+      {/* Instructions Modal */}
+      <NielitInstructionModal
+        isOpen={isInstructionOpen}
+        onClose={() => setIsInstructionOpen(false)}
+        paperCode={test.paperCode}
+        durationMinutes={test.durationMinutes}
+      />
+
+      {/* AI Code Assistant Modal */}
+      <AiCodeAssistantModal
+        isOpen={isAiAssistantOpen}
+        onClose={() => setIsAiAssistantOpen(false)}
+        questionTitle={currentQ.title}
+        questionDescription={currentQ.description}
+        code={Object.values(currentFiles)[0] || ''}
+        language={currentQ.language}
+        onApplyFix={(fixed) => {
+          const mainKey = Object.keys(currentFiles)[0] || 'solution';
+          handleFilesChange({ ...currentFiles, [mainKey]: fixed });
+        }}
+      />
     </div>
   );
 };

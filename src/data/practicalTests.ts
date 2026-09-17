@@ -263,23 +263,7 @@ export const initialPracticalTests: PracticalTestSet[] = [
         marks: 40,
         language: 'arduino',
         starterCode: {
-          'sketch.ino': '',
-          'diagram.json': `{
-  "version": 1,
-  "author": "Mr. Aditya Pathak",
-  "editor": "wokwi",
-  "parts": [
-    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
-    { "type": "wokwi-led", "id": "led1", "top": -80, "left": 120, "attrs": { "color": "red" } },
-    { "type": "wokwi-pushbutton", "id": "btn1", "top": 120, "left": -80, "attrs": { "color": "green" } }
-  ],
-  "connections": [
-    [ "uno:13", "led1:A", "green", [ "v0" ] ],
-    [ "uno:GND.1", "led1:C", "black", [ "v0" ] ],
-    [ "uno:2", "btn1:2.1", "blue", [ "v0" ] ],
-    [ "uno:GND.2", "btn1:1.1", "black", [ "v0" ] ]
-  ]
-}`
+          'sketch.ino': ''
         }
       },
       {
@@ -297,20 +281,7 @@ export const initialPracticalTests: PracticalTestSet[] = [
         marks: 40,
         language: 'arduino',
         starterCode: {
-          'sketch.ino': '',
-          'diagram.json': `{
-  "version": 1,
-  "author": "Mr. Aditya Pathak",
-  "editor": "wokwi",
-  "parts": [
-    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
-    { "type": "wokwi-led", "id": "led1", "top": -70, "left": 110, "attrs": { "color": "yellow" } }
-  ],
-  "connections": [
-    [ "uno:10", "led1:A", "yellow", [ "v0" ] ],
-    [ "uno:GND.1", "led1:C", "black", [ "v0" ] ]
-  ]
-}`
+          'sketch.ino': ''
         }
       },
       {
@@ -327,26 +298,7 @@ export const initialPracticalTests: PracticalTestSet[] = [
         marks: 40,
         language: 'arduino',
         starterCode: {
-          'sketch.ino': '',
-          'diagram.json': `{
-  "version": 1,
-  "author": "Mr. Aditya Pathak",
-  "editor": "wokwi",
-  "parts": [
-    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
-    { "type": "wokwi-led", "id": "ledRed", "top": -90, "left": 130, "attrs": { "color": "red" } },
-    { "type": "wokwi-led", "id": "ledYellow", "top": -50, "left": 130, "attrs": { "color": "yellow" } },
-    { "type": "wokwi-led", "id": "ledGreen", "top": -10, "left": 130, "attrs": { "color": "green" } }
-  ],
-  "connections": [
-    [ "uno:12", "ledRed:A", "red", [ "v0" ] ],
-    [ "uno:11", "ledYellow:A", "yellow", [ "v0" ] ],
-    [ "uno:10", "ledGreen:A", "green", [ "v0" ] ],
-    [ "uno:GND.1", "ledRed:C", "black", [ "v0" ] ],
-    [ "uno:GND.1", "ledYellow:C", "black", [ "v0" ] ],
-    [ "uno:GND.1", "ledGreen:C", "black", [ "v0" ] ]
-  ]
-}`
+          'sketch.ino': ''
         }
       }
     ],
@@ -395,7 +347,7 @@ export const initialPracticalTests: PracticalTestSet[] = [
     paperCode: 'PR1 B1',
     title: 'IT Tools & Network Basics Practical Lab Exam Set 1',
     hindiTitle: 'आईटी टूल्स एवं नेटवर्क बेसिक्स प्रैक्टिकल लैब परीक्षा सेट 1',
-    description: 'Official model practical exam for M1-R5.1 covering LibreOffice Writer document design, Calc spreadsheet formulas, and Linux terminal scripts.',
+    description: 'Official model practical exam for M1-R5.1 covering LibreOffice Writer word processing, Calc spreadsheet formulas, and Impress multimedia presentations.',
     durationMinutes: 50,
     totalMarks: 100,
     requiredQuestionsCount: 2,
@@ -404,7 +356,7 @@ export const initialPracticalTests: PracticalTestSet[] = [
     instructions: [
       'The practical examination carries 100 marks (80 Marks for 2 Coding Questions + 20 Marks for Viva Voce).',
       'Solve and document ANY TWO practical tasks (40 marks each).',
-      'Type your solution or formula script in the editor.',
+      'Use the LibreOffice suite (Writer, Calc, or Impress) to build and verify your solution.',
       'Proceed to Viva Voce once your answers are finalized.'
     ],
     isFeatured: true,
@@ -412,49 +364,54 @@ export const initialPracticalTests: PracticalTestSet[] = [
       {
         id: 'q-it-1',
         number: 1,
-        title: 'Design a Salary Slip Generator in LibreOffice Calc with formulas for HRA (20%), DA (15%), PF (12%), Gross Salary, and Net Payable Salary.',
-        description: `Write a calculation script / spreadsheet structure that:
-1. Takes Employee Name, Basic Salary as input.
-2. Computes HRA = Basic * 20%
-3. Computes DA = Basic * 15%
-4. Computes Gross Salary = Basic + HRA + DA
-5. Computes PF Deduction = Basic * 12%
-6. Computes Net Salary = Gross Salary - PF Deduction
-7. Formats the output with currency format and displays the breakdown.`,
+        title: 'Explain step-by-step procedure and design an official letter to perform Mail Merge in LibreOffice Writer to dispatch interview call letters to candidates.',
+        description: `Design an official document and explain the Mail Merge procedure in LibreOffice Writer:
+1. Prepare the Master Document (Interview Call Letter template) with proper heading, formatting, date, and salutation.
+2. Prepare or link a Data Source (Spreadsheet/Table with Candidate Name, Address, Interview Date, Time).
+3. Insert Mail Merge Fields (<Candidate_Name>, <Address>, <Date>, <Time>) into the document.
+4. Preview merged letters and generate individualized print output documents.`,
         marks: 40,
         language: 'general',
         starterCode: {
+          'document.html': '',
           'solution.txt': ''
         }
       },
       {
         id: 'q-it-2',
         number: 2,
-        title: 'Write Linux Terminal bash commands to create a student directory structure, set permissions (chmod), and search files using grep.',
-        description: `Write shell commands to accomplish the following system tasks:
-1. Create a directory named "NIELIT_2026" with subdirectories "M1", "M2", "M3", "M4".
-2. Create a file "notes.txt" inside "M1" containing the text "LibreOffice Writer & Calc".
-3. Change permission of "notes.txt" so only the owner can read, write, and execute (chmod 700).
-4. Use grep to find all lines containing the word "Calc" inside "notes.txt".`,
+        title: 'Design a Salary Slip Generator in LibreOffice Calc with formulas for HRA (20%), DA (15%), PF (12%), Gross Salary, and Net Payable Salary.',
+        description: `Write a calculation spreadsheet structure in LibreOffice Calc that:
+1. Creates headers: Emp Name, Basic Salary, HRA, DA, Gross Salary, PF, Net Salary.
+2. Enters employee records and computes:
+   - HRA = Basic * 20%
+   - DA = Basic * 15%
+   - Gross Salary = Basic + HRA + DA
+   - PF Deduction = Basic * 12%
+   - Net Salary = Gross Salary - PF Deduction
+3. Calculates total payroll sums using the =SUM() formula.`,
         marks: 40,
         language: 'general',
         starterCode: {
-          'solution.sh': ''
+          'sheet_data.json': '',
+          'solution.txt': ''
         }
       },
       {
         id: 'q-it-3',
         number: 3,
-        title: 'Explain step-by-step procedure to perform Mail Merge in LibreOffice Writer to dispatch interview call letters to 50 candidates.',
-        description: `Document the exact step-by-step procedure in LibreOffice Writer to:
-1. Prepare the Master Document (Interview Call Letter template).
-2. Prepare or link a Data Source (Spreadsheet list with Name, Address, Date).
-3. Insert Mail Merge Fields into document.
-4. Preview merged letters and generate final personalized print documents.`,
+        title: 'Create a 4-slide multimedia presentation in LibreOffice Impress on "Cyber Security Best Practices" with custom layouts, bullet points, and slide transitions.',
+        description: `Design a presentation in LibreOffice Impress that:
+1. Slide 1 (Title Slide): Title "Cyber Security Best Practices" with candidate name and date.
+2. Slide 2: Types of Cyber Threats (Phishing, Malware, Ransomware, Social Engineering).
+3. Slide 3: Essential Safety Tips (Strong Passwords, 2-Factor Authentication, Regular Backups).
+4. Slide 4: Conclusion summary slide with safety checklist.
+5. Apply appropriate slide theme, bullet animations, and slide transition effects.`,
         marks: 40,
         language: 'general',
         starterCode: {
-          'mail_merge_steps.txt': ''
+          'presentation.json': '',
+          'solution.txt': ''
         }
       }
     ],
