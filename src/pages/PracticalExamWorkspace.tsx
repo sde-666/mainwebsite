@@ -24,7 +24,9 @@ import {
   PanelRightClose,
   PanelRightOpen,
   Save,
-  Check
+  Check,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { getPracticalTestById, evaluatePracticalExam, submitPracticalExam } from '../services/practicalService';
 import { PracticalTestSet, PracticalScorecard } from '../types/practical';
@@ -84,6 +86,7 @@ export const PracticalExamWorkspace: React.FC = () => {
   const [editorTheme, setEditorTheme] = useState<'light' | 'dark'>('light');
   const [fontScale, setFontScale] = useState(100); // 100% default
   const [runTrigger, setRunTrigger] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // AI Evaluation State
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -125,6 +128,59 @@ export const PracticalExamWorkspace: React.FC = () => {
       document.title = `${test.paperCode} Practical Examination | NIELIT O Level`;
     }
   }, [test]);
+
+  // Request browser Fullscreen automatically when practical exam starts
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    const tryEnterFullscreen = async () => {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        try {
+          await document.documentElement.requestFullscreen();
+          setIsFullscreen(true);
+        } catch (err) {
+          // Browser may require user gesture; fallback to first click
+        }
+      }
+    };
+
+    // Attempt immediately
+    tryEnterFullscreen();
+
+    // Fallback: trigger fullscreen on the first student click/interaction if blocked initially by browser security policy
+    const onFirstUserGesture = () => {
+      tryEnterFullscreen();
+      window.removeEventListener('click', onFirstUserGesture);
+      window.removeEventListener('keydown', onFirstUserGesture);
+    };
+
+    window.addEventListener('click', onFirstUserGesture, { once: true });
+    window.addEventListener('keydown', onFirstUserGesture, { once: true });
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      window.removeEventListener('click', onFirstUserGesture);
+      window.removeEventListener('keydown', onFirstUserGesture);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } else if (document.exitFullscreen) {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (e) {
+      console.warn('Fullscreen toggle:', e);
+    }
+  };
 
   // Timer Countdown Effect
   useEffect(() => {
@@ -382,49 +438,65 @@ export const PracticalExamWorkspace: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans select-none">
+    <div className="h-screen w-screen max-h-screen overflow-hidden bg-white text-slate-800 flex flex-col font-sans select-none fixed inset-0">
       {/* 1. Official NIELIT Practical Top Header Bar matching all 8 screenshots */}
-      <header className="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between select-none shrink-0">
+      <header className="bg-white border-b border-slate-200 px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between select-none shrink-0 h-13 sm:h-14">
         {/* Left: Emblem + रा.इ.सू.प्रौ.सं / NIELIT + PR1 B4 */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <img
               src="/nielit-emblem.svg"
               alt="NIELIT"
-              className="h-9 w-9 object-contain"
+              className="h-8 w-8 sm:h-9 sm:w-9 object-contain"
             />
             <div className="flex flex-col leading-none">
-              <span className="text-[11px] font-bold text-slate-800 tracking-tight">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-800 tracking-tight">
                 रा.इ.सू.प्रौ.सं
               </span>
-              <span className="text-xs font-black text-slate-900 tracking-wider">
+              <span className="text-[11px] sm:text-xs font-black text-slate-900 tracking-wider">
                 NIELIT
               </span>
             </div>
           </div>
 
-          <div className="h-6 w-[1px] bg-slate-200 mx-1" />
+          <div className="h-5 sm:h-6 w-[1px] bg-slate-200 mx-0.5 sm:mx-1" />
 
           {/* Paper / Batch Code (e.g. PR1 B4, PR2 B3, PR3 B2, PR4 B1) */}
-          <span className="text-lg font-extrabold text-slate-900 tracking-tight">
+          <span className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
             {test.paperCode || 'PR1 B4'}
           </span>
         </div>
 
-        {/* Right: Clock + Instruction + Gallery + Candidate Profile */}
-        <div className="flex items-center gap-4 sm:gap-6">
+        {/* Right: Clock + Fullscreen Toggle + Instruction + Gallery + Candidate Profile */}
+        <div className="flex items-center gap-3 sm:gap-5">
           {/* Countdown Timer with Clock Icon matching screenshot: '43 min : 42 sec' */}
           {examStep !== 'scorecard' && (
-            <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-xs sm:text-sm">
-              <Clock className="w-4 h-4 text-slate-600" />
-              <span>{formatTimer(secondsRemaining)}</span>
+            <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-xs sm:text-sm bg-slate-50 px-2 py-1 rounded border border-slate-200">
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 shrink-0" />
+              <span className="tabular-nums font-mono">{formatTimer(secondsRemaining)}</span>
             </div>
           )}
+
+          {/* Fullscreen Toggle Button */}
+          <button
+            onClick={toggleFullscreen}
+            className="flex items-center gap-1 text-slate-700 hover:text-blue-600 transition-colors cursor-pointer text-xs font-medium bg-slate-100 hover:bg-slate-200 px-2 sm:px-2.5 py-1 rounded border border-slate-300"
+            title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
+          >
+            {isFullscreen ? (
+              <Minimize2 className="w-3.5 h-3.5 text-blue-700" />
+            ) : (
+              <Maximize2 className="w-3.5 h-3.5 text-blue-700" />
+            )}
+            <span className="hidden md:inline text-[11px] font-semibold text-slate-800">
+              {isFullscreen ? 'Exit Fullscreen' : 'Full Screen'}
+            </span>
+          </button>
 
           {/* Instruction Button */}
           <button
             onClick={() => setIsInstructionOpen(true)}
-            className="flex flex-col sm:flex-row items-center gap-1 text-slate-700 hover:text-blue-600 transition-colors cursor-pointer text-xs font-medium"
+            className="flex items-center gap-1 text-slate-700 hover:text-blue-600 transition-colors cursor-pointer text-xs font-medium"
           >
             <Info className="w-4 h-4 text-slate-600" />
             <span className="text-[11px] sm:text-xs">Instruction</span>
@@ -439,7 +511,7 @@ export const PracticalExamWorkspace: React.FC = () => {
             test.module?.toLowerCase().includes('web')) && (
             <button
               onClick={() => setIsGalleryOpen(true)}
-              className="flex flex-col sm:flex-row items-center gap-1 text-slate-700 hover:text-blue-600 transition-colors cursor-pointer text-xs font-medium"
+              className="flex items-center gap-1 text-slate-700 hover:text-blue-600 transition-colors cursor-pointer text-xs font-medium"
             >
               <ImageIcon className="w-4 h-4 text-slate-600" />
               <span className="text-[11px] sm:text-xs">Gallery</span>
@@ -448,14 +520,14 @@ export const PracticalExamWorkspace: React.FC = () => {
 
           {/* Candidate Profile Widget matching Screenshot */}
           <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 overflow-hidden">
-              <User className="w-5 h-5" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 overflow-hidden shrink-0">
+              <User className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="flex flex-col leading-tight text-left">
-              <span className="text-xs font-bold text-slate-900 truncate max-w-[120px]">
+              <span className="text-xs font-bold text-slate-900 truncate max-w-[100px] sm:max-w-[130px]">
                 {studentName}
               </span>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[9px] sm:text-[10px] text-slate-400">
                 null
               </span>
             </div>
@@ -465,7 +537,7 @@ export const PracticalExamWorkspace: React.FC = () => {
 
       {/* Main Workspace Body */}
       {examStep === 'coding' && (
-        <div className="flex-1 flex flex-col overflow-hidden bg-slate-100">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden bg-slate-100">
           {/* 2. Subheader Bar matching Screenshots 2, 3, 4, 6 */}
           <div className="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between select-none shrink-0 gap-2">
             {/* Left: Question No.1 + Refresh (↺) + Zoom (A+, A-) */}
@@ -576,7 +648,7 @@ export const PracticalExamWorkspace: React.FC = () => {
           </div>
 
           {/* 3. Middle Area: Left Sliding Question Window ↔ Right Editor Pane ↔ Slide-out Palette */}
-          <div className="flex-1 flex overflow-hidden relative">
+          <div className="flex-1 min-h-0 flex overflow-hidden relative">
             {/* Left Sliding Question Window */}
             <div className="relative flex items-stretch z-20 select-none">
               {/* Slide-out Question Panel */}
@@ -646,7 +718,7 @@ export const PracticalExamWorkspace: React.FC = () => {
             </div>
 
             {/* Middle Working Area */}
-            <div className="flex-1 flex flex-col overflow-hidden bg-slate-100 p-2">
+            <div className="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden bg-slate-100 p-2">
               {renderEditor()}
             </div>
 
@@ -663,13 +735,13 @@ export const PracticalExamWorkspace: React.FC = () => {
           </div>
 
           {/* 4. Bottom Action Footer Bar matching Screenshot */}
-          <div className="bg-white border-t border-slate-300 px-4 py-2.5 flex items-center justify-between select-none shrink-0 gap-2">
+          <div className="bg-white border-t border-slate-300 px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between select-none shrink-0 gap-2 z-30">
             {/* Left: Previous Question / Next Question Buttons + Save Button */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => requestQuestionChange(currentQIndex - 1)}
                 disabled={currentQIndex === 0}
-                className="bg-[#1E3A8A] hover:bg-[#172554] disabled:opacity-40 text-white font-semibold text-xs px-5 py-2 rounded shadow-xs transition-colors cursor-pointer"
+                className="bg-[#1E3A8A] hover:bg-[#172554] disabled:opacity-40 text-white font-semibold text-xs px-3.5 sm:px-5 py-1.5 sm:py-2 rounded shadow-xs transition-colors cursor-pointer"
               >
                 Previous Question
               </button>
@@ -677,24 +749,24 @@ export const PracticalExamWorkspace: React.FC = () => {
               <button
                 onClick={() => requestQuestionChange(currentQIndex + 1)}
                 disabled={currentQIndex === test.questions.length - 1}
-                className="bg-[#1E3A8A] hover:bg-[#172554] disabled:opacity-40 text-white font-semibold text-xs px-5 py-2 rounded shadow-xs transition-colors cursor-pointer"
+                className="bg-[#1E3A8A] hover:bg-[#172554] disabled:opacity-40 text-white font-semibold text-xs px-3.5 sm:px-5 py-1.5 sm:py-2 rounded shadow-xs transition-colors cursor-pointer"
               >
                 Next Question
               </button>
 
               <button
                 onClick={handleManualSave}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs px-4 py-2 rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer ml-1"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs px-3 sm:px-4 py-1.5 sm:py-2 rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer ml-1"
                 title="Save work for this question"
               >
                 <Save className="w-3.5 h-3.5" />
-                <span>Save Work</span>
+                <span className="hidden sm:inline">Save Work</span>
               </button>
             </div>
 
             {/* Right: Review Checkbox + Submit Test Button */}
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <label className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={Boolean(reviewedQuestions[currentQ.id])}
@@ -706,7 +778,7 @@ export const PracticalExamWorkspace: React.FC = () => {
 
               <button
                 onClick={() => setIsSubmitConfirmOpen(true)}
-                className="bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold text-xs px-6 py-2 rounded shadow-xs transition-colors cursor-pointer"
+                className="bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold text-xs px-4 sm:px-6 py-1.5 sm:py-2 rounded shadow-xs transition-colors cursor-pointer"
               >
                 Submit Test
               </button>

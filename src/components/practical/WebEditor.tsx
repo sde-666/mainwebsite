@@ -158,7 +158,7 @@ export const WebEditor: React.FC<WebEditorProps> = ({
       )}
 
       {/* Split Grid: Editor (Left) ↔ Live Preview (Right) matching Screenshot 2 & 3 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 flex-1 overflow-hidden min-h-[400px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 flex-1 min-h-0 overflow-hidden">
         {/* Left Side: Code Editor with Line Numbers */}
         <div className={`flex flex-col border-r border-slate-300 overflow-hidden ${isDark ? 'bg-[#1E1E1E] text-slate-100' : 'bg-white text-slate-900'}`}>
           <div className="flex-1 flex overflow-hidden">
