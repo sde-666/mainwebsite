@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import {
   Clock,
   RotateCcw,
@@ -209,6 +210,16 @@ export const PracticalExamWorkspace: React.FC = () => {
   if (loading || !test) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-800">
+        <SEO
+          title="NIELIT O Level Practical Exam Practice | Skilldotpy"
+          description="Practice the real NIELIT O Level CBT practical exam interface \u2014 timed, module-wise practical tests with instant scoring, built to match the official exam environment."
+          keywords={[
+            'NIELIT O Level practical exam practice',
+            'O Level practical mock test',
+            'NIELIT CBT practice test',
+            'O Level practical exam simulator',
+          ]}
+        />
         <Loader2 className="w-10 h-10 animate-spin text-[#2B56C6] mb-4" />
         <p className="text-sm text-slate-600 font-semibold">Initializing NIELIT Practical Lab Workspace...</p>
       </div>
@@ -439,6 +450,16 @@ export const PracticalExamWorkspace: React.FC = () => {
 
   return (
     <div className="h-screen w-screen max-h-screen overflow-hidden bg-white text-slate-800 flex flex-col font-sans select-none fixed inset-0">
+      <SEO
+        title="NIELIT O Level Practical Exam Practice | Skilldotpy"
+        description="Practice the real NIELIT O Level CBT practical exam interface \u2014 timed, module-wise practical tests with instant scoring, built to match the official exam environment."
+        keywords={[
+          'NIELIT O Level practical exam practice',
+          'O Level practical mock test',
+          'NIELIT CBT practice test',
+          'O Level practical exam simulator',
+        ]}
+      />
       {/* 1. Official NIELIT Practical Top Header Bar matching all 8 screenshots */}
       <header className="bg-white border-b border-slate-200 px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between select-none shrink-0 h-13 sm:h-14">
         {/* Left: Emblem + रा.इ.सू.प्रौ.सं / NIELIT + PR1 B4 */}

@@ -1,54 +1,62 @@
-import { lazy, Suspense } from 'react';
+// SSR / prerender-only entry point.
+//
+// This file exists ONLY because scripts/prerender.mjs renders each page
+// synchronously (React.renderToString) to bake real HTML + <title>/meta
+// tags into static files for search engines. React.lazy()-based code
+// splitting (used in the real client app, see App.tsx) relies on Suspense
+// throwing a pending promise that resolves *after* render returns — which
+// a synchronous render can never wait for. Using lazy-loaded pages here
+// would make every prerendered page snapshot as a blank/loading fallback
+// instead of real content, which would hurt SEO instead of helping it.
+//
+// So: App.tsx (client, browser) = lazy-loaded pages, small initial bundle.
+//     AppSSR.tsx (this file, build-time only) = same routes, eagerly
+//     imported, used exclusively by src/_prerender-entry.tsx.
+//
+// IMPORTANT: if you add/remove/rename a route in App.tsx, make the same
+// change here. The two route tables must stay in sync.
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ScrollToTop } from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
 import { AiAssistantProvider } from './context/AiAssistantContext';
 
-// Pages — lazy-loaded so a visitor only downloads the JS for the page
-// they're actually viewing, instead of all 34 pages up front. This is
-// purely a client-bundle change: prerendered SEO snapshots are generated
-// from AppSSR.tsx (eager imports), completely unaffected by this file.
-// IMPORTANT: keep this route table in sync with AppSSR.tsx.
-const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
-const OLevelHub = lazy(() => import('./pages/OLevelHub').then(m => ({ default: m.OLevelHub })));
-const CCCHub = lazy(() => import('./pages/CCCHub').then(m => ({ default: m.CCCHub })));
-const MockTest = lazy(() => import('./pages/MockTest').then(m => ({ default: m.MockTest })));
-const McqLanding = lazy(() => import('./pages/McqLanding').then(m => ({ default: m.McqLanding })));
-const ChapterWiseMcqHub = lazy(() => import('./pages/ChapterWiseMcqHub').then(m => ({ default: m.ChapterWiseMcqHub })));
-const PaperChaptersList = lazy(() => import('./pages/PaperChaptersList').then(m => ({ default: m.PaperChaptersList })));
-const ChapterMcqPractice = lazy(() => import('./pages/ChapterMcqPractice').then(m => ({ default: m.ChapterMcqPractice })));
-const ChapterWiseNotesHub = lazy(() => import('./pages/ChapterWiseNotesHub').then(m => ({ default: m.ChapterWiseNotesHub })));
-const PaperNotesChaptersList = lazy(() => import('./pages/PaperNotesChaptersList').then(m => ({ default: m.PaperNotesChaptersList })));
-const SyllabusPage = lazy(() => import('./pages/SyllabusPage').then(m => ({ default: m.SyllabusPage })));
-const PracticalHub = lazy(() => import('./pages/PracticalHub').then(m => ({ default: m.PracticalHub })));
-const PracticalExamWorkspace = lazy(() => import('./pages/PracticalExamWorkspace').then(m => ({ default: m.PracticalExamWorkspace })));
-const Resources = lazy(() => import('./pages/Resources').then(m => ({ default: m.Resources })));
-const ResourceCategory = lazy(() => import('./pages/ResourceCategory').then(m => ({ default: m.ResourceCategory })));
-const NotesReader = lazy(() => import('./pages/NotesReader').then(m => ({ default: m.NotesReader })));
-const OLevelResultCalculator = lazy(() => import('./pages/OLevelResultCalculator').then(m => ({ default: m.OLevelResultCalculator })));
-const Courses = lazy(() => import('./pages/Courses').then(m => ({ default: m.Courses })));
-const CourseDetail = lazy(() => import('./pages/CourseDetail').then(m => ({ default: m.CourseDetail })));
-const MyCourses = lazy(() => import('./pages/MyCourses').then(m => ({ default: m.MyCourses })));
-const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
-const AppPage = lazy(() => import('./pages/AppPage').then(m => ({ default: m.AppPage })));
-const AppInstall = lazy(() => import('./pages/AppInstall').then(m => ({ default: m.AppInstall })));
-const Tutorials = lazy(() => import('./pages/Tutorials').then(m => ({ default: m.Tutorials })));
-const TutorialDetail = lazy(() => import('./pages/TutorialDetail').then(m => ({ default: m.TutorialDetail })));
-const YouTubePage = lazy(() => import('./pages/YouTube').then(m => ({ default: m.YouTubePage })));
-const FAQ = lazy(() => import('./pages/FAQ').then(m => ({ default: m.FAQ })));
-const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
-const Founder = lazy(() => import('./pages/Founder').then(m => ({ default: m.Founder })));
-const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
-const PrivacyPolicy = lazy(() => import('./pages/Legal').then(m => ({ default: m.PrivacyPolicy })));
-const Terms = lazy(() => import('./pages/Legal').then(m => ({ default: m.Terms })));
-const Disclaimer = lazy(() => import('./pages/Legal').then(m => ({ default: m.Disclaimer })));
-const RefundPolicy = lazy(() => import('./pages/Legal').then(m => ({ default: m.RefundPolicy })));
+// Pages
+import { Home } from './pages/Home';
+import { OLevelHub } from './pages/OLevelHub';
+import { CCCHub } from './pages/CCCHub';
+import { MockTest } from './pages/MockTest';
+import { McqLanding } from './pages/McqLanding';
+import { ChapterWiseMcqHub } from './pages/ChapterWiseMcqHub';
+import { PaperChaptersList } from './pages/PaperChaptersList';
+import { ChapterMcqPractice } from './pages/ChapterMcqPractice';
+import { ChapterWiseNotesHub } from './pages/ChapterWiseNotesHub';
+import { PaperNotesChaptersList } from './pages/PaperNotesChaptersList';
+import { SyllabusPage } from './pages/SyllabusPage';
+import { PracticalHub } from './pages/PracticalHub';
+import { PracticalExamWorkspace } from './pages/PracticalExamWorkspace';
+import { Resources } from './pages/Resources';
+import { ResourceCategory } from './pages/ResourceCategory';
+import { NotesReader } from './pages/NotesReader';
+import { OLevelResultCalculator } from './pages/OLevelResultCalculator';
+import { Courses } from './pages/Courses';
+import { CourseDetail } from './pages/CourseDetail';
+import { MyCourses } from './pages/MyCourses';
+import { Login } from './pages/Login';
+import { AppPage } from './pages/AppPage';
+import { AppInstall } from './pages/AppInstall';
+import { Tutorials } from './pages/Tutorials';
+import { TutorialDetail } from './pages/TutorialDetail';
+import { YouTubePage } from './pages/YouTube';
+import { FAQ } from './pages/FAQ';
+import { About } from './pages/About';
+import { Founder } from './pages/Founder';
+import { Contact } from './pages/Contact';
+import { PrivacyPolicy, Terms, Disclaimer, RefundPolicy } from './pages/Legal';
 
-// Admin Pages — never crawled/indexed (blocked in robots.txt, skipped by
-// prerender), so no SSR-safety concern; also lazy-loaded.
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
-const AdminLogin = lazy(() => import('./pages/admin/AdminLogin').then(m => ({ default: m.AdminLogin })));
+// Admin Pages
+import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { AdminLogin } from './pages/admin/AdminLogin';
 
 export default function App() {
   return (
@@ -56,7 +64,6 @@ export default function App() {
       <AiAssistantProvider>
         <BrowserRouter>
           <ScrollToTop />
-          <Suspense fallback={null}>
             <Routes>
               {/* Standalone Fullscreen Practical Exam Environment */}
               <Route path="/practical-practice/:testId" element={<PracticalExamWorkspace />} />
@@ -139,7 +146,6 @@ export default function App() {
                 } />
               </Route>
             </Routes>
-          </Suspense>
         </BrowserRouter>
       </AiAssistantProvider>
     </AuthProvider>

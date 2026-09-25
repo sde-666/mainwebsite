@@ -120,18 +120,26 @@ async function safeMain() {
 }
 
 // The app renders page-specific <title>/<meta>/<link> tags (via its own
-// Helmet-based SEO component) as literal elements at the START of the React
-// tree, right before the real Layout wrapper div. renderToStaticMarkup has
+// SEO component, see src/components/SEO.tsx) as literal elements at the
+// START of the React tree, before any real page markup. renderToString has
 // no way to "teleport" these into <head> like a browser does, so they land
 // inline inside <div id="root">, which is invalid there and ignored by
 // crawlers. This splits that leading chunk off, and applyPageHeadTags()
 // below copies the page-specific values into the REAL <head> of the output
 // file, so each route gets its own correct <title>/description/OG tags
 // instead of the generic homepage ones.
-const LAYOUT_MARKER = '<div class="flex min-h-screen';
-
+//
+// SEO.tsx's prerender-mode output is only <title>/<meta>/<link>/<script>
+// tags (no wrapping element), so the split point is simply "wherever the
+// first real HTML element tag begins" — the first '<div', regardless of
+// which component renders it. Do NOT match a specific component's class
+// name here (e.g. the shared Layout wrapper's div): several real routes
+// (the standalone practical-exam workspace, admin pages) don't render
+// Layout at all, and a Layout-specific marker silently finds nothing for
+// those routes, silently falling back to "no head content" and leaving
+// them with the generic homepage title/description in the static snapshot.
 function splitHeadAndBody(rawHtml) {
-  const idx = rawHtml.indexOf(LAYOUT_MARKER);
+  const idx = rawHtml.indexOf('<div');
   if (idx <= 0) {
     return { headHtml: '', bodyHtml: rawHtml };
   }
