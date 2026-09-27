@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Download, ExternalLink, FileText, Share2, Printer } from 'lucide-react';
 import { DynamicResource } from '../types/database';
-import { resourceService } from '../services/resourceService';
+import { resourceService, formatDirectPdfUrl, formatDirectDownloadUrl } from '../services/resourceService';
 
 interface PdfViewerModalProps {
   resource: DynamicResource | null;
@@ -11,13 +11,17 @@ interface PdfViewerModalProps {
 export function PdfViewerModal({ resource, onClose }: PdfViewerModalProps) {
   if (!resource) return null;
 
-  const directUrl = resource.directPdfUrl || resource.downloadUrl;
-  const isWebUrl = directUrl && (directUrl.startsWith('http://') || directUrl.startsWith('https://'));
+  const rawUrl = resource.directPdfUrl || resource.downloadUrl || '';
+  const isWebUrl = Boolean(
+    rawUrl && (rawUrl.startsWith('http://') || rawUrl.startsWith('https://') || rawUrl.startsWith('/'))
+  );
+  const embedUrl = isWebUrl ? formatDirectPdfUrl(rawUrl) : '';
+  const downloadUrl = isWebUrl ? formatDirectDownloadUrl(rawUrl) : rawUrl;
 
   const handleDownload = () => {
     resourceService.recordDownload(resource.id);
-    if (isWebUrl) {
-      window.open(directUrl, '_blank', 'noopener,noreferrer');
+    if (downloadUrl) {
+      window.open(downloadUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -72,9 +76,9 @@ export function PdfViewerModal({ resource, onClose }: PdfViewerModalProps) {
               <Share2 className="w-4 h-4" />
             </button>
 
-            {isWebUrl && (
+            {downloadUrl && (
               <a
-                href={directUrl}
+                href={downloadUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => resourceService.recordDownload(resource.id)}
@@ -104,9 +108,9 @@ export function PdfViewerModal({ resource, onClose }: PdfViewerModalProps) {
 
         {/* Modal Main Content / PDF Frame */}
         <div className="flex-1 bg-slate-950 relative overflow-hidden flex items-center justify-center">
-          {isWebUrl ? (
+          {embedUrl ? (
             <iframe
-              src={directUrl}
+              src={embedUrl}
               title={resource.title}
               className="w-full h-full border-0 bg-white"
               allow="autoplay"

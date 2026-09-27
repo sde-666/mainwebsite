@@ -28,10 +28,13 @@ import {
   Edit3,
   GraduationCap,
   CheckSquare,
-  Square
+  Square,
+  Loader2,
+  FileCheck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { resourceService, formatDirectPdfUrl } from '../../services/resourceService';
+import { uploadNotePdf } from '../../services/storageService';
 import { quizService } from '../../services/quizService';
 import { DynamicResource, DynamicQuizTest, QuizQuestionItem, ResourceCategoryType } from '../../types/database';
 import { resourceCategories } from '../../data/resources';
@@ -79,6 +82,12 @@ export function AdminDashboard() {
   const [resourceSearch, setResourceSearch] = useState('');
   const [editingResource, setEditingResource] = useState<Partial<DynamicResource> | null>(null);
   const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
+  const [isUploadingFreePdf, setIsUploadingFreePdf] = useState(false);
+  const [freePdfPercent, setFreePdfPercent] = useState<number | null>(null);
+  const [isUploadingPreviewPdf, setIsUploadingPreviewPdf] = useState(false);
+  const [previewPdfPercent, setPreviewPdfPercent] = useState<number | null>(null);
+  const [isUploadingPaidPdf, setIsUploadingPaidPdf] = useState(false);
+  const [paidPdfPercent, setPaidPdfPercent] = useState<number | null>(null);
 
   // Quizzes State
   const [quizzes, setQuizzes] = useState<DynamicQuizTest[]>([]);
@@ -2216,14 +2225,105 @@ export function AdminDashboard() {
 
               {/* PDF URL Upload Options */}
               {editingResource.isPaid ? (
-                /* PAID NOTES: TWO OPTIONS */
+                /* PAID NOTES: TWO OPTIONS WITH FIREBASE STORAGE UPLOAD */
                 <div className="space-y-4 p-4 bg-slate-50/60 rounded-2xl border border-slate-200">
                   {/* OPTION 1: PREVIEW PDF */}
-                  <div>
-                    <label className="block font-bold text-amber-700 text-xs mb-1 flex items-center justify-between">
-                      <span>Option 1: Preview / Sample Notes PDF URL (Demo)</span>
+                  <div className="p-3 bg-white rounded-xl border border-amber-200/80 space-y-2">
+                    <label className="block font-bold text-amber-700 text-xs flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Option 1: Preview / Sample Notes PDF (Demo)</span>
+                      </span>
                       <span className="text-[10px] text-amber-700/80 font-normal">Opens in New Window for Students</span>
                     </label>
+
+                    {/* Storage Upload Button for Preview */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-amber-50/50 rounded-lg border border-dashed border-amber-300">
+                      <div>
+                        <p className="text-[11px] font-bold text-slate-800 flex items-center gap-1">
+                          <Upload className="w-3 h-3 text-amber-600" />
+                          <span>Upload Sample / Demo PDF</span>
+                        </p>
+                        <p className="text-[10px] text-slate-500">First few sample pages (stored directly on website server or paste Google Drive link below).</p>
+                      </div>
+
+                      <label className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                        isUploadingPreviewPdf 
+                          ? 'bg-amber-200 text-amber-800 cursor-not-allowed' 
+                          : 'bg-amber-600 hover:bg-amber-700 text-white shadow-xs'
+                      }`}>
+                        {isUploadingPreviewPdf ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            <span>Uploading {previewPdfPercent || 0}%</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-3 h-3" />
+                            <span>Choose Preview PDF</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          disabled={isUploadingPreviewPdf}
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            try {
+                              setIsUploadingPreviewPdf(true);
+                              setPreviewPdfPercent(0);
+                              const res = await uploadNotePdf(file, (percent) => setPreviewPdfPercent(percent));
+                              setEditingResource({
+                                ...editingResource,
+                                previewPdfUrl: res.downloadUrl
+                              });
+                              showNotification('success', `Preview sample "${file.name}" uploaded successfully!`);
+                            } catch (err: any) {
+                              showNotification('error', err.message || 'Failed to upload preview PDF');
+                            } finally {
+                              setIsUploadingPreviewPdf(false);
+                              setPreviewPdfPercent(null);
+                              e.target.value = '';
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Progress Bar for Preview PDF */}
+                    {isUploadingPreviewPdf && (
+                      <div className="mt-2 space-y-1">
+                        <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-amber-600 h-full transition-all duration-200" 
+                            style={{ width: `${previewPdfPercent || 0}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                          <span>Uploading sample preview...</span>
+                          <span>{previewPdfPercent || 0}%</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {editingResource.previewPdfUrl && (
+                      <div className="flex items-center justify-between text-[11px] text-emerald-700 font-semibold px-1">
+                        <span className="flex items-center gap-1 truncate max-w-md">
+                          <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="truncate">Sample Attached: {editingResource.previewPdfUrl}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setEditingResource({ ...editingResource, previewPdfUrl: '' })}
+                          className="text-red-500 hover:text-red-700 text-[10px] font-bold underline shrink-0 ml-2"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+
                     <input
                       type="text"
                       value={editingResource.previewPdfUrl || ''}
@@ -2231,19 +2331,232 @@ export function AdminDashboard() {
                         ...editingResource, 
                         previewPdfUrl: e.target.value 
                       })}
-                      placeholder="https://drive.google.com/file/d/... or sample-preview.pdf"
+                      placeholder="https://firebasestorage.googleapis.com/... or Google Drive preview link"
                       className="w-full px-3 py-2 bg-white border border-amber-200 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-amber-400 font-mono"
                     />
-                    <p className="text-[10px] text-slate-600 mt-1">
-                      Upload/paste the link for the sample PDF (e.g. first 2-3 sample pages). When students click "Preview Sample", this opens directly in a new window.
-                    </p>
                   </div>
 
                   {/* OPTION 2: ACTUAL FULL PDF */}
+                  <div className="p-3 bg-white rounded-xl border border-emerald-300 space-y-2">
+                    <label className="block font-bold text-emerald-800 text-xs flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Option 2: Actual / Full Master Notes PDF</span>
+                      </span>
+                      <span className="text-[10px] text-emerald-700 font-semibold">Protected • Unlocked After Purchase</span>
+                    </label>
+
+                    {/* Storage Upload Button for Full Master PDF */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-emerald-50/50 rounded-lg border border-dashed border-emerald-300">
+                      <div>
+                        <p className="text-[11px] font-bold text-slate-800 flex items-center gap-1">
+                          <Upload className="w-3 h-3 text-emerald-600" />
+                          <span>Upload Full Master PDF from Computer</span>
+                        </p>
+                        <p className="text-[10px] text-slate-500">Complete paid material stored directly on website server (or paste Google Drive link below).</p>
+                      </div>
+
+                      <label className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                        isUploadingPaidPdf 
+                          ? 'bg-emerald-200 text-emerald-800 cursor-not-allowed' 
+                          : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
+                      }`}>
+                        {isUploadingPaidPdf ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            <span>Uploading {paidPdfPercent || 0}%</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-3 h-3" />
+                            <span>Choose Master PDF</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          disabled={isUploadingPaidPdf}
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            try {
+                              setIsUploadingPaidPdf(true);
+                              setPaidPdfPercent(0);
+                              const res = await uploadNotePdf(file, (percent) => setPaidPdfPercent(percent));
+                              setEditingResource({
+                                ...editingResource,
+                                directPdfUrl: res.downloadUrl,
+                                downloadUrl: res.downloadUrl,
+                                fileSize: editingResource.fileSize || res.fileSizeFormatted
+                              });
+                              showNotification('success', `Master PDF "${file.name}" uploaded successfully! (${res.fileSizeFormatted})`);
+                            } catch (err: any) {
+                              showNotification('error', err.message || 'Failed to upload master PDF');
+                            } finally {
+                              setIsUploadingPaidPdf(false);
+                              setPaidPdfPercent(null);
+                              e.target.value = '';
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Progress Bar for Master PDF */}
+                    {isUploadingPaidPdf && (
+                      <div className="mt-2 space-y-1">
+                        <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-emerald-600 h-full transition-all duration-200" 
+                            style={{ width: `${paidPdfPercent || 0}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                          <span>Uploading master PDF notes...</span>
+                          <span>{paidPdfPercent || 0}%</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {editingResource.directPdfUrl && (
+                      <div className="flex items-center justify-between text-[11px] text-emerald-700 font-semibold px-1">
+                        <span className="flex items-center gap-1 truncate max-w-md">
+                          <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="truncate">Master Attached: {editingResource.directPdfUrl}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setEditingResource({ ...editingResource, directPdfUrl: '', downloadUrl: '' })}
+                          className="text-red-500 hover:text-red-700 text-[10px] font-bold underline shrink-0 ml-2"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+
+                    <input
+                      type="text"
+                      value={editingResource.directPdfUrl || editingResource.downloadUrl || ''}
+                      onChange={(e) => setEditingResource({ 
+                        ...editingResource, 
+                        directPdfUrl: e.target.value,
+                        downloadUrl: e.target.value 
+                      })}
+                      placeholder="https://firebasestorage.googleapis.com/... or master PDF link"
+                      className="w-full px-3 py-2 bg-white border border-emerald-500/30 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-emerald-400 font-mono"
+                    />
+                  </div>
+                </div>
+              ) : (
+                /* FREE NOTES: FIREBASE STORAGE UPLOAD DROPZONE + URL ALTERNATIVE */
+                <div className="p-4 bg-slate-50/70 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                      <FileText className="w-4 h-4 text-blue-600" />
+                      <span>Actual Free Notes PDF</span>
+                    </label>
+                    <span className="text-[10px] text-blue-600 font-semibold">Firebase Cloud Storage</span>
+                  </div>
+
+                  {/* Direct Upload from Device */}
+                  <div className="bg-white p-3 rounded-xl border border-dashed border-blue-300 hover:border-blue-400 transition-colors">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <p className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                          <Upload className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Upload Free PDF from computer</span>
+                        </p>
+                        <p className="text-[10px] text-slate-500">
+                          Uploads directly to your website server storage without requiring external buckets or billing.
+                        </p>
+                      </div>
+
+                      <label className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                        isUploadingFreePdf 
+                          ? 'bg-blue-200 text-blue-800 cursor-not-allowed' 
+                          : 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs'
+                      }`}>
+                        {isUploadingFreePdf ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Uploading {freePdfPercent || 0}%</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Choose PDF File</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          disabled={isUploadingFreePdf}
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            try {
+                              setIsUploadingFreePdf(true);
+                              setFreePdfPercent(0);
+                              const res = await uploadNotePdf(file, (percent) => setFreePdfPercent(percent));
+                              setEditingResource({
+                                ...editingResource,
+                                directPdfUrl: res.downloadUrl,
+                                downloadUrl: res.downloadUrl,
+                                fileSize: editingResource.fileSize || res.fileSizeFormatted
+                              });
+                              showNotification('success', `PDF "${file.name}" uploaded successfully! (${res.fileSizeFormatted})`);
+                            } catch (err: any) {
+                              showNotification('error', err.message || 'Failed to upload PDF');
+                            } finally {
+                              setIsUploadingFreePdf(false);
+                              setFreePdfPercent(null);
+                              e.target.value = '';
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Progress Bar */}
+                    {isUploadingFreePdf && (
+                      <div className="mt-2.5 space-y-1">
+                        <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-blue-600 h-full transition-all duration-200" 
+                            style={{ width: `${freePdfPercent || 0}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                          <span>Uploading directly to server storage...</span>
+                          <span>{freePdfPercent || 0}%</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Attached confirmation */}
+                    {editingResource.directPdfUrl && !isUploadingFreePdf && (
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-emerald-700 font-medium">
+                        <span className="flex items-center gap-1.5 truncate max-w-sm">
+                          <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="truncate">Attached: {editingResource.directPdfUrl}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setEditingResource({ ...editingResource, directPdfUrl: '', downloadUrl: '' })}
+                          className="text-red-500 hover:text-red-700 text-[11px] font-bold underline cursor-pointer shrink-0 ml-2"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Fallback Direct URL field */}
                   <div>
-                    <label className="block font-bold text-emerald-700 text-xs mb-1 flex items-center justify-between">
-                      <span>Option 2: Actual / Full Notes PDF URL (Complete Document)</span>
-                      <span className="text-[10px] text-emerald-700/80 font-normal">Protected • Unlocked After Purchase</span>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      Or Direct Link (Auto-filled on upload):
                     </label>
                     <input
                       type="text"
@@ -2253,34 +2566,10 @@ export function AdminDashboard() {
                         directPdfUrl: e.target.value,
                         downloadUrl: e.target.value 
                       })}
-                      placeholder="https://drive.google.com/file/d/... or full-complete-notes.pdf"
-                      className="w-full px-3 py-2 bg-white border border-emerald-500/30 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-emerald-400 font-mono"
+                      placeholder="https://firebasestorage.googleapis.com/... or Google Drive direct link"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-blue-500 font-mono"
                     />
-                    <p className="text-[10px] text-slate-600 mt-1">
-                      The complete master PDF. Kept locked and provided to students in a new window/download only after payment.
-                    </p>
                   </div>
-                </div>
-              ) : (
-                /* FREE NOTES: SINGLE ACTUAL PDF URL (NO PREVIEW UPLOAD) */
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1 text-xs">
-                    Actual Free Notes PDF URL (Google Drive / GitHub / Direct Link)
-                  </label>
-                  <input
-                    type="text"
-                    value={editingResource.directPdfUrl || editingResource.downloadUrl || ''}
-                    onChange={(e) => setEditingResource({ 
-                      ...editingResource, 
-                      directPdfUrl: e.target.value,
-                      downloadUrl: e.target.value 
-                    })}
-                    placeholder="https://drive.google.com/file/d/... or direct https://...pdf"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-blue-500 font-mono"
-                  />
-                  <p className="text-[10px] text-slate-600 mt-1">
-                    Paste Google Drive or direct link. Clicking "View PDF" or "Download" will open this complete PDF in a new window.
-                  </p>
                 </div>
               )}
 

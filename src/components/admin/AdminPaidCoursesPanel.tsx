@@ -24,10 +24,14 @@ import {
   Clock,
   Radio,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  Upload,
+  Loader2,
+  FileCheck
 } from 'lucide-react';
 import { paidCourseService, extractYouTubeVideoId } from '../../services/paidCourseService';
 import { CourseItem, CourseChapter, CourseLesson, StudentEnrollment } from '../../types/paidCourse';
+import { uploadNotePdf } from '../../services/storageService';
 
 export function AdminPaidCoursesPanel() {
   const [activeTab, setActiveTab] = useState<'courses' | 'chapters-lessons' | 'enrollments'>('courses');
@@ -51,6 +55,10 @@ export function AdminPaidCoursesPanel() {
   const [manualStudentEmail, setManualStudentEmail] = useState('');
   const [manualStudentName, setManualStudentName] = useState('');
   const [isManualEnrollModalOpen, setIsManualEnrollModalOpen] = useState(false);
+
+  // PDF upload state
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const [pdfUploadPercent, setPdfUploadPercent] = useState<number | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -1231,30 +1239,138 @@ export function AdminPaidCoursesPanel() {
                 )}
               </div>
 
-              {/* PDF Notes Field */}
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              {/* PDF Notes Field with Firebase Storage Upload */}
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="block font-bold text-blue-700">Attached PDF Notes URL</label>
-                  <span className="text-[10px] text-slate-600">Google Drive / Cloud PDF Link</span>
+                  <div className="flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-blue-700" />
+                    <label className="block font-bold text-blue-700 text-xs">Attached PDF Notes</label>
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-medium">Stored in Firebase Cloud Storage</span>
                 </div>
-                <input
-                  type="url"
-                  placeholder="https://drive.google.com/file/d/... or direct PDF link"
-                  value={editingLesson.pdfUrl || ''}
-                  onChange={(e) => setEditingLesson({
-                    ...editingLesson,
-                    pdfUrl: e.target.value,
-                    hasPdf: Boolean(e.target.value?.trim())
-                  })}
-                  className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-[11px]"
-                />
-                <input
-                  type="text"
-                  placeholder="PDF Notes Title (e.g. Chapter 2 Complete Handwritten Notes PDF)"
-                  value={editingLesson.pdfTitle || ''}
-                  onChange={(e) => setEditingLesson({ ...editingLesson, pdfTitle: e.target.value })}
-                  className="w-full p-2 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
-                />
+
+                {/* Direct Upload from Device to Firebase Storage */}
+                <div className="bg-white p-3 rounded-lg border border-dashed border-blue-300 hover:border-blue-500 transition-colors">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                        <Upload className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Upload PDF file from computer</span>
+                      </p>
+                      <p className="text-[10px] text-slate-500 mt-0.5">
+                        Uploaded directly to your portal storage bucket without exposing external links.
+                      </p>
+                    </div>
+
+                    <label className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0 ${
+                      isUploadingPdf 
+                        ? 'bg-blue-100 text-blue-600 cursor-not-allowed' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs'
+                    }`}>
+                      {isUploadingPdf ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Uploading {pdfUploadPercent || 0}%</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>Choose PDF</span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        disabled={isUploadingPdf}
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          try {
+                            setIsUploadingPdf(true);
+                            setPdfUploadPercent(0);
+                            const res = await uploadNotePdf(file, (percent) => {
+                              setPdfUploadPercent(percent);
+                            });
+                            setEditingLesson({
+                              ...editingLesson,
+                              pdfUrl: res.downloadUrl,
+                              pdfTitle: editingLesson.pdfTitle || file.name.replace(/\.[^/.]+$/, ''),
+                              hasPdf: true
+                            });
+                            showToast(`PDF "${file.name}" uploaded successfully! (${res.fileSizeFormatted})`, 'success');
+                          } catch (err: any) {
+                            console.error('PDF upload error:', err);
+                            showToast(err.message || 'Failed to upload PDF', 'error');
+                          } finally {
+                            setIsUploadingPdf(false);
+                            setPdfUploadPercent(null);
+                            e.target.value = '';
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Active Upload Indicator */}
+                  {isUploadingPdf && (
+                    <div className="mt-2.5 space-y-1">
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div 
+                          className="bg-blue-600 h-full transition-all duration-200" 
+                          style={{ width: `${pdfUploadPercent || 0}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                        <span>Uploading PDF notes document...</span>
+                        <span>{pdfUploadPercent || 0}%</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Uploaded File Confirmation */}
+                  {editingLesson.pdfUrl && !isUploadingPdf && (
+                    <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-emerald-700 font-medium">
+                      <span className="flex items-center gap-1.5 truncate max-w-sm">
+                        <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="truncate">Attached: {editingLesson.pdfTitle || 'PDF Notes Document'}</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setEditingLesson({ ...editingLesson, pdfUrl: '', hasPdf: false })}
+                        className="text-red-500 hover:text-red-700 text-[11px] font-bold underline cursor-pointer shrink-0 ml-2"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Direct Link Alternative */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] text-slate-600 font-semibold">
+                    <span>PDF Storage / Direct Link:</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Auto-filled after upload or enter URL</span>
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="https://firebasestorage.googleapis.com/... or direct link"
+                    value={editingLesson.pdfUrl || ''}
+                    onChange={(e) => setEditingLesson({
+                      ...editingLesson,
+                      pdfUrl: e.target.value,
+                      hasPdf: Boolean(e.target.value?.trim())
+                    })}
+                    className="w-full p-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-[11px]"
+                  />
+                  <input
+                    type="text"
+                    placeholder="PDF Display Title (e.g. Chapter 2 Complete Handwritten Notes PDF)"
+                    value={editingLesson.pdfTitle || ''}
+                    onChange={(e) => setEditingLesson({ ...editingLesson, pdfTitle: e.target.value })}
+                    className="w-full p-2 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs"
+                  />
+                </div>
               </div>
 
               {/* Free Preview Toggle */}
