@@ -1,9 +1,13 @@
 import { 
   ref, 
   uploadBytesResumable, 
-  getDownloadURL 
+  getDownloadURL,
+  getStorage
 } from 'firebase/storage';
-import { storage } from '../lib/firebase';
+import app from '../lib/firebase';
+
+// Initialize Storage instance from main app
+const storage = getStorage(app);
 
 /**
  * Storage Upload Progress and Result Interface
