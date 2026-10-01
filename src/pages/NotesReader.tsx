@@ -21,14 +21,12 @@
     Coffee,
     CheckCircle2,
     BookOpen,
-    Laptop,
-    Info
+    Laptop
   } from 'lucide-react';
   import { NoteCourse, NoteChapter, NoteTopic } from '../types/notes';
   import { notesService } from '../services/notesService';
   import { SEO } from '../components/SEO';
   import { useAuth } from '../context/AuthContext';
-  import { AdUnit } from '../components/AdUnit';
 
   export function NotesReader() {
     const { 
@@ -867,7 +865,7 @@
         </header>
 
         {/* ========================================================================= */}
-        {/* 2. MAIN BODY (SIDEBAR + EXPANSIVE READING CANVAS + RIGHT AD PLACEMENT) */}
+        {/* 2. MAIN BODY (SIDEBAR + EXPANSIVE FULL-WIDTH READING CANVAS) */}
         {/* ========================================================================= */}
         <div className="flex-1 flex overflow-hidden relative">
 
@@ -881,25 +879,26 @@
           )}
 
           {/* ======================================================================= */}
-          {/* LEFT NAVIGATION SIDEBAR */}
+          {/* LEFT NAVIGATION SIDEBAR (Rich Light Blue Theme) */}
           {/* ======================================================================= */}
           <aside 
             className={`
               fixed md:relative z-40 inset-y-0 left-0 md:inset-auto h-full 
-              w-72 max-w-[85vw] md:w-72 shrink-0 border-r flex flex-col transition-transform md:transition-all duration-200 bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 shadow-2xl md:shadow-none
+              w-72 max-w-[85vw] md:w-72 shrink-0 border-r flex flex-col transition-transform md:transition-all duration-200 
+              bg-[#DBEAFE] dark:bg-[#0B1528] border-blue-200 dark:border-slate-800 shadow-2xl md:shadow-none
               ${isSidebarOpen ? 'md:translate-x-0' : 'md:-translate-x-full md:w-0 md:border-r-0 md:overflow-hidden'}
               ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
             `}
           >
             
             {/* Logo Branding */}
-            <div className="p-4 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between shrink-0">
+            <div className="p-4 border-b border-blue-200/90 dark:border-slate-800/80 flex items-center justify-between shrink-0 bg-blue-200/40 dark:bg-transparent">
               <div className="flex items-center gap-2.5">
                 <div className="flex flex-col">
                   <div className="text-lg font-black tracking-tight leading-none text-slate-900 dark:text-white flex items-center">
                     Skill<span className="text-red-500 font-extrabold">.</span>py
                   </div>
-                  <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-1">
+                  <span className="text-[11px] font-semibold text-blue-900/80 uppercase tracking-wider mt-1">
                     NIELIT Notes Hub
                   </span>
                 </div>
@@ -908,7 +907,7 @@
               {/* Mobile Close Button */}
               <button
                 onClick={() => setIsMobileSidebarOpen(false)}
-                className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600"
+                className="md:hidden p-1.5 rounded-lg text-blue-600 hover:text-blue-900"
                 aria-label="Close Mobile Navigation"
               >
                 <X className="w-5 h-5" />
@@ -936,7 +935,7 @@
                     navigate(`/notes/${targetCourseId}`, { replace: true });
                   }
                 }}
-                className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 outline-none cursor-pointer"
+                className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-blue-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 outline-none cursor-pointer shadow-xs focus:ring-2 focus:ring-blue-400"
               >
                 {courses.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -948,13 +947,13 @@
 
             {/* Segmented Control: [Contents] vs [Saved] */}
             <div className="p-3 shrink-0 space-y-2">
-              <div className="grid grid-cols-2 gap-1.5 bg-slate-100/90 dark:bg-slate-900 p-1 rounded-xl text-xs font-semibold border border-slate-200/60 dark:border-slate-800">
+              <div className="grid grid-cols-2 gap-1.5 bg-blue-200/90 dark:bg-slate-900/90 p-1 rounded-xl text-xs font-semibold border border-blue-300/80 dark:border-slate-800">
                 <button
                   onClick={() => setActiveTab('contents')}
                   className={`py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                     activeTab === 'contents' 
-                      ? 'bg-white dark:bg-slate-800 shadow-xs text-blue-600 dark:text-blue-400 font-bold' 
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                      ? 'bg-white dark:bg-slate-800 shadow-xs text-blue-700 dark:text-blue-400 font-bold' 
+                      : 'text-blue-900/80 dark:text-slate-400 hover:text-blue-950'
                   }`}
                 >
                   <BookOpen className="w-4 h-4" />
@@ -964,8 +963,8 @@
                   onClick={() => setActiveTab('saved')}
                   className={`py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                     activeTab === 'saved' 
-                      ? 'bg-white dark:bg-slate-800 shadow-xs text-blue-600 dark:text-blue-400 font-bold' 
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                      ? 'bg-white dark:bg-slate-800 shadow-xs text-blue-700 dark:text-blue-400 font-bold' 
+                      : 'text-blue-900/80 dark:text-slate-400 hover:text-blue-950'
                   }`}
                 >
                   <Bookmark className="w-4 h-4" />
@@ -980,14 +979,14 @@
 
               {/* Search Input: 'Search in chapter...' */}
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-blue-500" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search in chapter..."
-                  className="w-full pl-8 pr-7 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 outline-none transition-all focus:border-blue-500"
+                  className="w-full pl-8 pr-7 py-2 text-xs rounded-xl border border-blue-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 outline-none transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-400 shadow-xs"
                 />
                 {searchQuery && (
                   <button
@@ -1006,7 +1005,7 @@
               {/* Search Results */}
               {searchQuery.trim() !== '' ? (
                 <div className="space-y-1">
-                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
+                  <div className="text-[11px] font-bold text-blue-900/80 uppercase tracking-wider px-2 py-1">
                     {`Search Results (${searchResults?.length || 0})`}
                   </div>
                   {searchResults && searchResults.length > 0 ? (
@@ -1023,7 +1022,7 @@
                             }
                           }}
                           className={`w-full text-left p-2.5 rounded-xl text-xs transition-colors flex items-start justify-between cursor-pointer ${
-                            isActive ? 'bg-blue-600 text-white font-semibold' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                            isActive ? 'bg-blue-600 text-white font-semibold shadow-xs' : 'text-slate-800 dark:text-slate-300 hover:bg-blue-200/80 dark:hover:bg-slate-800'
                           }`}
                         >
                           <div className="min-w-0 pr-2">
@@ -1034,7 +1033,7 @@
                       );
                     })
                   ) : (
-                    <div className="p-4 text-center text-xs text-slate-400">
+                    <div className="p-4 text-center text-xs text-blue-900/70">
                       {`No topics matched "${searchQuery}".`}
                     </div>
                   )}
@@ -1042,9 +1041,9 @@
               ) : activeTab === 'saved' ? (
                 /* Saved Notes View */
                 <div className="space-y-1">
-                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
+                  <div className="text-[11px] font-bold text-blue-900/80 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
                     <span>Saved Notes</span>
-                    <span className="text-[10px] text-blue-600 font-bold">{savedTopicsList.length}</span>
+                    <span className="text-[10px] text-blue-700 font-bold bg-white px-1.5 py-0.5 rounded-md">{savedTopicsList.length}</span>
                   </div>
                   {savedTopicsList.length > 0 ? (
                     savedTopicsList.map((topic) => {
@@ -1053,7 +1052,7 @@
                         <div
                           key={topic.id}
                           className={`w-full rounded-xl text-xs transition-colors flex items-center justify-between p-2.5 group cursor-pointer ${
-                            isActive ? 'bg-blue-600 text-white font-semibold' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                            isActive ? 'bg-blue-600 text-white font-semibold shadow-xs' : 'hover:bg-blue-200/80 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-300'
                           }`}
                           onClick={() => {
                             requestFullscreenSafe();
@@ -1075,8 +1074,8 @@
                       );
                     })
                   ) : (
-                    <div className="p-6 text-center text-xs text-slate-400 space-y-2">
-                      <Bookmark className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600" />
+                    <div className="p-6 text-center text-xs text-blue-900/70 space-y-2">
+                      <Bookmark className="w-8 h-8 mx-auto text-blue-400 dark:text-slate-600" />
                       <p>No saved notes yet.</p>
                     </div>
                   )}
@@ -1091,7 +1090,7 @@
                     return (
                       <div 
                         key={chapter.id} 
-                        className="border-b border-slate-100 dark:border-slate-800/80 pb-1"
+                        className="border-b border-blue-200/80 dark:border-slate-800/80 pb-1"
                       >
                         {/* Chapter Heading with Collapse Toggle */}
                         <button
@@ -1102,13 +1101,13 @@
                               [chapter.id]: !prev[chapter.id]
                             }));
                           }}
-                          className="w-full py-2.5 px-2 text-left flex items-center justify-between gap-2 transition-colors cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl"
+                          className="w-full py-2.5 px-2 text-left flex items-center justify-between gap-2 transition-colors cursor-pointer hover:bg-blue-200/70 dark:hover:bg-slate-900 rounded-xl"
                         >
-                          <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight truncate">
+                          <span className="text-xs font-bold text-blue-950 dark:text-slate-100 uppercase tracking-tight truncate">
                             {`CH ${chapter.chapterNumber}: `}
                             {chapter.title}
                           </span>
-                          <div className="shrink-0 text-slate-400">
+                          <div className="shrink-0 text-blue-700">
                             {isExpanded ? (
                               <ChevronUp className="w-4 h-4" />
                             ) : (
@@ -1140,7 +1139,7 @@
                                       transition-all group cursor-pointer
                                       ${isActive 
                                         ? 'bg-blue-600 text-white font-semibold shadow-xs' 
-                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}
+                                        : 'text-slate-800 dark:text-slate-300 hover:bg-blue-200/80 dark:hover:bg-slate-800 font-medium'}
                                     `}
                                   >
                                     <div className="flex items-center gap-2 min-w-0">
@@ -1148,7 +1147,7 @@
                                       {isActive ? (
                                         <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
                                       ) : (
-                                        <span className="text-slate-400 font-medium shrink-0">
+                                        <span className="text-blue-800/70 font-semibold shrink-0">
                                           {idx + 1}.
                                         </span>
                                       )}
@@ -1165,7 +1164,7 @@
                                           ? 'text-white/80 hover:text-white'
                                           : isBookmarked 
                                             ? 'text-blue-600 opacity-100' 
-                                            : 'text-slate-400 opacity-60 hover:opacity-100 hover:text-slate-600'
+                                            : 'text-blue-500 opacity-60 hover:opacity-100 hover:text-blue-700'
                                       }`}
                                       title={isBookmarked ? "Bookmarked" : "Bookmark note"}
                                     >
@@ -1175,7 +1174,7 @@
                                 );
                               })
                             ) : (
-                              <div className="text-[11px] text-slate-400 p-2 text-center italic">
+                              <div className="text-[11px] text-blue-900/70 p-2 text-center italic">
                                 No topics added yet.
                               </div>
                             )}
@@ -1196,7 +1195,7 @@
           <main 
             ref={mainScrollContainerRef}
             onScroll={handleContainerScroll}
-            className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-3 md:p-4 lg:p-5 flex justify-center select-none"
+            className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-4 md:p-6 lg:p-8 select-none"
           >
             {loading ? (
               <div className="my-auto flex flex-col items-center justify-center text-center p-8 space-y-3">
@@ -1204,16 +1203,16 @@
                 <p className="text-sm font-semibold text-slate-500">Loading chapter notes...</p>
               </div>
             ) : activeTopic ? (
-              <div className="w-full flex items-start justify-center gap-3.5 md:gap-4 lg:gap-5 pb-20">
+              <div className="w-full pb-20">
 
                 {/* =============================================================== */}
-                {/* 📄 CENTER READING ARTICLE CONTAINER (Copy Protected) */}
+                {/* 📄 FULL-WIDTH READING ARTICLE CONTAINER (Copy Protected) */}
                 {/* =============================================================== */}
-                <div className="flex-1 min-w-0 max-w-6xl 2xl:max-w-7xl w-full space-y-6">
+                <div className="w-full space-y-6">
 
                   {/* Main Reading Card with Anti-Copy Protection */}
                   <article 
-                    className={`p-4 sm:p-7 md:p-10 rounded-2xl border transition-colors select-none notes-protected-content ${themeClasses.cardBg}`}
+                    className={`p-4 sm:p-7 md:p-10 rounded-2xl border transition-colors select-none notes-protected-content w-full ${themeClasses.cardBg}`}
                     onCopy={(e) => { e.preventDefault(); return false; }}
                     onCut={(e) => { e.preventDefault(); return false; }}
                     onContextMenu={(e) => { e.preventDefault(); return false; }}
@@ -1357,32 +1356,6 @@
                   </article>
 
                 </div>
-
-                {/* =============================================================== */}
-                {/* 🔵 RIGHT SIDE AD PLACEMENTS (Official AdSense Slots) */}
-                {/* =============================================================== */}
-                <aside 
-                  className="hidden xl:flex flex-col w-72 2xl:w-80 shrink-0 sticky top-2 space-y-4 select-none"
-                  aria-label="Sponsored Content"
-                >
-                  {/* 1. Primary Sidebar Ad Unit */}
-                  <div className="p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative">
-                    <div className="text-[10px] text-slate-400 font-semibold mb-1 flex items-center justify-between">
-                      <span>Advertisement</span>
-                      <Info className="w-3 h-3 text-slate-400" />
-                    </div>
-                    <AdUnit format="rectangle" />
-                  </div>
-
-                  {/* 2. Secondary Vertical Ad Unit */}
-                  <div className="p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#1E293B] shadow-2xs relative">
-                    <div className="text-[10px] text-slate-400 font-semibold mb-1 flex items-center justify-between">
-                      <span>Sponsored Link</span>
-                      <Info className="w-3 h-3 text-slate-400" />
-                    </div>
-                    <AdUnit format="vertical" />
-                  </div>
-                </aside>
 
               </div>
             ) : (
