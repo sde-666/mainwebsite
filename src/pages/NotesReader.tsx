@@ -774,6 +774,56 @@ export function NotesReader() {
   const isCurrentTopicCompleted = activeTopic ? completed.includes(activeTopic.id) : false;
   const readTimeLabel = activeTopic?.readTime || `${computedReadMin} min read`;
 
+  // ---- SEO values (kept identical to what scripts/generate-notes-pages.mjs writes at build time) ----
+  const seoUrl = `https://skilldotpy.com/notes/${currentCourse?.id || ''}/${currentChapter?.id || ''}/${activeTopic?.id || ''}`;
+  const seoDescription = useMemo(() => {
+    if (!activeTopic) return 'Free NIELIT O Level and CCC chapter-wise notes in simple English and Hindi.';
+    const text = stripHtml(activeTopic.content || '').split(/\s+/).slice(0, 40).join(' ');
+    return text || `${activeTopic.title} explained in simple words for NIELIT ${currentCourse?.badge || 'O Level'}.`;
+  }, [activeTopic, currentCourse?.badge]);
+  const seoKeywords = useMemo(() => {
+    if (!activeTopic) return undefined;
+    return [
+      activeTopic.title,
+      `${activeTopic.title} o level notes`,
+      `${currentCourse?.badge || 'o level'} notes`,
+      'o level free notes',
+      'o level study material',
+      ...(activeTopic.tags || [])
+    ];
+  }, [activeTopic, currentCourse?.badge]);
+  const seoBreadcrumbs = useMemo(() => {
+    if (!activeTopic || !currentCourse) return undefined;
+    const base = `/notes/${currentCourse.id}`;
+    return [
+      { name: 'Home', url: '/' },
+      { name: 'Free O Level Notes', url: '/notes' },
+      { name: currentCourse.title, url: base },
+      ...(currentChapter ? [{ name: `Chapter ${currentChapter.chapterNumber}: ${currentChapter.title}`, url: `${base}/${currentChapter.id}` }] : []),
+      { name: activeTopic.title, url: `${base}/${currentChapter?.id || ''}/${activeTopic.id}` }
+    ];
+  }, [activeTopic, currentCourse, currentChapter]);
+  const seoSchema = useMemo(() => {
+    if (!activeTopic) return undefined;
+    const modified = new Date(activeTopic.updatedAt || Date.now()).toISOString();
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: activeTopic.title.slice(0, 110),
+      description: seoDescription,
+      mainEntityOfPage: seoUrl,
+      url: seoUrl,
+      inLanguage: activeTopic.hindiContent ? ['en', 'hi'] : 'en',
+      datePublished: modified,
+      dateModified: modified,
+      isAccessibleForFree: true,
+      educationalLevel: 'NIELIT O Level',
+      learningResourceType: 'Study notes',
+      author: { '@type': 'Person', name: 'Mr. Aditya Pathak' },
+      publisher: { '@id': 'https://skilldotpy.com/#organization' }
+    };
+  }, [activeTopic, seoDescription, seoUrl]);
+
   const chapterLabel = (ch?: NoteChapter | null) =>
     ch ? `Chapter ${ch.chapterNumber}${ch.title ? `: ${ch.title}` : ''}` : '';
 
@@ -786,9 +836,13 @@ export function NotesReader() {
     >
 
       <SEO
-        title={`${activeTopic?.title || 'Notes'} - ${currentCourse?.title || 'NIELIT'} | Skilldotpy`}
-        description={activeTopic ? `Read chapter-wise revision notes on ${activeTopic.title}.` : 'Minimalist clean NIELIT Notes reader.'}
-        url={`https://skilldotpy.com/notes/${currentCourse?.id || ''}/${currentChapter?.id || ''}/${activeTopic?.id || ''}`}
+        title={`${activeTopic?.title || 'Notes'} - ${currentCourse?.badge || 'NIELIT'} Notes`}
+        description={seoDescription}
+        url={seoUrl}
+        type="article"
+        keywords={seoKeywords}
+        breadcrumbs={seoBreadcrumbs}
+        schema={seoSchema}
       />
 
       {/* Share Toast Feedback */}
