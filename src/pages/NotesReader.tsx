@@ -24,7 +24,6 @@ import {
   CheckCircle2,
   Circle,
   BookOpen,
-  List,
   Languages
 } from 'lucide-react';
 import { NoteCourse, NoteChapter, NoteTopic } from '../types/notes';
@@ -37,12 +36,6 @@ type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 type FontFamily = 'sans' | 'serif' | 'mono';
 type ContentWidth = 'narrow' | 'comfort' | 'wide';
 type NoteLang = 'en' | 'hi';
-
-interface TocItem {
-  id: string;
-  text: string;
-  level: 2 | 3;
-}
 
 interface FlowItem {
   chapter: NoteChapter;
@@ -73,14 +66,6 @@ function readStoredList(key: string): string[] {
 
 function stripHtml(html: string): string {
   return (html || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60);
 }
 
 export function NotesReader() {
@@ -117,7 +102,7 @@ export function NotesReader() {
     readStored<FontFamily>('skilldotpy_reader_fontfamily', ['sans', 'serif', 'mono'], 'sans')
   );
   const [contentWidth, setContentWidth] = useState<ContentWidth>(() =>
-    readStored<ContentWidth>('skilldotpy_reader_width', ['narrow', 'comfort', 'wide'], 'comfort')
+    readStored<ContentWidth>('skilldotpy_reader_width_v2', ['narrow', 'comfort', 'wide'], 'comfort')
   );
   const [lang, setLang] = useState<NoteLang>(() =>
     readStored<NoteLang>('skilldotpy_reader_lang', ['en', 'hi'], 'en')
@@ -139,10 +124,7 @@ export function NotesReader() {
 
   // Interactive & Feedback Elements
   const [shareToast, setShareToast] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [tocItems, setTocItems] = useState<TocItem[]>([]);
-  const [activeHeadingId, setActiveHeadingId] = useState('');
   const [computedReadMin, setComputedReadMin] = useState(1);
 
   const mainScrollContainerRef = useRef<HTMLDivElement>(null);
@@ -150,6 +132,11 @@ export function NotesReader() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const typographyWrapRef = useRef<HTMLDivElement>(null);
   const scrollRafRef = useRef<number | null>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const userExitedFullscreenRef = useRef(false);
+  const touchStartRef = useRef<{ x: number; y: number; t: number; ignore: boolean } | null>(null);
+  const lastFlowIndexRef = useRef(-2);
+  const navDirRef = useRef<'next' | 'prev' | 'jump'>('jump');
 
   // Load reader fonts once (Inter / Noto Devanagari / Source Serif / JetBrains Mono)
   useEffect(() => {
@@ -185,7 +172,7 @@ export function NotesReader() {
   useEffect(() => { localStorage.setItem('skilldotpy_notes_theme', readingTheme); }, [readingTheme]);
   useEffect(() => { localStorage.setItem('skilldotpy_reader_fontsize', fontSize); }, [fontSize]);
   useEffect(() => { localStorage.setItem('skilldotpy_reader_fontfamily', fontFamily); }, [fontFamily]);
-  useEffect(() => { localStorage.setItem('skilldotpy_reader_width', contentWidth); }, [contentWidth]);
+  useEffect(() => { localStorage.setItem('skilldotpy_reader_width_v2', contentWidth); }, [contentWidth]);
   useEffect(() => { localStorage.setItem('skilldotpy_reader_lang', lang); }, [lang]);
 
   // Anti-Copy & Strict Content Protection
@@ -524,26 +511,10 @@ export function NotesReader() {
   const displayTitle = showHindi && activeTopic?.hindiTitle ? activeTopic.hindiTitle : activeTopic?.title || '';
   const subTitle = showHindi ? activeTopic?.title : activeTopic?.hindiTitle;
 
-  // Post-process the note HTML: heading anchors + table of contents, scroll-wrapped tables, lazy images, read time
+  // Post-process the note HTML: scroll-wrapped tables, lazy images, read time
   useLayoutEffect(() => {
     const root = noteBodyRef.current;
-    if (!root) {
-      setTocItems([]);
-      return;
-    }
-
-    const used = new Set<string>();
-    const heads = Array.from(root.querySelectorAll<HTMLElement>('h2, h3'));
-    const items: TocItem[] = [];
-    heads.forEach((h, i) => {
-      const text = (h.textContent || '').replace(/\s*:-?\s*$/, '').trim();
-      if (!text) return;
-      let id = slugify(text) || `section-${i + 1}`;
-      while (used.has(id)) id = `${id}-${i + 1}`;
-      used.add(id);
-      h.id = id;
-      items.push({ id, text, level: h.tagName === 'H2' ? 2 : 3 });
-    });
+    if (!root) return;
 
     root.querySelectorAll('table').forEach(tbl => {
       if (!tbl.parentElement?.classList.contains('notes-table-wrapper')) {
@@ -561,28 +532,16 @@ export function NotesReader() {
 
     const words = (root.textContent || '').trim().split(/\s+/).filter(Boolean).length;
     setComputedReadMin(Math.max(1, Math.round(words / 180)));
-    setTocItems(items);
-    setActiveHeadingId(items[0]?.id || '');
   }, [activeHtml, activeTopic?.id]);
 
-  // Scroll spy + progress inside the main reading container
+  // Scroll progress is written straight to the DOM (no React re-render while scrolling = smooth)
   const updateScrollState = useCallback(() => {
     const el = mainScrollContainerRef.current;
     if (!el) return;
     const scrollableHeight = el.scrollHeight - el.clientHeight;
     const pct = scrollableHeight > 0 ? Math.min(100, Math.max(0, (el.scrollTop / scrollableHeight) * 100)) : 0;
-    setScrollProgress(pct);
+    if (progressBarRef.current) progressBarRef.current.style.transform = `scaleX(${pct / 100})`;
     setShowBackToTop(el.scrollTop > 700);
-
-    const body = noteBodyRef.current;
-    if (body) {
-      const threshold = el.getBoundingClientRect().top + 110;
-      let current = '';
-      body.querySelectorAll<HTMLElement>('h2[id], h3[id]').forEach(h => {
-        if (h.getBoundingClientRect().top <= threshold) current = h.id;
-      });
-      if (current) setActiveHeadingId(current);
-    }
   }, []);
 
   const handleContainerScroll = () => {
@@ -604,18 +563,9 @@ export function NotesReader() {
     if (mainScrollContainerRef.current) {
       mainScrollContainerRef.current.scrollTo({ top: 0, behavior: 'auto' });
     }
-    setScrollProgress(0);
+    if (progressBarRef.current) progressBarRef.current.style.transform = 'scaleX(0)';
     setShowBackToTop(false);
   }, [activeTopic?.id]);
-
-  const scrollToHeading = (id: string) => {
-    const container = mainScrollContainerRef.current;
-    const target = noteBodyRef.current?.querySelector<HTMLElement>(`[id="${id}"]`);
-    if (!container || !target) return;
-    const top = container.scrollTop + target.getBoundingClientRect().top - container.getBoundingClientRect().top - 84;
-    container.scrollTo({ top, behavior: 'smooth' });
-    setActiveHeadingId(id);
-  };
 
   const scrollToTop = () => {
     mainScrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -650,6 +600,7 @@ export function NotesReader() {
 
   // Safe Fullscreen Request
   const requestFullscreenSafe = () => {
+    if (userExitedFullscreenRef.current) return;
     try {
       if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -690,15 +641,27 @@ export function NotesReader() {
   // Toggle Fullscreen mode
   const toggleBrowserFullscreen = () => {
     if (!document.fullscreenElement) {
+      userExitedFullscreenRef.current = false;
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen().catch(() => {});
       }
     } else {
+      userExitedFullscreenRef.current = true;
       if (document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
       }
     }
   };
+
+  // Work out which way we moved so the page can slide in from the correct side
+  if (lastFlowIndexRef.current !== flowIndex) {
+    const last = lastFlowIndexRef.current;
+    navDirRef.current =
+      last < 0 || flowIndex < 0 || Math.abs(flowIndex - last) !== 1
+        ? 'jump'
+        : flowIndex > last ? 'next' : 'prev';
+    lastFlowIndexRef.current = flowIndex;
+  }
 
   const goToItem = (item: FlowItem) => {
     if (!currentCourse) return;
@@ -745,6 +708,33 @@ export function NotesReader() {
     }
   };
 
+  // Swipe left / right on touch screens to change topic
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) {
+      touchStartRef.current = null;
+      return;
+    }
+    const target = e.target as HTMLElement;
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+      t: Date.now(),
+      ignore: !!target.closest('.notes-table-wrapper, pre, details')
+    };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start || start.ignore) return;
+    const dx = e.changedTouches[0].clientX - start.x;
+    const dy = e.changedTouches[0].clientY - start.y;
+    if (Date.now() - start.t > 600) return;
+    if (Math.abs(dx) < 80 || Math.abs(dx) < Math.abs(dy) * 1.8) return;
+    if (dx < 0 && nextItem) goToItem(nextItem);
+    else if (dx > 0 && prevItem) goToItem(prevItem);
+  };
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -789,7 +779,7 @@ export function NotesReader() {
 
   return (
     <div
-      className={`nr-root nr-${readingTheme} ${fontClass} nr-width-${contentWidth} notes-reader-theme-${readingTheme} fixed inset-0 z-50 h-screen w-screen overflow-hidden flex flex-col select-none`}
+      className={`nr-root nr-${readingTheme} ${fontClass} nr-width-${contentWidth} notes-reader-theme-${readingTheme} nr-enter fixed inset-0 z-50 overflow-hidden flex flex-col select-none`}
       onContextMenu={(e) => e.preventDefault()}
       onCopy={(e) => { e.preventDefault(); return false; }}
       onCut={(e) => { e.preventDefault(); return false; }}
@@ -815,8 +805,8 @@ export function NotesReader() {
       <header className="relative h-14 sm:h-16 px-2 sm:px-4 md:px-5 border-b nr-surface nr-border flex items-center justify-between z-30 shrink-0 gap-2">
 
         {/* Reading progress line (sits on the header's bottom edge) */}
-        <div className="absolute left-0 right-0 -bottom-px h-[3px] nr-progress-track" aria-hidden="true">
-          <div className="h-full nr-progress-bar rounded-r-full" style={{ width: `${scrollProgress}%` }} />
+        <div className="absolute left-0 right-0 -bottom-px h-[3px] nr-progress-track overflow-hidden" aria-hidden="true">
+          <div ref={progressBarRef} className="h-full w-full nr-progress-bar origin-left" style={{ transform: 'scaleX(0)' }} />
         </div>
 
         {/* Left Side: Sidebar Toggle, Back Button & Breadcrumb */}
@@ -1180,7 +1170,7 @@ export function NotesReader() {
           </div>
 
           {/* Chapter Accordion / Saved Topics Area */}
-          <div className="flex-1 overflow-y-auto nr-scroll px-3 pb-4 space-y-1">
+          <div className="flex-1 overflow-y-auto nr-scroll overscroll-contain px-3 pb-4 space-y-1">
 
             {searchQuery.trim() !== '' ? (
               /* Search Results */
@@ -1357,7 +1347,9 @@ export function NotesReader() {
         <main
           ref={mainScrollContainerRef}
           onScroll={handleContainerScroll}
-          className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden nr-scroll select-none relative"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden nr-scroll select-none relative overscroll-contain"
         >
           {loading ? (
             <div className="mx-auto w-full max-w-[var(--nr-measure)] px-4 sm:px-6 py-8 space-y-4" aria-busy="true">
@@ -1371,12 +1363,12 @@ export function NotesReader() {
               </div>
             </div>
           ) : activeTopic ? (
-            <div className="mx-auto w-full flex justify-center gap-8 xl:gap-10 px-0 sm:px-6 lg:px-8 py-0 sm:py-6 lg:py-9 pb-6">
+            <div className="mx-auto w-full px-0 sm:px-5 lg:px-8 py-0 sm:py-5 lg:py-8 pb-6">
 
-              <div className="min-w-0 flex-1 max-w-[var(--nr-measure)]">
+              <div className="mx-auto w-full max-w-[var(--nr-measure)]">
                 <article
                   key={activeTopic.id + (showHindi ? '-hi' : '-en')}
-                  className="nr-card nr-fade-up sm:rounded-3xl sm:border notes-protected-content px-5 pt-6 pb-8 sm:px-9 sm:pt-9 md:px-12 md:pt-11 md:pb-10"
+                  className={`nr-card nr-page-${navDirRef.current} sm:rounded-3xl sm:border notes-protected-content px-5 pt-6 pb-8 sm:px-9 sm:pt-9 md:px-12 md:pt-11 md:pb-10`}
                   onCopy={(e) => { e.preventDefault(); return false; }}
                   onCut={(e) => { e.preventDefault(); return false; }}
                   onContextMenu={(e) => { e.preventDefault(); return false; }}
@@ -1454,30 +1446,6 @@ export function NotesReader() {
                         </button>
                       </div>
                     </div>
-
-                    {/* Mobile / tablet: collapsible "In this note" index */}
-                    {tocItems.length >= 3 && (
-                      <details className="xl:hidden mt-5 rounded-xl nr-surface-2 border nr-border group">
-                        <summary className="cursor-pointer list-none flex items-center justify-between gap-2 px-4 py-3 text-sm font-bold nr-heading">
-                          <span className="flex items-center gap-2"><List className="w-4 h-4 nr-accent" /> In this note ({tocItems.length})</span>
-                          <ChevronDown className="w-4 h-4 nr-muted transition-transform group-open:rotate-180" />
-                        </summary>
-                        <div className="px-3 pb-3 space-y-0.5">
-                          {tocItems.map(item => (
-                            <button
-                              key={item.id}
-                              onClick={(e) => {
-                                scrollToHeading(item.id);
-                                (e.currentTarget.closest('details') as HTMLDetailsElement | null)?.removeAttribute('open');
-                              }}
-                              className={`nr-row w-full text-left text-[13px] py-2 rounded-lg cursor-pointer ${item.level === 3 ? 'pl-7 nr-muted' : 'pl-3 font-semibold'}`}
-                            >
-                              {item.text}
-                            </button>
-                          ))}
-                        </div>
-                      </details>
-                    )}
                   </header>
 
                   {/* Note body (copy protected) */}
@@ -1549,37 +1517,6 @@ export function NotesReader() {
                   </button>
                 </nav>
               </div>
-
-              {/* Desktop "On this page" rail */}
-              {tocItems.length >= 2 && (
-                <aside className="hidden xl:block w-60 shrink-0" aria-label="On this page">
-                  <div className="sticky top-3">
-                    <div className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.14em] nr-muted mb-3">
-                      <List className="w-3.5 h-3.5" /> On this page
-                    </div>
-                    <nav className="space-y-0.5 max-h-[calc(100vh-14rem)] overflow-y-auto nr-scroll pr-1">
-                      {tocItems.map(item => (
-                        <button
-                          key={item.id}
-                          onClick={() => scrollToHeading(item.id)}
-                          className={`nr-toc-link block w-full text-[12.5px] leading-snug py-1.5 ${item.level === 3 ? 'pl-6' : 'pl-3'} ${activeHeadingId === item.id ? 'nr-toc-link-active' : ''}`}
-                        >
-                          {item.text}
-                        </button>
-                      ))}
-                    </nav>
-                    <div className="mt-5 pt-4 border-t nr-border">
-                      <div className="flex items-center justify-between text-[11px] font-semibold nr-muted mb-1.5">
-                        <span>Read</span>
-                        <span className="nr-heading">{Math.round(scrollProgress)}%</span>
-                      </div>
-                      <div className="h-1.5 rounded-full nr-progress-track overflow-hidden">
-                        <div className="h-full rounded-full nr-progress-bar" style={{ width: `${scrollProgress}%` }} />
-                      </div>
-                    </div>
-                  </div>
-                </aside>
-              )}
             </div>
           ) : (
             <div className="min-h-full flex flex-col items-center justify-center text-center p-8 space-y-4 mx-auto max-w-md">
