@@ -836,7 +836,7 @@ export function NotesReader() {
     >
 
       <SEO
-        title={`${activeTopic?.title || 'Notes'} - ${currentCourse?.badge || 'NIELIT'} Notes`}
+        title={`${activeTopic?.title || 'Notes'} - ${currentCourse?.id === 'ccc' ? 'CCC Notes' : 'O Level Notes'}`}
         description={seoDescription}
         url={seoUrl}
         type="article"

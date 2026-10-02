@@ -99,6 +99,9 @@ function limitWords(html, maxWords) {
   return `<p>${esc(firstWords(text, maxWords))}…</p>`;
 }
 
+// "O Level Notes" for the four modules, "CCC Notes" for CCC (added automatically to every title tag)
+const notesLabel = (course) => (course.id === 'ccc' ? 'CCC Notes' : 'O Level Notes');
+
 const isoDate = (ms) => {
   const d = ms ? new Date(Number(ms)) : new Date();
   return (isNaN(d.getTime()) ? new Date() : d).toISOString();
@@ -350,7 +353,7 @@ async function main() {
       writePage(
         chPath,
         renderPage(shell, {
-          title: `${ch.title} - ${course.badge || course.code} Chapter ${ch.chapterNumber} Notes`,
+          title: `${ch.title} - ${notesLabel(course)}`,
           description: ch.description || `Free ${courseLabel} notes: Chapter ${ch.chapterNumber} ${ch.title}. ${chTopics.length} topics explained in simple English & Hindi.`,
           canonical: SITE + chPath,
           ogType: 'website',
@@ -392,7 +395,7 @@ async function main() {
         writePage(
           tPath,
           renderPage(shell, {
-            title: `${t.title} - ${course.badge || course.code} Notes`,
+            title: `${t.title} - ${notesLabel(course)}`,
             description: desc,
             canonical: SITE + tPath,
             jsonLd: [
