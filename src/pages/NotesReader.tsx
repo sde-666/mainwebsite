@@ -68,6 +68,89 @@ function stripHtml(html: string): string {
   return (html || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+const LOADING_MESSAGES = [
+  'Opening your notes…',
+  'Fetching chapters & topics…',
+  'Getting everything ready…',
+  'Almost there…'
+];
+const LOADING_TIPS = [
+  'Tip: tap the Aa button to change text size, font and theme.',
+  'Tip: swipe left or right to move to the next or previous topic.',
+  'Tip: press “/” on a keyboard to search inside the notes.',
+  'Tip: mark topics as complete to track your progress.'
+];
+
+/** Shown while courses / chapters / topics are still coming from the server. */
+function NotesLoader({ onRetry }: { onRetry: () => void }) {
+  const [tick, setTick] = useState(0);
+  const [slow, setSlow] = useState(false);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setTick(t => t + 1), 2200);
+    const slowTimer = window.setTimeout(() => setSlow(true), 15000);
+    return () => {
+      window.clearInterval(interval);
+      window.clearTimeout(slowTimer);
+    };
+  }, []);
+
+  const message = LOADING_MESSAGES[Math.min(tick, LOADING_MESSAGES.length - 1)];
+  const tip = LOADING_TIPS[tick % LOADING_TIPS.length];
+
+  return (
+    <div className="mx-auto w-full px-0 sm:px-5 lg:px-8 py-0 sm:py-5 lg:py-8 pb-6" role="status" aria-live="polite" aria-busy="true">
+      <div className="mx-auto w-full max-w-[var(--nr-measure)]">
+
+        {/* Friendly status banner */}
+        <div className="nr-fade-up flex flex-col items-center text-center gap-3 px-5 pt-8 pb-6 sm:pt-6">
+          <div className="nr-book" aria-hidden="true">
+            <span className="nr-book-page" />
+            <span className="nr-book-page" />
+            <span className="nr-book-page" />
+          </div>
+          <div>
+            <div key={slow ? 'slow' : message} className="nr-pop text-base sm:text-lg font-bold nr-heading">
+              {slow ? 'Taking longer than usual…' : message}
+            </div>
+            <div className="mt-1 text-xs sm:text-[13px] nr-muted max-w-sm mx-auto min-h-[2.4em]">
+              {slow ? 'Please check your internet connection. Your notes will appear as soon as they load.' : tip}
+            </div>
+          </div>
+          <div className="nr-indeterminate w-44 h-1.5 rounded-full nr-progress-track overflow-hidden" aria-hidden="true">
+            <span />
+          </div>
+          {slow && (
+            <button onClick={onRetry} className="nr-btn h-10 px-4 rounded-xl text-sm font-semibold mt-1">
+              Try again
+            </button>
+          )}
+        </div>
+
+        {/* Skeleton shaped exactly like a note, so nothing jumps when it loads */}
+        <div className="nr-card sm:rounded-3xl sm:border px-5 pt-6 pb-8 sm:px-9 sm:pt-9 md:px-12 md:pt-11 md:pb-10" aria-hidden="true">
+          <div className="pb-6 border-b nr-border space-y-3">
+            <div className="h-6 w-28 rounded-full nr-skeleton" />
+            <div className="h-9 w-4/5 rounded-lg nr-skeleton" />
+            <div className="h-4 w-1/3 rounded nr-skeleton" />
+          </div>
+          <div className="pt-7 space-y-3.5">
+            <div className="h-6 w-2/5 rounded-md nr-skeleton" />
+            {[100, 96, 99, 90, 97, 62].map((w, i) => (
+              <div key={`a${i}`} className="h-4 rounded nr-skeleton" style={{ width: `${w}%` }} />
+            ))}
+            <div className="h-24 rounded-xl nr-skeleton mt-5" />
+            <div className="h-6 w-1/3 rounded-md nr-skeleton mt-6" />
+            {[98, 93, 100, 74].map((w, i) => (
+              <div key={`b${i}`} className="h-4 rounded nr-skeleton" style={{ width: `${w}%` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function NotesReader() {
   const {
     courseId: paramCourseId,
@@ -84,7 +167,8 @@ export function NotesReader() {
   const [courses, setCourses] = useState<NoteCourse[]>([]);
   const [chapters, setChapters] = useState<NoteChapter[]>([]);
   const [topics, setTopics] = useState<NoteTopic[]>([]);
-  const [loading, setLoading] = useState(true);
+  // The reader is "ready" once courses, chapters and topics have all arrived (from cache or server)
+  const dataReady = courses.length > 0 && chapters.length > 0 && topics.length > 0;
 
   // Layout View Controls
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -149,7 +233,8 @@ export function NotesReader() {
   }, []);
 
   // 1. Live Subscribe to courses, chapters, and topics
-  useEffect(() => {
+  // (layout effect: cached notes are applied before the first paint, so returning students never see a loader flash)
+  useLayoutEffect(() => {
     const unsubCourses = notesService.subscribeCourses((cList) => {
       setCourses(cList);
     });
@@ -158,7 +243,6 @@ export function NotesReader() {
     });
     const unsubTopics = notesService.subscribeTopics((tList) => {
       setTopics(tList);
-      setLoading(false);
     });
 
     return () => {
@@ -1226,7 +1310,20 @@ export function NotesReader() {
           {/* Chapter Accordion / Saved Topics Area */}
           <div className="flex-1 overflow-y-auto nr-scroll overscroll-contain px-3 pb-4 space-y-1">
 
-            {searchQuery.trim() !== '' ? (
+            {!dataReady ? (
+              /* Sidebar skeleton while chapters load */
+              <div className="space-y-2 pt-1" aria-hidden="true">
+                {[0, 1, 2, 3, 4, 5].map(i => (
+                  <div key={i} className="flex items-center gap-2.5 px-2.5 py-2">
+                    <div className="w-7 h-7 rounded-lg nr-skeleton shrink-0" />
+                    <div className="flex-1 space-y-1.5">
+                      <div className="h-3 rounded nr-skeleton" style={{ width: `${88 - (i % 3) * 14}%` }} />
+                      <div className="h-2.5 w-1/3 rounded nr-skeleton" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : searchQuery.trim() !== '' ? (
               /* Search Results */
               <div className="space-y-1">
                 <div className="text-[11px] font-bold nr-muted uppercase tracking-wider px-2 py-1">
@@ -1405,17 +1502,8 @@ export function NotesReader() {
           onTouchEnd={handleTouchEnd}
           className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden nr-scroll select-none relative overscroll-contain"
         >
-          {loading ? (
-            <div className="mx-auto w-full max-w-[var(--nr-measure)] px-4 sm:px-6 py-8 space-y-4" aria-busy="true">
-              <div className="h-4 w-40 rounded nr-skeleton" />
-              <div className="h-9 w-3/4 rounded-lg nr-skeleton" />
-              <div className="h-4 w-1/2 rounded nr-skeleton" />
-              <div className="pt-6 space-y-3">
-                {[100, 94, 98, 88, 96, 70].map((w, i) => (
-                  <div key={i} className="h-4 rounded nr-skeleton" style={{ width: `${w}%` }} />
-                ))}
-              </div>
-            </div>
+          {!dataReady ? (
+            <NotesLoader onRetry={() => window.location.reload()} />
           ) : activeTopic ? (
             <div className="mx-auto w-full px-0 sm:px-5 lg:px-8 py-0 sm:py-5 lg:py-8 pb-6">
 
