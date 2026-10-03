@@ -201,7 +201,7 @@ export function Home() {
                     <FileText className="w-5 h-5" />
                   </div>
                   <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-blue-700 transition-colors">
-                    फ्री PDF नोट्स
+                    Chapter-Wise नोट्स
                   </span>
                   <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
                     सभी विषय (M1-M4 & CCC)
