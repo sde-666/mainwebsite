@@ -176,7 +176,7 @@ export function AppPage() {
               </div>
               <h3 className="font-bold text-base text-gray-900">Teacher Doubt Clearing</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Ask your coding and exam doubts directly to Er. Skilldotpy via the in-app student chat portal with fast replies.
+                Ask your coding and exam doubts directly to Er. Aditya Pathak via the in-app student chat portal with fast replies.
               </p>
             </div>
           </div>

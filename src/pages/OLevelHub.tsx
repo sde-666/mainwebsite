@@ -30,7 +30,6 @@ import {
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { oLevelModules, OLevelModule } from '../data/oLevelData';
-import { AdBanner } from '../components/AdBanner';
 
 export function OLevelHub() {
   const { moduleId } = useParams<{ moduleId?: string }>();
@@ -870,9 +869,6 @@ export function OLevelHub() {
             </div>
           </div>
         )}
-
-        {/* Non-intrusive Ad Banner */}
-        <AdBanner slotId="olevel-bottom-banner" format="horizontal" fallbackType="calculator" />
 
       </main>
 

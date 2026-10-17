@@ -45,7 +45,6 @@ import { CourseItem, CourseChapter, CourseLesson } from '../types/paidCourse';
 import { useAuth } from '../context/AuthContext';
 import { StudentAuthModal } from '../components/auth/StudentAuthModal';
 import { openRazorpayCheckout } from '../utils/razorpay';
-import { AdBanner } from '../components/AdBanner';
 import { ComingSoon } from '../components/ComingSoon';
 
 export function CourseDetail() {

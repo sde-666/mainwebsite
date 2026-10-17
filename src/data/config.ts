@@ -98,7 +98,7 @@ export const siteConfig = {
     telegram: 'https://t.me/skilldotpy',
     instagram: 'https://instagram.com/skilldotpy',
     email: 'skilldotpy@gmail.com',
-    whatsapp: 'https://wa.me/919999999999?text=Hello%20Skilldotpy%2C%20I%20have%20a%20query%20about%20NIELIT%20O%20Level%20and%20CCC%20courses',
+    whatsapp: 'https://wa.me/919335521389?text=Hello%20Skilldotpy%2C%20I%20have%20a%20query%20about%20NIELIT%20O%20Level%20and%20CCC%20courses',
   },
   social: {
     youtube: 'https://youtube.com/@skilldotpy',

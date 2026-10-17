@@ -20,7 +20,6 @@ import {
   Info
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
-import { AdBanner } from '../components/AdBanner';
 
 interface ModuleScore {
   theory: number | '';
@@ -572,11 +571,6 @@ export function OLevelResultCalculator() {
 
             </div>
 
-            {/* PRIME AD PLACEMENT: Below Single Paper Calculator */}
-            <div className="lg:col-span-12 no-print">
-              <AdBanner slotId="calculator-single-result" format="horizontal" fallbackType="app" />
-            </div>
-
           </div>
         )}
 
@@ -842,11 +836,6 @@ export function OLevelResultCalculator() {
 
             </div>
 
-            {/* PRIME AD PLACEMENT: Below Full Diploma Calculator */}
-            <div className="no-print">
-              <AdBanner slotId="calculator-full-diploma-result" format="horizontal" fallbackType="youtube" />
-            </div>
-
           </div>
         )}
 
@@ -885,11 +874,6 @@ export function OLevelResultCalculator() {
                 The Project (PJ1-R5) has no marks or grades, but project submission and approval by NIELIT is strictly mandatory to obtain the final O Level Diploma certificate.
               </p>
             </div>
-          </div>
-
-          {/* Prime Monetization Banner */}
-          <div className="pt-4 no-print">
-            <AdBanner slotId="calculator-faq-bottom" format="horizontal" fallbackType="mock-test" />
           </div>
         </div>
 

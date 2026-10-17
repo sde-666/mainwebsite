@@ -13,7 +13,6 @@ import {
 import { SEO } from '../components/SEO';
 import { Card, CardContent } from '../components/Card';
 import { Button } from '../components/Button';
-import { AdBanner } from '../components/AdBanner';
 import { resourceCategories } from '../data/resources';
 import { resourceService, formatDirectDownloadUrl } from '../services/resourceService';
 import { DynamicResource, PurchasedResource } from '../types/database';
@@ -329,11 +328,6 @@ export function ResourceCategory() {
                 </Card>
               );
             })}
-
-            {/* In-Category Sponsor Banner */}
-            <div className="pt-6">
-              <AdBanner slotId="category-resources-bottom" format="horizontal" fallbackType="notes" />
-            </div>
           </div>
         ) : (
           <div className="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">

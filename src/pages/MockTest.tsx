@@ -28,7 +28,6 @@ import {
   Globe
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
-import { AdBanner } from '../components/AdBanner';
 import { quizService } from '../services/quizService';
 import { DynamicQuizTest, QuizQuestionItem, UserTestResult } from '../types/database';
 import { useAuth } from '../context/AuthContext';
@@ -685,9 +684,6 @@ export function MockTest() {
               </div>
             </div>
 
-            {/* In-Directory High-Value Ad Placement */}
-            <AdBanner slotId="mocktest-directory-bottom" format="horizontal" fallbackType="app" />
-
           </div>
         )}
 
@@ -836,9 +832,6 @@ export function MockTest() {
                   </div>
                 </div>
 
-                {/* AD PLACEMENT 1: Test Result Banner */}
-                <AdBanner slotId="mocktest-result-score-bottom" format="horizontal" fallbackType="app" />
-
                 {/* Detailed Solution Review */}
                 <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-8 space-y-6 shadow-xs">
                   <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
@@ -938,9 +931,6 @@ export function MockTest() {
                     })}
                   </div>
                 </div>
-
-                {/* AD PLACEMENT 2: End of Review Banner */}
-                <AdBanner slotId="mocktest-result-solutions-bottom" format="horizontal" fallbackType="notes" />
               </div>
             ) : (
               /* LIVE TEST QUESTION SOLVING & PALETTE SPLIT */
@@ -1063,9 +1053,6 @@ export function MockTest() {
                       </button>
                     )}
                   </div>
-
-                  {/* Non-intrusive Ad Banner in Exam Solving Window */}
-                  <AdBanner slotId="mocktest-question-bottom" format="horizontal" fallbackType="app" />
                 </div>
 
                 {/* Right Side Palette Sidebar (Desktop & Mobile Drawer) */}
@@ -1133,11 +1120,6 @@ export function MockTest() {
                         </button>
                       );
                     })}
-                  </div>
-
-                  {/* Sidebar Ad Placement */}
-                  <div className="pt-2 border-t border-slate-100">
-                    <AdBanner slotId="mocktest-palette-sidebar" format="rectangle" fallbackType="mock-test" />
                   </div>
 
                   <button

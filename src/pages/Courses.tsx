@@ -18,7 +18,6 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
-import { AdBanner } from '../components/AdBanner';
 import { siteConfig } from '../data/config';
 import { paidCourseService } from '../services/paidCourseService';
 import { CourseItem, CourseChapter, CourseLesson } from '../types/paidCourse';
@@ -334,9 +333,6 @@ export function Courses() {
             );
           })}
         </div>
-
-        {/* Ad Banner for organic monetization */}
-        <AdBanner format="horizontal" className="my-8" />
 
         {/* Student Trust & Guarantee Section */}
         <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-8 sm:p-12 max-w-5xl mx-auto shadow-2xl space-y-6">

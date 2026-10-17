@@ -36,12 +36,8 @@ export function PrivacyPolicy() {
         <li><strong>Study & Progress Data:</strong> Mock test scores, calculator records, and saved chapter bookmarks stored locally on your device or in our secure database.</li>
       </ul>
 
-      <h2>3. Google AdSense & Third-Party Advertising (Mandatory Disclosure)</h2>
-      <p>We use third-party advertising companies, including <strong>Google AdSense</strong>, to serve advertisements when you visit our website. These companies may use cookies and web beacons to collect information about your visits to this and other websites in order to provide advertisements about goods and services of interest to you.</p>
-      <ul>
-        <li><strong>DoubleClick DART Cookies:</strong> Google, as a third-party vendor, uses cookies to serve ads on our site. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visits to our site and/or other sites on the Internet.</li>
-        <li><strong>User Opt-Out:</strong> Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline font-semibold">Google Ads Settings</a> or through the Network Advertising Initiative opt-out page at <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline font-semibold">www.aboutads.info</a>.</li>
-      </ul>
+      <h2>3. Advertising Policy</h2>
+      <p>{siteConfig.name} is committed to providing a clean, distraction-free educational environment. We do not display intrusive third-party advertisements, pop-up banners, or sponsored ad networks on our study hubs, ensuring students can focus entirely on NIELIT exam preparation.</p>
 
       <h2>4. Cookies and Web Beacons</h2>
       <p>Like any other website, {siteConfig.name} uses "cookies". These cookies are used to store information including visitors' preferences, study progress, and the pages on the website that the visitor accessed or visited. The information is used to optimize the users' experience by customizing our web page content based on visitors' browser type and/or other information.</p>

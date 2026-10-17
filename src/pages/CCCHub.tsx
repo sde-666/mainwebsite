@@ -31,7 +31,6 @@ import {
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { NielitLogo } from '../components/NielitLogo';
-import { AdBanner } from '../components/AdBanner';
 import { siteConfig } from '../data/config';
 import { cccExamInfo, cccChapters, libreOfficeShortcutCheatSheet, LibreOfficeShortcut } from '../data/cccData';
 
@@ -887,11 +886,6 @@ export function CCCHub() {
               </tbody>
             </table>
           </div>
-        </div>
-
-        {/* CCC HUB SPONSOR BANNER */}
-        <div className="pt-6">
-          <AdBanner slotId="ccc-shortcuts-bottom" format="horizontal" fallbackType="mock-test" />
         </div>
 
       </div>

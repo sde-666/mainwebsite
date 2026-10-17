@@ -17,7 +17,6 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
-import { AdBanner } from '../components/AdBanner';
 import { DynamicResource, PurchasedResource } from '../types/database';
 import { resourceService, formatDirectDownloadUrl } from '../services/resourceService';
 import { resourceCategories } from '../data/resources';
@@ -559,11 +558,6 @@ export function Resources() {
              </div>
           </div>
         </div>
-      </div>
-
-      {/* BOTTOM RESOURCES MONETIZATION BANNER */}
-      <div className="pt-8">
-        <AdBanner slotId="resources-grid-bottom" format="horizontal" fallbackType="notes" />
       </div>
 
     </div>

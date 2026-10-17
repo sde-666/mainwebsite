@@ -238,7 +238,7 @@ export const initialPaidLessonsSeed: CourseLesson[] = [
     videoId: 'kqtD5dpn9C8',
     hasPdf: true,
     pdfTitle: 'Chapter 1 Complete Theory & Installation Guide PDF',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pdfUrl: '/downloads/m3-r5-notes.pdf',
     pdfPages: 8,
     isFreePreview: true, // Free Demo 1
     createdAt: Date.now() - 86400000 * 10,
@@ -258,7 +258,7 @@ export const initialPaidLessonsSeed: CourseLesson[] = [
     videoId: '7wnove7K-ZQ',
     hasPdf: true,
     pdfTitle: 'Flowchart Symbols & Example Problem PDF Notes',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pdfUrl: '/downloads/m3-r5-notes.pdf',
     pdfPages: 12,
     isFreePreview: true, // Free Demo 2
     createdAt: Date.now() - 86400000 * 9,
@@ -278,7 +278,7 @@ export const initialPaidLessonsSeed: CourseLesson[] = [
     videoId: 'YYXdXT2l-Gg',
     hasPdf: true,
     pdfTitle: 'Variables & Data Types Handwritten Formula Notes',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pdfUrl: '/downloads/m3-r5-notes.pdf',
     pdfPages: 15,
     isFreePreview: false, // LOCKED (Paid only)
     createdAt: Date.now() - 86400000 * 8,
@@ -298,7 +298,7 @@ export const initialPaidLessonsSeed: CourseLesson[] = [
     videoId: 'vLqTf2b6GZw',
     hasPdf: true,
     pdfTitle: 'Operator Precedence & Evaluation Rules Sheet',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pdfUrl: '/downloads/m3-r5-notes.pdf',
     pdfPages: 10,
     isFreePreview: false, // LOCKED (Paid only)
     createdAt: Date.now() - 86400000 * 7,
@@ -318,7 +318,7 @@ export const initialPaidLessonsSeed: CourseLesson[] = [
     videoId: 'kqtD5dpn9C8',
     hasPdf: true,
     pdfTitle: 'Conditional Statements Solved Code Examples PDF',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pdfUrl: '/downloads/m3-r5-notes.pdf',
     pdfPages: 14,
     isFreePreview: false, // LOCKED
     createdAt: Date.now() - 86400000 * 6,
@@ -340,7 +340,7 @@ export const initialPaidLessonsSeed: CourseLesson[] = [
     videoId: 'kqtD5dpn9C8',
     hasPdf: true,
     pdfTitle: 'Computer Fundamentals Chapter 1 Notes PDF',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pdfUrl: '/downloads/m1-r5-notes.pdf',
     pdfPages: 11,
     isFreePreview: true, // Free Demo 1
     createdAt: Date.now() - 86400000 * 8,
@@ -360,7 +360,7 @@ export const initialPaidLessonsSeed: CourseLesson[] = [
     videoId: '7wnove7K-ZQ',
     hasPdf: true,
     pdfTitle: 'Operating System Short Notes & Shortcuts PDF',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pdfUrl: '/downloads/m1-r5-notes.pdf',
     pdfPages: 9,
     isFreePreview: true, // Free Demo 2
     createdAt: Date.now() - 86400000 * 7,
@@ -380,7 +380,7 @@ export const initialPaidLessonsSeed: CourseLesson[] = [
     videoId: 'YYXdXT2l-Gg',
     hasPdf: true,
     pdfTitle: 'LibreOffice Writer All Menu & Shortcuts Sheet',
-    pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pdfUrl: '/downloads/m1-r5-notes.pdf',
     pdfPages: 16,
     isFreePreview: false, // LOCKED
     createdAt: Date.now() - 86400000 * 6,

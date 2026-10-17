@@ -3,7 +3,6 @@ import Markdown from 'react-markdown';
 import { ArrowLeft } from 'lucide-react';
 import { SEO } from '../components/SEO';
 import { Button } from '../components/Button';
-import { AdBanner } from '../components/AdBanner';
 import { tutorials } from '../data/tutorials';
 
 export function TutorialDetail() {
@@ -45,11 +44,6 @@ export function TutorialDetail() {
           <div className="markdown-body">
             <Markdown>{tutorial.content}</Markdown>
           </div>
-        </div>
-
-        {/* Tutorial In-Article Sponsor */}
-        <div className="my-10">
-          <AdBanner slotId="tutorial-article-bottom" format="in-article" fallbackType="notes" />
         </div>
         
         <div className="mt-12 pt-8 border-t border-gray-200 flex justify-between items-center">
