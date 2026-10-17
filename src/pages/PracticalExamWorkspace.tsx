@@ -27,7 +27,9 @@ import {
   Save,
   Check,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Monitor,
+  Smartphone
 } from 'lucide-react';
 import { getPracticalTestById, evaluatePracticalExam, submitPracticalExam } from '../services/practicalService';
 import { PracticalTestSet, PracticalScorecard } from '../types/practical';
@@ -44,6 +46,25 @@ import { NielitLogo } from '../components/NielitLogo';
 export const PracticalExamWorkspace: React.FC = () => {
   const { testId } = useParams<{ testId: string }>();
   const navigate = useNavigate();
+
+  // ─── Mobile Detection ───────────────────────────────────────
+  const [isMobileDevice, setIsMobileDevice] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const ua = navigator.userAgent || navigator.vendor || '';
+    const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua);
+    return mobileUA || window.innerWidth < 768;
+  });
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const ua = navigator.userAgent || navigator.vendor || '';
+      const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua);
+      setIsMobileDevice(mobileUA || window.innerWidth < 768);
+    };
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
 
   const [test, setTest] = useState<PracticalTestSet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -206,6 +227,114 @@ export const PracticalExamWorkspace: React.FC = () => {
     const secs = seconds % 60;
     return `${mins} min : ${String(secs).padStart(2, '0')} sec`;
   };
+
+  // ─── Mobile Blocker Screen ─────────────────────────────────
+  if (isMobileDevice) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 flex items-center justify-center p-4 relative overflow-hidden">
+        <SEO
+          title="Desktop Required — Practical Simulator"
+          description="The NIELIT O Level Practical Exam Simulator requires a desktop or laptop computer."
+        />
+
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500/5 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }} />
+        </div>
+
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
+        }} />
+
+        <div className="relative z-10 max-w-md w-full">
+          {/* Main card */}
+          <div className="bg-white/[0.07] backdrop-blur-2xl border border-white/[0.12] rounded-3xl p-8 shadow-2xl">
+            {/* Icon pair */}
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-2xl bg-red-500/15 border border-red-500/20 flex items-center justify-center">
+                  <Smartphone className="w-8 h-8 text-red-400" />
+                </div>
+                {/* X mark on mobile */}
+                <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/30">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex items-center gap-1 text-slate-500">
+                <ArrowRight className="w-5 h-5" />
+              </div>
+
+              <div className="relative">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
+                  <Monitor className="w-8 h-8 text-emerald-400" />
+                </div>
+                {/* Checkmark on desktop */}
+                <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                </div>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-xl font-bold text-white text-center mb-2 tracking-tight">
+              Desktop Mode Required
+            </h1>
+            <p className="text-sm text-slate-400 text-center mb-6 leading-relaxed">
+              The Practical Exam Simulator requires a <span className="text-blue-300 font-semibold">desktop or laptop</span> computer for the best experience.
+            </p>
+
+            {/* Reason cards */}
+            <div className="space-y-2.5 mb-7">
+              {[
+                { icon: '💻', text: 'Full-screen code editor needs wider display' },
+                { icon: '⌨️', text: 'Typing code requires a physical keyboard' },
+                { icon: '🖥️', text: 'Split-pane layout designed for desktop screens' },
+                { icon: '⏱️', text: 'Timed exam environment works best on desktop' }
+              ].map((reason, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.06]"
+                >
+                  <span className="text-base flex-shrink-0">{reason.icon}</span>
+                  <span className="text-[13px] text-slate-300">{reason.text}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* How to access */}
+            <div className="bg-blue-500/10 border border-blue-500/15 rounded-xl p-4 mb-7">
+              <p className="text-xs font-bold text-blue-300 mb-1.5 uppercase tracking-wider">How to Access</p>
+              <p className="text-[13px] text-slate-300 leading-relaxed">
+                Open <span className="text-white font-semibold">skilldotpy.com</span> on your laptop or desktop browser and navigate to the Practical Lab section.
+              </p>
+            </div>
+
+            {/* Back button */}
+            <button
+              onClick={() => navigate('/practical-practice')}
+              className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-bold shadow-lg shadow-blue-600/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Practical Hub
+            </button>
+          </div>
+
+          {/* Bottom note */}
+          <p className="text-center text-xs text-slate-500 mt-5">
+            🔒 This restriction ensures exam simulation accuracy
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading || !test) {
     return (
