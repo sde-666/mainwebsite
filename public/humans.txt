@@ -1,0 +1,26 @@
+# https://skilldotpy.com/humans.txt
+
+/* TEAM */
+Founder & Developer: Er. Aditya Pathak
+Role: NIELIT Mentor, Full-Stack Developer
+Contact: skilldotpy@gmail.com
+Location: India
+YouTube: https://youtube.com/@skilldotpy
+Telegram: https://t.me/skilldotpy
+Instagram: https://instagram.com/skilldotpy
+
+/* SITE */
+Standards: HTML5, CSS3, JavaScript ES2024, React 19
+Framework: Vite + React + TypeScript
+Hosting: Netlify
+Database: Firebase Firestore
+Last updated: 2026-10-21
+Language: English, Hindi
+Doctype: HTML5
+Software: Visual Studio Code, Figma
+
+/* THANKS */
+NIELIT India: https://www.nielit.gov.in/
+React: https://react.dev/
+Vite: https://vite.dev/
+Lucide Icons: https://lucide.dev/

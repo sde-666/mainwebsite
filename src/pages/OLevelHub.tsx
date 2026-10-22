@@ -128,17 +128,73 @@ export function OLevelHub() {
     }
   };
 
+  const oLevelModuleSchema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: `NIELIT O Level ${currentModule.code}: ${currentModule.title}`,
+      description: `Complete syllabus, chapter-wise study notes, practice questions, and marks weightage distribution for NIELIT O Level ${currentModule.code} (${currentModule.shortName}).`,
+      provider: {
+        '@type': 'EducationalOrganization',
+        name: 'Skilldotpy',
+        url: 'https://skilldotpy.com'
+      },
+      courseCode: currentModule.code,
+      educationalCredentialAwarded: 'NIELIT O Level Certification'
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: `What is the syllabus of NIELIT O Level ${currentModule.code}?`,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: `NIELIT O Level ${currentModule.code} (${currentModule.title}) covers ${currentModule.chapters.length} comprehensive units as per the revised R5.1 curriculum. All chapter notes, theory, and practical topics are available on Skilldotpy.`
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the passing formula for NIELIT O Level exams?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'To pass each module, a student must score at least 33% in theory, 33% in practical, and achieve a combined 60:40 composite score of at least 50% (Grade D).'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: `Where can I get chapter wise notes for ${currentModule.code}?`,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: `Skilldotpy provides free bilingual (Hindi and English) chapter-wise lecture notes and online MCQ practice tests for all chapters of ${currentModule.code}.`
+          }
+        }
+      ]
+    }
+  ];
+
   return (
     <div className="bg-slate-50 min-h-screen">
       <SEO 
-        title={`${currentModule.code}: ${currentModule.shortName} Notes & Syllabus`}
-        description={`NIELIT O Level ${currentModule.code} (${currentModule.shortName}) complete study hub: Syllabus, chapter-wise notes, and marks weightage distribution.`}
+        title={`${currentModule.code}: ${currentModule.shortName} Notes, Syllabus & MCQs | Skilldotpy`}
+        description={`NIELIT O Level ${currentModule.code} (${currentModule.shortName}) complete study guide: Latest R5.1 syllabus, chapter-wise notes in Hindi/English, and marks weightage distribution.`}
+        canonicalUrl={`/o-level/${currentModule.id}`}
         keywords={[
           `NIELIT O level ${currentModule.code}`,
-          `${currentModule.shortName} syllabus pdf`,
           `${currentModule.code} chapter wise notes`,
+          `${currentModule.shortName} notes in hindi pdf`,
+          `${currentModule.code} mcq online test`,
+          `${currentModule.shortName} syllabus pdf`,
           'Skilldotpy NIELIT O level',
+          'o level notes free download',
           'O Level R5.1 marks distribution'
+        ]}
+        schema={oLevelModuleSchema}
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'O Level Study Hub', url: '/o-level' },
+          { name: currentModule.code, url: `/o-level/${currentModule.id}` }
         ]}
       />
 

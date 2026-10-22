@@ -2,6 +2,8 @@
 # Skilldotpy - Official Robots.txt for Search Engine Optimization
 # Website: https://skilldotpy.com
 # Maintained for Googlebot, Bingbot, Applebot, DuckDuckBot, YandexBot
+# and AI crawlers (GPTBot, Anthropic, Perplexity, Google-Extended)
+# Last Updated: 2026-10-21
 # ====================================================================
 
 User-agent: *
@@ -46,6 +48,9 @@ Allow: /disclaimer
 Allow: /refund-policy
 Allow: /sitemap.xml
 Allow: /robots.txt
+Allow: /llms.txt
+Allow: /humans.txt
+Allow: /.well-known/
 
 # Disallow Private & Admin Endpoints
 Disallow: /admin
@@ -53,6 +58,10 @@ Disallow: /admin/
 Disallow: /admin/*
 Disallow: /api/
 Disallow: /api/*
+Disallow: /login
+Disallow: /signup
+Disallow: /student-login
+Disallow: /my-courses
 
 # --------------------------------------------------------------------
 # Googlebot Specific Rules
@@ -67,6 +76,10 @@ Allow: /practical-practice
 Allow: /practical-practice/*
 Allow: /notes
 Allow: /notes/*
+Allow: /chapter-wise-notes
+Allow: /chapter-wise-notes/*
+Allow: /chapter-wise-mcq
+Allow: /chapter-wise-mcq/*
 Allow: /resources
 Allow: /resources/*
 Allow: /courses
@@ -90,6 +103,80 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/*
 Disallow: /api/*
+
+# --------------------------------------------------------------------
+# AI Search Engine Crawlers (GEO/AEO Optimization)
+# Allow AI crawlers to index content for AI Overviews and citations
+# --------------------------------------------------------------------
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /api/*
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /api/*
+
+User-agent: Anthropic-ai
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /api/*
+
+User-agent: Claude-Web
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /api/*
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /api/*
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /api/*
+
+User-agent: Applebot
+Allow: /
+Disallow: /admin
+Disallow: /api/*
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin
+Disallow: /api/*
+
+User-agent: YandexBot
+Allow: /
+Disallow: /admin
+Disallow: /api/*
+
+# Crawl delay for less important bots
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Crawl-delay: 10
+
+# Block harmful bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: dotbot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
 
 # --------------------------------------------------------------------
 # XML Sitemap Index

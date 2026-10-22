@@ -259,11 +259,61 @@ export function ChapterWiseMcqHub() {
     }
   ];
 
+  const chapterMcqFaqs = [
+    {
+      q: 'How can I practice NIELIT O Level chapter wise MCQs online?',
+      a: 'You can practice online chapter-wise MCQs for all 4 NIELIT O Level modules (M1-R5.1 IT Tools, M2-R5.1 Web Design, M3-R5.1 Python Programming, and M4-R5.1 IoT) on Skilldotpy for free. Each question features instant answer checking, detailed bilingual (Hindi/English) explanations, and score tracking.'
+    },
+    {
+      q: 'Is there negative marking in NIELIT O Level and CCC exams?',
+      a: 'No. There is strictly NO negative marking in NIELIT O Level online theory (CBT) exams or CCC exams. Every correct answer gives +1 mark, and unattempted or incorrect answers receive 0 marks.'
+    },
+    {
+      q: 'What is the passing criteria for NIELIT O Level exam?',
+      a: 'A candidate must score a minimum of 33% marks in the Theory exam and 33% marks in the Practical exam independently, with an overall composite score (60% weightage for theory + 40% weightage for practical) of at least 50% to pass (Grade D).'
+    },
+    {
+      q: 'How many MCQs are in the NIELIT CCC exam?',
+      a: 'The NIELIT CCC online exam comprises 100 questions (multiple choice questions and True/False) to be completed in 90 minutes. A minimum score of 50 marks (50%) is required to pass.'
+    },
+    {
+      q: 'Are previous year questions (PYQs) included in these chapter-wise MCQs?',
+      a: 'Yes, our chapter-wise question banks integrate real exam questions from previous NIELIT exam cycles (2020 through 2026), updated strictly for the R5.1 revised syllabus.'
+    }
+  ];
+
+  const mcqHubSchema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: 'NIELIT O Level Chapter Wise MCQ Online Practice Tests & Solutions',
+      description: 'Practice NIELIT O Level (M1-R5.1, M2-R5.1, M3-R5.1 Python, M4-R5.1 IoT) and CCC MCQs chapter by chapter with instant answers and bilingual explanations.',
+      provider: {
+        '@type': 'EducationalOrganization',
+        name: 'Skilldotpy',
+        url: 'https://skilldotpy.com'
+      },
+      educationalCredentialAwarded: 'NIELIT O Level Certificate'
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: chapterMcqFaqs.map(faq => ({
+        '@type': 'Question',
+        name: faq.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.a
+        }
+      }))
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-16">
       <SEO
         title="O Level Chapter Wise MCQ Online Practice & Solutions | Skilldotpy"
-        description="Practice NIELIT O Level (M1-R5.1, M2-R5.1, M3-R5.1 Python, M4-R5.1 IoT) and CCC MCQs chapter by chapter with instant answer verification, score tracker, and bilingual explanations."
+        description="Practice NIELIT O Level (M1-R5.1, M2-R5.1, M3-R5.1 Python, M4-R5.1 IoT) & CCC MCQs chapter by chapter with instant answer verification and Hindi solutions."
         canonicalUrl="/chapter-wise-mcq"
         keywords={[
           'o level mcq',
@@ -274,8 +324,11 @@ export function ChapterWiseMcqHub() {
           'o level m3 r5 python mcq practice',
           'o level m4 r5 iot mcq test',
           'ccc chapter wise mcq practice in hindi',
-          'nielit o level previous year solved mcq'
+          'nielit o level previous year solved mcq',
+          'nielit o level mock test online free',
+          'skilldotpy mcq test'
         ]}
+        schema={mcqHubSchema}
         breadcrumbs={[
           { name: 'Home', url: '/' },
           { name: 'Chapter Wise MCQs', url: '/chapter-wise-mcq' }
@@ -454,6 +507,63 @@ export function ChapterWiseMcqHub() {
           </div>
         )}
 
+        {/* =========================================================================
+            FREQUENTLY ASKED QUESTIONS (FAQ) - SEARCH SNIPPETS
+           ========================================================================= */}
+        <section className="mt-14 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2.5 py-1 rounded-md">
+              Exam Guidance
+            </span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            Frequently Asked Questions: NIELIT O Level &amp; CCC MCQs
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 mb-6">
+            Everything you need to know about O Level and CCC online tests, passing marks, negative marking, and preparation strategy.
+          </p>
+
+          <div className="space-y-4">
+            {chapterMcqFaqs.map((faq, idx) => (
+              <div 
+                key={idx}
+                className="p-4 sm:p-5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-50 transition-colors"
+              >
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-start gap-2.5">
+                  <span className="text-rose-600 font-extrabold text-sm sm:text-base shrink-0">Q{idx + 1}.</span>
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2 pl-6 sm:pl-7 leading-relaxed">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Cross-Promotion: Study Notes CTA */}
+        <section className="mt-10 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-300 bg-blue-500/20 px-2.5 py-1 rounded-md border border-blue-400/30">
+              Need Theory First?
+            </span>
+            <h3 className="text-lg sm:text-xl font-bold mt-2">
+              Read Chapter-Wise Notes Before Practicing MCQs
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+              Revise complete theory, definitions, formulas, and code snippets in Hindi &amp; English.
+            </p>
+          </div>
+          <div className="shrink-0">
+            <Link
+              to="/chapter-wise-notes"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-extrabold text-xs sm:text-sm shadow-sm transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Read Chapter Notes →</span>
+            </Link>
+          </div>
+        </section>
       </div>
     </div>
   );

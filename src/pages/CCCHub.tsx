@@ -120,20 +120,60 @@ export function CCCHub() {
       },
       educationalCredentialAwarded: 'NIELIT CCC Certificate',
       courseCode: 'NIELIT-CCC-80HR'
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is NIELIT CCC exam duration and total number of questions?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'The NIELIT CCC exam consists of 100 questions (objective MCQs and True/False) to be completed in 90 minutes. There is no negative marking.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'What are the passing marks and grading system for NIELIT CCC?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Passing marks for CCC are 50%. Grading: Grade D (50%-54%), Grade C (55%-64%), Grade B (65%-74%), Grade A (75%-84%), and Grade S (85% and above).'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Where can I get CCC LibreOffice shortcut keys and chapter notes in Hindi?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Skilldotpy provides complete 9-chapter CCC study notes in Hindi and English, along with an interactive 100+ LibreOffice shortcut keys cheat sheet for Writer, Calc, and Impress.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'What are the 9 chapters in NIELIT CCC syllabus?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: '1. Introduction to Computer, 2. Introduction to Operating System, 3. Word Processing (LibreOffice Writer), 4. Spreadsheet (LibreOffice Calc), 5. Presentation (LibreOffice Impress), 6. Introduction to Internet and WWW, 7. E-mail, Social Networking and e-Governance Services, 8. Digital Financial Tools and Applications, 9. Overview of Cyber Security.'
+          }
+        }
+      ]
     }
   ];
 
   return (
     <div className="bg-slate-50 min-h-screen">
       <SEO
-        title="NIELIT CCC Syllabus, Notes & Shortcuts"
-        description="Crack NIELIT CCC exam with Grade S. 9 chapters syllabus breakdown, 100+ LibreOffice Writer/Calc shortcuts, free PDF notes & CBT mock tests."
+        title="NIELIT CCC Notes, Syllabus, Shortcuts & MCQs | Skilldotpy"
+        description="Pass NIELIT CCC exam with Grade S. Complete 9 chapters syllabus notes in Hindi/English, 100+ LibreOffice Writer/Calc shortcuts, and free online mock tests."
+        canonicalUrl="/ccc"
         keywords={[
           'Skilldotpy CCC',
           'NIELIT CCC free notes PDF download',
           'CCC syllabus 2026 80 hours in Hindi',
           'LibreOffice shortcut keys in Hindi for CCC',
           'LibreOffice Writer Calc Impress shortcuts PDF',
+          'CCC chapter wise notes',
           'CCC online mock test free 100 questions',
           'CCC exam passing marks and grading system',
           'CCC digital banking AEPS UPI questions',

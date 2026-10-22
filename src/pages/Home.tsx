@@ -91,22 +91,23 @@ export function Home() {
   return (
     <div className="bg-slate-50 min-h-screen">
       <SEO 
-        title="NIELIT O Level & CCC Free Notes"
-        description="Free NIELIT O Level (M1-R5 to M4-R5) & CCC exam preparation: Chapter notes, syllabus, Python practicals, CBT mock tests & Android app by Skilldotpy."
+        title="NIELIT O Level & CCC Notes, MCQs & Syllabus"
+        description="Free NIELIT O Level (M1, M2, M3, M4) & CCC chapterwise notes in Hindi/English, online MCQs, practical compilers, CBT mock tests & PDF study material."
+        canonicalUrl="/"
         keywords={[
           'Skilldotpy',
-          'skilldotpy',
-          'skill.py',
-          'Skill.py',
-          'Skill Dot Py',
+          'o level chapterwise notes',
+          'o level chapterwise mcq',
+          'ccc notes mcq',
+          'NIELIT O Level study material',
           'NIELIT O Level free notes',
           'O Level syllabus 2026 pdf',
           'O level M1-R5 notes',
           'O level M2-R5 web design',
           'O level M3-R5 python notes in Hindi',
-          'O level M4-R5 IoT',
-          'CCC free notes pdf',
-          'LibreOffice shortcuts',
+          'O level M4-R5 IoT notes',
+          'CCC free notes pdf in hindi',
+          'LibreOffice shortcuts cheat sheet',
           'Skilldotpy app download apk'
         ]}
         schema={homeSchemas}

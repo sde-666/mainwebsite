@@ -52,14 +52,20 @@ function setMetaTag(attr: 'name' | 'property', key: string, content: string) {
   el.setAttribute('content', content);
 }
 
-function setLinkTag(rel: string, href: string) {
-  let el = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+function setLinkTag(rel: string, href: string, extra?: Record<string, string>) {
+  const selector = extra?.hreflang
+    ? `link[rel="${rel}"][hreflang="${extra.hreflang}"]`
+    : `link[rel="${rel}"]`;
+  let el = document.head.querySelector<HTMLLinkElement>(selector);
   if (!el) {
     el = document.createElement('link');
     el.setAttribute('rel', rel);
     document.head.appendChild(el);
   }
   el.setAttribute('href', href);
+  if (extra) {
+    Object.entries(extra).forEach(([k, v]) => el!.setAttribute(k, v));
+  }
 }
 
 function setJsonLd(id: string, data: unknown) {
@@ -260,6 +266,17 @@ export function SEO({
     setMetaTag('name', 'geo.placename', 'India');
     setMetaTag('name', 'rating', 'General');
     setMetaTag('name', 'distribution', 'Global');
+    setMetaTag('name', 'language', 'English, Hindi');
+    setMetaTag('name', 'revisit-after', '3 days');
+    setMetaTag('name', 'coverage', 'Worldwide');
+
+    // Hreflang alternate links for bilingual content
+    setLinkTag('alternate', pageUrl, { hreflang: 'en-IN' });
+    setLinkTag('alternate', pageUrl, { hreflang: 'hi-IN' });
+    setLinkTag('alternate', pageUrl, { hreflang: 'x-default' });
+
+    // Content freshness signal
+    setMetaTag('property', 'article:modified_time', new Date().toISOString().split('T')[0]);
 
     setLinkTag('canonical', pageUrl);
 

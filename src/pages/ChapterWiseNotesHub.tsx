@@ -269,11 +269,88 @@ export function ChapterWiseNotesHub() {
     return `/notes/${moduleId}/${prefix}-ch${chapterNum}`;
   };
 
+  const chapterNotesFaqs = [
+    {
+      q: 'How can I download NIELIT O Level chapter wise notes in PDF for free?',
+      a: 'You can study all NIELIT O Level chapter wise notes online for free on Skilldotpy covering all 4 modules: M1-R5.1 (IT Tools), M2-R5.1 (Web Designing), M3-R5.1 (Python Programming), and M4-R5.1 (Internet of Things). Notes are prepared in Hindi and English with key definitions, formulas, syntax, and step-by-step examples.'
+    },
+    {
+      q: 'Are these O Level notes updated according to the latest NIELIT R5.1 revised syllabus?',
+      a: 'Yes, 100% of our study material, chapter notes, code samples, and definitions are strictly aligned with the latest NIELIT R5.1 curriculum, including LibreOffice 7.x, HTML5, CSS3, JavaScript, Python 3.10+, and Arduino IoT programming.'
+    },
+    {
+      q: 'Can I practice chapter wise MCQs after reading these notes?',
+      a: 'Yes! Skilldotpy provides dedicated Chapter-Wise MCQ Practice Tests for each chapter of M1-R5, M2-R5, M3-R5, M4-R5, and CCC with instant answer evaluation, detailed bilingual explanations, and accuracy tracking.'
+    },
+    {
+      q: 'What are the 4 modules in the NIELIT O Level Course?',
+      a: 'The four modules of NIELIT O Level are: M1-R5.1: Information Technology Tools and Network Basics; M2-R5.1: Web Designing & Publishing; M3-R5.1: Programming and Problem Solving through Python; M4-R5.1: Internet of Things (IoT) and its Applications, along with one mandatory final project (PJ1-R5).'
+    },
+    {
+      q: 'Does Skilldotpy offer CCC (Course on Computer Concepts) chapter-wise notes?',
+      a: 'Yes, Skilldotpy covers the entire 80-hour NIELIT CCC syllabus across 9 chapters, including Computer Fundamentals, LibreOffice Writer, Calc, Impress, Internet, Email, Social Networking, Digital Financial Tools (UPI, AEPS, USSD, Cards), and Cyber Security.'
+    }
+  ];
+
+  const notesHubSchema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: 'NIELIT O Level Chapter Wise Notes & Study Material',
+      description: 'Comprehensive NIELIT O Level (M1-R5, M2-R5, M3-R5 Python, M4-R5 IoT) and CCC chapter wise study notes, formulas, syntax, and definitions in Hindi & English.',
+      provider: {
+        '@type': 'EducationalOrganization',
+        name: 'Skilldotpy',
+        url: 'https://skilldotpy.com'
+      },
+      educationalCredentialAwarded: 'NIELIT O Level Diploma',
+      hasCourseInstance: [
+        {
+          '@type': 'CourseInstance',
+          name: 'M1-R5.1: Information Technology Tools and Network Basics',
+          courseMode: 'Online'
+        },
+        {
+          '@type': 'CourseInstance',
+          name: 'M2-R5.1: Web Designing & Publishing',
+          courseMode: 'Online'
+        },
+        {
+          '@type': 'CourseInstance',
+          name: 'M3-R5.1: Programming and Problem Solving through Python',
+          courseMode: 'Online'
+        },
+        {
+          '@type': 'CourseInstance',
+          name: 'M4-R5.1: Internet of Things (IoT) and its Applications',
+          courseMode: 'Online'
+        },
+        {
+          '@type': 'CourseInstance',
+          name: 'NIELIT CCC: Course on Computer Concepts',
+          courseMode: 'Online'
+        }
+      ]
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: chapterNotesFaqs.map(faq => ({
+        '@type': 'Question',
+        name: faq.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.a
+        }
+      }))
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-20">
       <SEO
-        title="O Level Chapter Wise Notes (M1-R5, M2-R5, M3-R5, M4-R5) & CCC | Skilldotpy"
-        description="Comprehensive NIELIT O Level chapter wise notes in Hindi & English for M1-R5.1, M2-R5.1, M3-R5.1 Python, M4-R5.1 IoT, and CCC. Detailed theory, formulas, definitions, and code syntax."
+        title="O Level Chapter Wise Notes (M1, M2, M3, M4) & CCC in Hindi | Skilldotpy"
+        description="Free NIELIT O Level chapter wise notes in Hindi & English for M1-R5.1, M2-R5.1, M3-R5.1 Python, M4-R5.1 IoT, and CCC. Detailed theory, formulas, definitions, and code syntax."
         canonicalUrl="/chapter-wise-notes"
         keywords={[
           'o level chapter wise notes',
@@ -284,8 +361,11 @@ export function ChapterWiseNotesHub() {
           'o level m3-r5 python programming chapter notes',
           'o level m4-r5 iot chapter notes',
           'ccc chapter wise study material nielit',
+          'nielit o level free notes pdf download',
+          'o level study material hindi english',
           'skilldotpy notes'
         ]}
+        schema={notesHubSchema}
         breadcrumbs={[
           { name: 'Home', url: '/' },
           { name: 'Chapter Wise Notes', url: '/chapter-wise-notes' }
@@ -302,15 +382,15 @@ export function ChapterWiseNotesHub() {
           
           <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 text-xs font-black px-3.5 py-1.5 rounded-full mb-4 border border-blue-400/30 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span>NIELIT R5.1 Official Chapter-Wise Lecture & Study Notes</span>
+            <span>NIELIT R5.1 Official Curriculum • Bilingual Study Notes</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-            चैप्टरवाइज़ स्टडी नोट्स
+            NIELIT O Level Chapter Wise Notes <span className="text-blue-400 block sm:inline">&amp; CCC Study Material</span>
           </h1>
           
-          <p className="text-sm sm:text-base text-slate-300 mt-3 max-w-2xl mx-auto leading-relaxed">
-            प्रत्येक चैप्टर के विस्तृत थ्योरी नोट्स, डेफिनिशन, सिंटैक्स, कोड उदाहरण और द्विभाषी (Hindi & English) व्याख्या। 1-क्लिक में चैप्टर का अध्ययन शुरू करें।
+          <p className="text-sm sm:text-base text-slate-300 mt-3 max-w-3xl mx-auto leading-relaxed">
+            M1-R5, M2-R5, M3-R5 (Python), M4-R5 (IoT) और CCC के प्रत्येक चैप्टर के विस्तृत थ्योरी नोट्स, डेफिनिशन, सिंटैक्स व कोड उदाहरण (Hindi &amp; English)। 1-क्लिक में चैप्टर का अध्ययन शुरू करें।
           </p>
 
           {/* Quick Segment Switcher Tabs */}
@@ -469,8 +549,42 @@ export function ChapterWiseNotesHub() {
           </div>
         )}
 
+        {/* =========================================================================
+            FREQUENTLY ASKED QUESTIONS (FAQ) - TARGETING HIGH-VOLUME SEARCH QUERIES
+           ========================================================================= */}
+        <section className="mt-14 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
+              Got Questions?
+            </span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            Frequently Asked Questions: NIELIT O Level &amp; CCC Notes
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 mb-6">
+            Find quick answers to common queries regarding O Level modules, syllabus updates, PDF study material, and exam preparation.
+          </p>
+
+          <div className="space-y-4">
+            {chapterNotesFaqs.map((faq, idx) => (
+              <div 
+                key={idx}
+                className="p-4 sm:p-5 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-50 transition-colors"
+              >
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-start gap-2.5">
+                  <span className="text-blue-600 font-extrabold text-sm sm:text-base shrink-0">Q{idx + 1}.</span>
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2 pl-6 sm:pl-7 leading-relaxed">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Quick Footer CTA to MCQs & Calculator */}
-        <section className="mt-12 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
+        <section className="mt-10 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
           <div>
             <span className="text-xs font-extrabold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md">
               Complete Preparation Ecosystem

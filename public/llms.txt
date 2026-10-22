@@ -1,0 +1,54 @@
+# Skilldotpy — NIELIT O Level & CCC Study Material Platform
+
+> Skilldotpy is India's #1 free and paid learning platform for NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5) and CCC exam preparation. Founded by Er. Aditya Pathak.
+
+## What We Offer
+
+- **Chapter-Wise Notes**: Free bilingual (Hindi + English) notes for all 32+ chapters across O Level M1, M2, M3, M4 and CCC.
+- **Chapter-Wise MCQs**: Instant practice tests with explanations for every chapter of every module.
+- **CBT Mock Tests**: Full-length 100-question timed mock tests simulating NIELIT's real CBT exam environment.
+- **Practical Exam IDE**: Browser-based code runners for Python, HTML/CSS/JS, and Arduino IoT practical exams.
+- **Paid Video Courses**: HD video masterclasses for all 4 O Level modules + CCC with lifetime access.
+- **Syllabus & Result Calculator**: Latest R5.1 syllabus breakdowns and O Level grade calculator tool.
+- **Free PDF Downloads**: Downloadable chapter-wise PDF notes, previous year papers, and cheat sheets.
+- **Android App**: Full-featured Android app with offline mode, video lectures, and mock tests.
+
+## Target Exams & Subjects
+
+### NIELIT O Level (R5.1)
+- **M1-R5**: IT Tools & Network Basics (9 chapters — Computer Fundamentals, Operating Systems, LibreOffice Writer/Calc/Impress, Networking & Internet, Cybersecurity)
+- **M2-R5**: Web Designing & Publishing (8 chapters — HTML5, CSS3, JavaScript, Responsive Design, Web Hosting)
+- **M3-R5**: Programming & Problem Solving through Python (9 chapters — Algorithms, Python Basics, Control Flow, Data Structures, Functions, File Handling, NumPy)
+- **M4-R5**: Internet of Things & its Applications (6 chapters — IoT Architecture, Sensors, Arduino, Raspberry Pi, Cloud & IoT, IoT Applications)
+
+### NIELIT CCC (Course on Computer Concepts)
+- 9 chapters covering Computer Fundamentals, LibreOffice Suite, Internet & Email, Digital Financial Tools, Cybersecurity, Future Skills
+
+## Key URLs
+
+- Home: https://skilldotpy.com/
+- O Level Hub: https://skilldotpy.com/o-level
+- CCC Hub: https://skilldotpy.com/ccc
+- Chapter-Wise Notes: https://skilldotpy.com/chapter-wise-notes
+- Chapter-Wise MCQs: https://skilldotpy.com/chapter-wise-mcq
+- CBT Mock Test: https://skilldotpy.com/mock-test
+- Practical IDE: https://skilldotpy.com/practical-practice
+- Paid Courses: https://skilldotpy.com/courses
+- Notes Reader: https://skilldotpy.com/notes
+- Syllabus: https://skilldotpy.com/syllabus
+- Result Calculator: https://skilldotpy.com/o-level-result-calculator
+- Resources: https://skilldotpy.com/resources
+- App Download: https://skilldotpy.com/app
+- YouTube: https://youtube.com/@skilldotpy
+- Contact: https://skilldotpy.com/contact
+
+## About the Founder
+
+Er. Aditya Pathak — NIELIT Mentor with 6+ years of teaching experience, having trained 50,000+ students across India in NIELIT O Level, CCC, Python programming, Web Development, and practical IT skills.
+
+## Contact
+
+- Email: skilldotpy@gmail.com
+- Telegram: https://t.me/skilldotpy
+- Instagram: https://instagram.com/skilldotpy
+- WhatsApp: https://wa.me/919335521389

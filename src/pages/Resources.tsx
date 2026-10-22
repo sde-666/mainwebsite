@@ -387,11 +387,12 @@ export function Resources() {
 
           const tier: 'unlocked' | 'premium' | 'free' = purchased ? 'unlocked' : res.isPaid ? 'premium' : 'free';
 
+          const cat = (res.moduleCode || res.category) as string;
           const iconRingColor =
-            res.category === 'm2-r5' ? 'text-fuchsia-500 bg-fuchsia-50 ring-fuchsia-100' :
-            res.category === 'm3-r5' ? 'text-sky-500 bg-sky-50 ring-sky-100' :
-            res.category === 'm4-r5' ? 'text-orange-500 bg-orange-50 ring-orange-100' :
-            res.category === 'ccc' ? 'text-rose-500 bg-rose-50 ring-rose-100' :
+            cat === 'm2-r5' ? 'text-fuchsia-500 bg-fuchsia-50 ring-fuchsia-100' :
+            cat === 'm3-r5' ? 'text-sky-500 bg-sky-50 ring-sky-100' :
+            cat === 'm4-r5' ? 'text-orange-500 bg-orange-50 ring-orange-100' :
+            cat === 'ccc' ? 'text-rose-500 bg-rose-50 ring-rose-100' :
             'text-teal-500 bg-teal-50 ring-teal-100';
 
           return (
@@ -406,7 +407,7 @@ export function Resources() {
               <div className={`flex items-center justify-between border-b px-5 py-3 sm:px-6 ${tier === 'premium' ? 'border-amber-100 bg-amber-50/50' : 'border-slate-100 bg-slate-50/70'}`}>
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${iconRingColor}`}>
-                    {res.category === 'm4-r5' ? <Lightning className="h-5 w-5" /> : res.category === 'm2-r5' || res.category === 'm3-r5' ? <Code className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+                    {cat === 'm4-r5' ? <Lightning className="h-5 w-5" /> : cat === 'm2-r5' || cat === 'm3-r5' ? <Code className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
                   </div>
                   {tier === 'unlocked' ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-teal-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-teal-700">
