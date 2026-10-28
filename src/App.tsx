@@ -42,6 +42,7 @@ const PrivacyPolicy = lazy(() => import('./pages/Legal').then(m => ({ default: m
 const Terms = lazy(() => import('./pages/Legal').then(m => ({ default: m.Terms })));
 const Disclaimer = lazy(() => import('./pages/Legal').then(m => ({ default: m.Disclaimer })));
 const RefundPolicy = lazy(() => import('./pages/Legal').then(m => ({ default: m.RefundPolicy })));
+const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy').then(m => ({ default: m.ShippingPolicy })));
 
 // Admin Pages — never crawled/indexed (blocked in robots.txt, skipped by
 // prerender), so no SSR-safety concern; also lazy-loaded.
@@ -122,9 +123,14 @@ export default function App() {
                 <Route path="contact" element={<Contact />} />
                 
                 <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="privacy" element={<Navigate to="/privacy-policy" replace />} />
                 <Route path="terms-and-conditions" element={<Terms />} />
+                <Route path="terms" element={<Navigate to="/terms-and-conditions" replace />} />
                 <Route path="disclaimer" element={<Disclaimer />} />
                 <Route path="refund-policy" element={<RefundPolicy />} />
+                <Route path="cancellation-policy" element={<Navigate to="/refund-policy" replace />} />
+                <Route path="shipping-policy" element={<ShippingPolicy />} />
+                <Route path="delivery-policy" element={<Navigate to="/shipping-policy" replace />} />
                 
                 <Route path="*" element={
                   <div className="container mx-auto px-4 py-32 text-center">

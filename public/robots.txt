@@ -42,6 +42,7 @@ Allow: /privacy-policy
 Allow: /terms-and-conditions
 Allow: /disclaimer
 Allow: /refund-policy
+Allow: /shipping-policy
 Allow: /sitemap.xml
 Allow: /robots.txt
 Allow: /llms.txt

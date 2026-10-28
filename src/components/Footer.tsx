@@ -199,15 +199,53 @@ export function Footer() {
               </li>
               <li>
                 <Link to="/privacy-policy" className="text-slate-400 hover:text-blue-400 transition-colors">
-                  Privacy Policy & Disclaimer
+                  Privacy Policy (DPDP Act, 2023)
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms-and-conditions" className="text-slate-400 hover:text-blue-400 transition-colors">
+                  Terms, Refunds &amp; Shipping
                 </Link>
               </li>
             </ul>
           </div>
         </div>
         
+        {/* Compliance & Legal Policies Bar */}
+        <div className="mt-12 border-t border-slate-800 pt-6 pb-2 flex flex-col sm:flex-row items-center justify-between gap-y-3 gap-x-6 text-xs text-slate-400">
+          <div className="flex items-center gap-2 text-slate-400">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="font-semibold text-slate-300">Statutory Compliance (DPDP Act, 2023):</span>
+          </div>
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2 text-xs">
+            <Link to="/privacy-policy" className="hover:text-blue-400 transition-colors underline decoration-slate-700 hover:decoration-blue-400">
+              Privacy Policy
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link to="/terms-and-conditions" className="hover:text-blue-400 transition-colors underline decoration-slate-700 hover:decoration-blue-400">
+              Terms &amp; Conditions
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link to="/refund-policy" className="hover:text-blue-400 transition-colors underline decoration-slate-700 hover:decoration-blue-400">
+              Refund Policy
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link to="/shipping-policy" className="hover:text-blue-400 transition-colors underline decoration-slate-700 hover:decoration-blue-400">
+              Shipping &amp; Delivery
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link to="/disclaimer" className="hover:text-blue-400 transition-colors underline decoration-slate-700 hover:decoration-blue-400">
+              Disclaimer
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link to="/contact" className="hover:text-blue-400 transition-colors underline decoration-slate-700 hover:decoration-blue-400">
+              Grievance Officer
+            </Link>
+          </div>
+        </div>
+
         {/* Bottom copyright and NIELIT trademark disclaimer */}
-        <div className="mt-12 border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <div className="mt-4 border-t border-slate-800/80 pt-6 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <p>
             &copy; {currentYear} {siteConfig.name} ({siteConfig.url}). Created by <Link to="/founder" className="text-slate-400 hover:text-blue-400 transition-colors underline decoration-slate-700 hover:decoration-blue-400">{siteConfig.teacher.name}</Link>. All rights reserved.
           </p>

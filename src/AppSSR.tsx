@@ -51,6 +51,7 @@ import { About } from './pages/About';
 import { Founder } from './pages/Founder';
 import { Contact } from './pages/Contact';
 import { PrivacyPolicy, Terms, Disclaimer, RefundPolicy } from './pages/Legal';
+import { ShippingPolicy } from './pages/ShippingPolicy';
 
 // Admin Pages
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -129,9 +130,14 @@ export default function App() {
                 <Route path="contact" element={<Contact />} />
                 
                 <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="privacy" element={<Navigate to="/privacy-policy" replace />} />
                 <Route path="terms-and-conditions" element={<Terms />} />
+                <Route path="terms" element={<Navigate to="/terms-and-conditions" replace />} />
                 <Route path="disclaimer" element={<Disclaimer />} />
                 <Route path="refund-policy" element={<RefundPolicy />} />
+                <Route path="cancellation-policy" element={<Navigate to="/refund-policy" replace />} />
+                <Route path="shipping-policy" element={<ShippingPolicy />} />
+                <Route path="delivery-policy" element={<Navigate to="/shipping-policy" replace />} />
                 
                 <Route path="*" element={
                   <div className="container mx-auto px-4 py-32 text-center">
