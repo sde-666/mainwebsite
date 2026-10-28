@@ -2,58 +2,57 @@ export interface Tutorial {
   id: string;
   title: string;
   description: string;
-  category: 'App Tutorials' | 'Course Tutorials' | 'Study Tutorials' | 'Technical Tutorials';
+  category: 'Course Tutorials' | 'Study Tutorials' | 'Technical Tutorials';
   content: string; // Markdown content
 }
 
 export const tutorials: Tutorial[] = [
   {
     id: 'how-to-purchase',
-    title: 'How to Purchase a Course in the Skilldotpy App',
-    description: 'A step-by-step guide to enrolling and purchasing premium courses on the Skilldotpy Android app.',
+    title: 'How to Enroll in a Course on Skilldotpy',
+    description: 'A step-by-step guide to enrolling and purchasing paid masterclasses & video batches directly on the Skilldotpy website.',
     category: 'Course Tutorials',
     content: `
-Purchasing a course on the Skilldotpy app is simple and secure. Follow these steps:
+Enrolling in a course on the Skilldotpy web portal is fast, transparent, and secure. Follow these steps:
 
-### Step 1: Open Skilldotpy App
-Launch the Skilldotpy application on your Android device.
+### Step 1: Browse Available Courses
+Visit the [Paid Courses & Batches](/courses) section on the Skilldotpy website to view our latest NIELIT O Level, CCC, and Python batches.
 
-### Step 2: Login or Register
-If you haven't already, create a free account or log in with your existing credentials.
+### Step 2: Choose Your Desired Course
+Click on any course card or click "View Batch Details" to review the curriculum, chapter notes, doubt-clearing sessions, and fee structure.
 
-### Step 3: Select the Course
-Navigate to the "Courses" section and tap on the course you wish to purchase (e.g., O Level Complete Course).
+### Step 3: Click "Enroll Now"
+Click the prominent "Enroll Now" or "Get Instant Access" button on the course details page.
 
-### Step 4: Click Purchase / Enroll
-Tap the prominent "Buy Now" or "Enroll" button on the course details screen.
+### Step 4: Complete the Secure Checkout
+Enter your name, email, and mobile number. Complete the payment securely via UPI (Google Pay, PhonePe, Paytm), Net Banking, Debit/Credit Cards, or Wallets powered by Razorpay.
 
-### Step 5: Complete the Payment
-Follow the on-screen instructions to complete your payment. We support various payment methods for your convenience.
+### Step 5: Instant Enrollment & Access
+Upon successful transaction, you receive instant access to batch resources, Telegram premium group links, video lectures, and PDF study material.
 
-### Step 6: Payment Confirmation
-Once payment is successful, you will receive a confirmation message.
-
-### Step 7: Access Your Course
-Go to the "My Courses" tab to access your newly purchased content. You can now start learning!
-
-*Note: If your course requires manual verification, it may take a few hours to activate. Please contact support if you face any issues.*
+*Note: You will also receive an automated confirmation email with your enrollment ID and access links. For any questions, our support team is available via WhatsApp or email.*
 `
   },
   {
-    id: 'how-to-install-apk',
-    title: 'How to Install the Skilldotpy APK',
-    description: 'Learn how to easily install the Skilldotpy Android app on your smartphone.',
-    category: 'App Tutorials',
+    id: 'how-to-access-notes-mock-tests',
+    title: 'How to Practice CBT Mock Tests & Download Notes',
+    description: 'Learn how to attempt free online NIELIT O Level & CCC mock tests and access bilingual revision notes on Skilldotpy.',
+    category: 'Study Tutorials',
     content: `
-Follow these simple steps to install the Skilldotpy Android app:
+Skilldotpy provides free interactive CBT mock tests and chapter-wise study notes for NIELIT exams. Follow these steps:
 
-1. **Download the APK:** Click the "Download App" button on our website to download the latest \`.apk\` file.
-2. **Open the downloaded APK:** Once downloaded, tap on the notification or find the file in your "Downloads" folder and tap to open it.
-3. **Allow installation from unknown sources:** Android will prompt you that installation from unknown sources is not allowed. Tap "Settings" on the prompt, and toggle on "Allow from this source".
-4. **Install:** Go back, and tap "Install".
-5. **Open Skilldotpy:** Once installed, tap "Open" to launch the app.
-6. **Register or log in:** Create a new account or log in to your existing one.
-7. **Start Learning:** Explore our free resources, notes, and courses!
+### Step 1: Select Your Exam Track
+Navigate to either the [NIELIT O Level Hub](/o-level) or [CCC Exam Hub](/ccc) from the top navigation bar.
+
+### Step 2: Choose Your Subject / Module
+Select your specific module (e.g., M1-R5 IT Tools, M2-R5 Web Designing, M3-R5 Python, or M4-R5 IoT).
+
+### Step 3: Launch Mock Tests
+Click on the "Mock Test" section to experience realistic exam simulations featuring real-time timer countdowns, negative-marking toggles, and instant bilingual score reports.
+
+### Step 4: Download PDF Notes & Syllabus
+Scroll to the "Chapter Notes & Syllabus" section to access or download comprehensive revision guides and question banks for offline study.
 `
   }
 ];
+

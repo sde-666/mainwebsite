@@ -15,7 +15,7 @@
 //
 // IMPORTANT: if you add/remove/rename a route in App.tsx, make the same
 // change here. The two route tables must stay in sync.
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ScrollToTop } from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
@@ -43,8 +43,6 @@ import { Courses } from './pages/Courses';
 import { CourseDetail } from './pages/CourseDetail';
 import { MyCourses } from './pages/MyCourses';
 import { Login } from './pages/Login';
-import { AppPage } from './pages/AppPage';
-import { AppInstall } from './pages/AppInstall';
 import { Tutorials } from './pages/Tutorials';
 import { TutorialDetail } from './pages/TutorialDetail';
 import { YouTubePage } from './pages/YouTube';
@@ -114,10 +112,10 @@ export default function App() {
                 <Route path="signup" element={<Login />} />
                 <Route path="student-login" element={<Login />} />
                 
-                {/* App Promotion */}
-                <Route path="app" element={<AppPage />} />
-                <Route path="app/install" element={<AppInstall />} />
-                <Route path="app-download" element={<AppPage />} />
+                {/* App Redirects */}
+                <Route path="app" element={<Navigate to="/courses" replace />} />
+                <Route path="app/install" element={<Navigate to="/courses" replace />} />
+                <Route path="app-download" element={<Navigate to="/courses" replace />} />
                 
                 {/* Tutorials & YouTube */}
                 <Route path="tutorials" element={<Tutorials />} />

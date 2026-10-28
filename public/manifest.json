@@ -1,7 +1,7 @@
 {
   "name": "Skilldotpy - NIELIT O Level & CCC Learning Platform",
   "short_name": "Skilldotpy",
-  "description": "India's #1 platform for NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5), CCC exams, Python programming & LibreOffice. Free notes, syllabus, mock tests & Android app by Er. Aditya Pathak.",
+  "description": "India's #1 platform for NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5), CCC exams, Python programming & LibreOffice. Free notes, syllabus, mock tests & video masterclasses by Er. Aditya Pathak.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

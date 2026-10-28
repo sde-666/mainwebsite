@@ -75,13 +75,7 @@
   to = "/.netlify/functions/razorpay-webhook"
   status = 200
 
-# Allow direct static file downloads (.apk, .pdf, .mp4, images) without SPA rewrite
-[[redirects]]
-  from = "/*.apk"
-  to = "/:splat.apk"
-  status = 200
-  force = true
-
+# Allow direct static file downloads (.pdf, .mp4, images) without SPA rewrite
 [[redirects]]
   from = "/downloads/*"
   to = "/downloads/:splat"

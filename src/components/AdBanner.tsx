@@ -6,7 +6,7 @@ export interface AdBannerProps {
   format?: 'auto' | 'horizontal' | 'rectangle' | 'in-feed' | 'in-article' | 'sticky-bottom';
   className?: string;
   showLabel?: boolean;
-  fallbackType?: 'app' | 'youtube' | 'notes' | 'telegram' | 'mock-test' | 'calculator' | 'general';
+  fallbackType?: 'courses' | 'youtube' | 'notes' | 'telegram' | 'mock-test' | 'calculator' | 'general';
 }
 
 /**

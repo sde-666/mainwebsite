@@ -53,7 +53,7 @@ export function ShippingPolicy() {
                 <strong>Instant Portal Activation:</strong> As soon as your transaction is confirmed, your course content, chapters, video lectures, and notes will be instantly unlocked in your {siteConfig.name} student account.
               </li>
               <li>
-                <strong>24/7 Multi-Device Access:</strong> You can access your enrolled courses anytime by logging in with your registered email on our official web app (<a href={siteConfig.url} className="text-blue-600 font-semibold underline">{siteConfig.url}</a>) or via the Skilldotpy Android Mobile App.
+                <strong>24/7 Multi-Device Access:</strong> You can access your enrolled courses anytime by logging in with your registered email on our official web platform (<a href={siteConfig.url} className="text-blue-600 font-semibold underline">{siteConfig.url}</a>) on mobile, tablet, or desktop.
               </li>
               <li>
                 <strong>Payment Confirmation:</strong> You will immediately receive a digital payment receipt and transaction ID from Razorpay and {siteConfig.name} on your registered email address and phone number.

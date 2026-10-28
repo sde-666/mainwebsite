@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SEO } from '../components/SEO';
 import { Button } from '../components/Button';
 import { faqs } from '../data/faqs';
-import { HelpCircle, Search, ChevronDown, BookOpen, Smartphone, Award, Terminal } from 'lucide-react';
+import { HelpCircle, Search, ChevronDown, BookOpen, Video, Award, Terminal } from 'lucide-react';
 
 export function FAQ() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,7 +13,6 @@ export function FAQ() {
     { id: 'all', label: 'All Questions', icon: HelpCircle },
     { id: 'o-level', label: 'NIELIT O Level', icon: Award },
     { id: 'ccc', label: 'NIELIT CCC', icon: BookOpen },
-    { id: 'app', label: 'Android App', icon: Smartphone },
     { id: 'general', label: 'General / Support', icon: Terminal },
   ];
 
@@ -43,7 +42,7 @@ export function FAQ() {
     <>
       <SEO 
         title="NIELIT O Level & CCC FAQs" 
-        description="Instant answers for NIELIT O Level (R5.1) & CCC exams: Passing marks, exam pattern, practical guidelines, project submission & Skilldotpy app info."
+        description="Instant answers for NIELIT O Level (R5.1) & CCC exams: Passing marks, exam pattern, practical guidelines, project submission & courses."
         keywords={[
           'Skilldotpy FAQ',
           'NIELIT O level FAQ',
@@ -67,7 +66,7 @@ export function FAQ() {
             Frequently Asked Questions
           </h1>
           <p className="mt-3 text-sm text-gray-300">
-            Everything you need to know about NIELIT O Level, CCC exam patterns, practicals, project submission, and the Skilldotpy Android app.
+            Everything you need to know about NIELIT O Level, CCC exam patterns, practicals, project submission, and video masterclasses.
           </p>
 
           {/* Search bar */}
@@ -77,7 +76,7 @@ export function FAQ() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by keyword (e.g., negative marking, practical, M1-R5, APK)..."
+              placeholder="Search by keyword (e.g., negative marking, practical, M1-R5, courses)..."
               className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-400 text-xs sm:text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>

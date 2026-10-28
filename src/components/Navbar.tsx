@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Menu, 
   X, 
-  Smartphone, 
   Sparkles, 
   ShieldCheck, 
   Bot, 
@@ -510,16 +509,6 @@ export function Navbar() {
               </button>
             )}
 
-            {/* Get App */}
-            <Link
-              to="/app"
-              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold text-white bg-slate-900 hover:bg-blue-600 transition-all shadow-2xs active:scale-95 shrink-0"
-              title="Download Android App"
-            >
-              <Smartphone className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden xs:inline">App</span>
-            </Link>
-
             {/* Mobile Menu Toggle Button */}
             <button
               type="button"
@@ -929,15 +918,6 @@ export function Navbar() {
                     <Bot className="w-4 h-4 text-indigo-600" />
                     <span>Ask AI Guru (Doubt Solver)</span>
                   </button>
-
-                  <Link
-                    to="/app"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-blue-600 transition-all active:scale-95 shadow-xs"
-                  >
-                    <Smartphone className="w-4 h-4" />
-                    <span>Download Skilldotpy App</span>
-                  </Link>
                 </div>
 
               </motion.div>

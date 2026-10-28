@@ -49,7 +49,7 @@ export const courses: Course[] = [
       '1000+ Online CBT Mock Questions with Instant Result & Analytics',
       'Solved Previous 5 Years Question Papers with Video Explanations',
       'All Practical Code Files (HTML, JS, Python, Arduino sketches)',
-      'Direct WhatsApp & In-App Doubt Chat Support with Teacher'
+      'Direct WhatsApp Doubt Support with Teacher'
     ],
     isFree: false,
     price: '₹999',
@@ -57,8 +57,8 @@ export const courses: Course[] = [
     discountBadge: '66% OFF • Best Value',
     duration: '6 Months Access (Extendable)',
     level: 'All Levels',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true,
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false,
     relatedYoutubeVideos: [
       { title: 'NIELIT O Level R5.1 Complete Strategy & Exam Pattern', url: 'https://youtube.com/@skilldotpy' },
       { title: 'How to score Grade S in O Level Exam', url: 'https://youtube.com/@skilldotpy' }
@@ -95,8 +95,8 @@ export const courses: Course[] = [
     discountBadge: '65% OFF',
     duration: '3 Months Access',
     level: 'Beginner',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   },
   {
     id: 'o-level-m2',
@@ -129,8 +129,8 @@ export const courses: Course[] = [
     discountBadge: '65% OFF',
     duration: '3 Months Access',
     level: 'Beginner',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   },
   {
     id: 'o-level-m3',
@@ -164,8 +164,8 @@ export const courses: Course[] = [
     discountBadge: '67% OFF',
     duration: '3 Months Access',
     level: 'Beginner to Intermediate',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   },
   {
     id: 'o-level-m4',
@@ -198,8 +198,8 @@ export const courses: Course[] = [
     discountBadge: '65% OFF',
     duration: '3 Months Access',
     level: 'Beginner',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   },
 
   // NIELIT CCC COURSES
@@ -233,8 +233,8 @@ export const courses: Course[] = [
     discountBadge: '71% OFF',
     duration: '3 Months Access',
     level: 'Beginner',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   },
 
   // INDEPENDENT PROGRAMMING COURSES
@@ -270,8 +270,8 @@ export const courses: Course[] = [
     discountBadge: '66% OFF',
     duration: 'Lifetime Access',
     level: 'All Levels',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   },
   {
     id: 'web-dev-fundamentals',
@@ -304,8 +304,8 @@ export const courses: Course[] = [
     discountBadge: '66% OFF',
     duration: 'Lifetime Access',
     level: 'Beginner',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   },
 
   // OFFICE PRODUCTIVITY SUITE
@@ -341,8 +341,8 @@ export const courses: Course[] = [
     discountBadge: '67% OFF',
     duration: 'Lifetime Access',
     level: 'Beginner to Intermediate',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   },
   {
     id: 'ms-office-pro',
@@ -375,7 +375,7 @@ export const courses: Course[] = [
     discountBadge: '69% OFF',
     duration: 'Lifetime Access',
     level: 'Beginner to Intermediate',
-    enrollmentUrl: '/app-download',
-    appDownloadRequired: true
+    enrollmentUrl: '/courses',
+    appDownloadRequired: false
   }
 ];

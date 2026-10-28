@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
-  Smartphone, 
   Download, 
   Award, 
   CheckCircle2, 
@@ -37,7 +36,6 @@ import {
 import { SEO } from '../components/SEO';
 import { NielitLogo } from '../components/NielitLogo';
 import { siteConfig } from '../data/config';
-import { AppPhoneMockup } from '../components/AppPhoneMockup';
 import { ComputerCourseHeroPoster } from '../components/ComputerCourseHeroPoster';
 import { courses } from '../data/courses';
 import { faqs } from '../data/faqs';
@@ -108,7 +106,7 @@ export function Home() {
           'O level M4-R5 IoT notes',
           'CCC free notes pdf in hindi',
           'LibreOffice shortcuts cheat sheet',
-          'Skilldotpy app download apk'
+          'Skilldotpy paid courses'
         ]}
         schema={homeSchemas}
         breadcrumbs={[{ name: 'Home', url: '/' }]}
@@ -429,7 +427,7 @@ export function Home() {
                     { num: 2, icon: <Code className="w-7 h-7 text-amber-700" />, title: 'HTML & Text Editors' },
                     { num: 3, icon: <div className="w-7 h-7 rounded bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">5</div>, title: 'HTML5 Elements' },
                     { num: 4, icon: <div className="w-7 h-7 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">3</div>, title: 'CSS3 Selectors' },
-                    { num: 5, icon: <Smartphone className="w-7 h-7 text-rose-500" />, title: 'Responsive Frameworks' },
+                    { num: 5, icon: <Laptop className="w-7 h-7 text-rose-500" />, title: 'Responsive Frameworks' },
                     { num: 6, icon: <div className="w-7 h-7 rounded bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center shadow-2xs">JS</div>, title: 'JavaScript & Angular' },
                   ].map((ch) => (
                     <Link
@@ -687,7 +685,7 @@ export function Home() {
                     { num: 2, icon: <Code className="w-7 h-7 text-amber-700" />, title: 'HTML Editors' },
                     { num: 3, icon: <div className="w-7 h-7 rounded bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">5</div>, title: 'HTML5 Elements' },
                     { num: 4, icon: <div className="w-7 h-7 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">3</div>, title: 'CSS3' },
-                    { num: 5, icon: <Smartphone className="w-7 h-7 text-rose-500" />, title: 'Responsive CSS' },
+                    { num: 5, icon: <Laptop className="w-7 h-7 text-rose-500" />, title: 'Responsive CSS' },
                     { num: 6, icon: <div className="w-7 h-7 rounded bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center shadow-2xs">JS</div>, title: 'JavaScript' },
                   ].map((ch) => (
                     <Link
@@ -1242,18 +1240,18 @@ export function Home() {
               <span className="text-[10px] text-slate-500 mt-0.5">सिलेबस व पेपर्स</span>
             </Link>
 
-            {/* 8. Android App */}
+            {/* 8. Paid Courses */}
             <Link
-              to="/app"
+              to="/courses"
               className="bg-slate-50 hover:bg-sky-50/80 border border-slate-200 hover:border-sky-300 p-3 sm:p-3.5 rounded-2xl flex flex-col items-center text-center transition-all group shadow-2xs hover:shadow-xs"
             >
               <div className="w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                <Smartphone className="w-5 h-5" />
+                <Video className="w-5 h-5" />
               </div>
               <span className="text-xs font-black text-slate-900 group-hover:text-sky-700 leading-tight">
-                मोबाइल ऐप
+                पेड वीडियो बैच
               </span>
-              <span className="text-[10px] text-slate-500 mt-0.5">ऑफलाइन वीडियो</span>
+              <span className="text-[10px] text-slate-500 mt-0.5">फुल क्लासेज</span>
             </Link>
 
           </div>
@@ -1453,10 +1451,10 @@ export function Home() {
                     )}
                   </div>
                   <Link
-                    to="/app"
+                    to="/courses"
                     className="inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg transition-colors"
                   >
-                    Enroll in App
+                    View Batch
                   </Link>
                 </div>
               </div>
@@ -1474,66 +1472,7 @@ export function Home() {
         </div>
       </section>
 
-      {/* DEDICATED APP DOWNLOAD PROMO CARD */}
-      <section className="py-16 bg-gradient-to-b from-blue-900 via-slate-900 to-slate-950 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-600/30 to-indigo-600/30 border border-blue-400/30 rounded-3xl p-8 sm:p-12 shadow-2xl backdrop-blur-md">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-              
-              <div className="md:col-span-7 space-y-4">
-                <div className="inline-flex items-center gap-2 bg-amber-400/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-full border border-amber-400/30">
-                  <Sparkles className="w-3.5 h-3.5" /> Official Android Application
-                </div>
 
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight">
-                  Get the Official <span className="text-amber-300">Skilldotpy App</span> for Complete Study
-                </h2>
-
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Download our lightweight Android APK to access sequential HD video classes, full-length CBT mock tests with timer, downloadable offline notes, solved practical codes, and direct doubt clearing with Er. Skilldotpy.
-                </p>
-
-                <div className="space-y-2 text-xs text-slate-200 pt-2">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Works completely offline once videos/notes are downloaded</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Real NIELIT CBT Mock Test format with scorecard & analytics</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>No ads, secure APK, verified for all Android devices (5.0+)</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <a
-                    href={siteConfig.app.apkUrl}
-                    download="skilldotpy-latest.apk"
-                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-extrabold px-6 py-3.5 rounded-xl shadow-lg text-xs transition-all"
-                  >
-                    <Smartphone className="w-4 h-4" /> Download Official APK ({siteConfig.app.size})
-                  </a>
-                  <Link
-                    to="/app"
-                    className="inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold px-5 py-3.5 rounded-xl border border-slate-600 text-xs transition-all"
-                  >
-                    View App Screenshots & Guide
-                  </Link>
-                </div>
-              </div>
-
-              {/* Right: Phone Visual Mockup Showcase */}
-              <div className="md:col-span-5 flex items-center justify-center py-2">
-                <AppPhoneMockup showBadges={true} />
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* FREQUENTLY ASKED QUESTIONS */}
       <section className="py-16 bg-slate-50">

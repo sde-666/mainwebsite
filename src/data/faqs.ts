@@ -1,6 +1,6 @@
 export interface FAQ {
   id: string;
-  category: 'o-level' | 'ccc' | 'app' | 'youtube' | 'general';
+  category: 'o-level' | 'ccc' | 'courses' | 'youtube' | 'general';
   question: string;
   hindiQuestion?: string;
   answer: string;
@@ -15,11 +15,11 @@ export const faqs: FAQ[] = [
     answer: 'Under the revised R5.1 pattern, each of the 4 modules (M1-R5, M2-R5, M3-R5, M4-R5) consists of: 1) Online Theory CBT / OMR exam of 100 Marks (100 MCQs, 90 minutes, NO negative marking) and 2) Practical Lab Exam of 100 Marks (Online coding + Viva Voce, 50 minutes). You need at least 33% in Theory and 33% in Practical, with an overall combined aggregate of 50% in each module to qualify.'
   },
   {
-    id: 'o-level-free-vs-app',
-    category: 'app',
-    question: 'What is the difference between Skilldotpy YouTube classes and the Android App?',
-    hindiQuestion: 'Skilldotpy के YouTube और Android App में क्या अंतर है?',
-    answer: 'Our YouTube channel offers free foundational lectures, chapter overviews, and exam marathon revision videos. The Skilldotpy Android App provides the complete structured learning system: full chapter-wise HD syllabus videos in exact sequential order, downloadable printable PDF notes, chapter tests, real CBT-timed online mock test series with detailed analytics, full practical code files, project guidance, and 1-on-1 direct doubt resolution with the teacher.'
+    id: 'o-level-free-vs-paid',
+    category: 'o-level',
+    question: 'What is the difference between Skilldotpy YouTube classes and Paid Master Batches?',
+    hindiQuestion: 'Skilldotpy के YouTube और Paid Master Batches में क्या अंतर है?',
+    answer: 'Our YouTube channel offers free foundational lectures, chapter overviews, and exam marathon revision videos. Our Paid Master Batches provide the complete structured learning system: full chapter-wise HD syllabus videos in exact sequential order, downloadable printable PDF notes, chapter tests, full practical code files, project guidance, and 1-on-1 direct WhatsApp doubt resolution with the teacher.'
   },
   {
     id: 'o-level-project-submission',
@@ -47,13 +47,6 @@ export const faqs: FAQ[] = [
     category: 'ccc',
     question: 'How to score Grade S (85%+) in NIELIT CCC in 15 days?',
     hindiQuestion: 'ट्रिपल सी (CCC) में 15 दिनों में Grade S कैसे लाएं?',
-    answer: 'To score Grade S in CCC: 1) Master all 9 chapters of the syllabus from our free video series, 2) Memorize the LibreOffice shortcut key chart, 3) Practice our 10 full-length CBT mock tests on the Skilldotpy app. Over 95% of students following this strategy clear CCC with top grades.'
-  },
-  {
-    id: 'app-apk-safety',
-    category: 'app',
-    question: 'Is the Skilldotpy Android APK safe to install on my phone?',
-    hindiQuestion: 'क्या Skilldotpy Android APK सुरक्षित है?',
-    answer: 'Yes, 100% safe and verified. Our APK is built with standard Android security standards, contains no malware or unnecessary permissions, and is trusted by over 10,000+ students across India.'
+    answer: 'To score Grade S in CCC: 1) Master all 9 chapters of the syllabus from our free video series, 2) Memorize the LibreOffice shortcut key chart, 3) Practice our full-length CBT mock tests on the Skilldotpy website portal. Over 95% of students following this strategy clear CCC with top grades.'
   }
 ];

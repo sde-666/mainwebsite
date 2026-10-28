@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ScrollToTop } from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
@@ -31,8 +31,6 @@ const Courses = lazy(() => import('./pages/Courses').then(m => ({ default: m.Cou
 const CourseDetail = lazy(() => import('./pages/CourseDetail').then(m => ({ default: m.CourseDetail })));
 const MyCourses = lazy(() => import('./pages/MyCourses').then(m => ({ default: m.MyCourses })));
 const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
-const AppPage = lazy(() => import('./pages/AppPage').then(m => ({ default: m.AppPage })));
-const AppInstall = lazy(() => import('./pages/AppInstall').then(m => ({ default: m.AppInstall })));
 const Tutorials = lazy(() => import('./pages/Tutorials').then(m => ({ default: m.Tutorials })));
 const TutorialDetail = lazy(() => import('./pages/TutorialDetail').then(m => ({ default: m.TutorialDetail })));
 const YouTubePage = lazy(() => import('./pages/YouTube').then(m => ({ default: m.YouTubePage })));
@@ -107,10 +105,10 @@ export default function App() {
                 <Route path="signup" element={<Login />} />
                 <Route path="student-login" element={<Login />} />
                 
-                {/* App Promotion */}
-                <Route path="app" element={<AppPage />} />
-                <Route path="app/install" element={<AppInstall />} />
-                <Route path="app-download" element={<AppPage />} />
+                {/* App Redirects */}
+                <Route path="app" element={<Navigate to="/courses" replace />} />
+                <Route path="app/install" element={<Navigate to="/courses" replace />} />
+                <Route path="app-download" element={<Navigate to="/courses" replace />} />
                 
                 {/* Tutorials & YouTube */}
                 <Route path="tutorials" element={<Tutorials />} />

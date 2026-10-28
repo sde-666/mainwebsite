@@ -2,7 +2,7 @@ import { SEO } from '../components/SEO';
 import { BrandLogo } from '../components/BrandLogo';
 import { NielitLogo } from '../components/NielitLogo';
 import { siteConfig } from '../data/config';
-import { BookOpen, Target, Users, MonitorPlay, Smartphone, CheckCircle } from 'lucide-react';
+import { BookOpen, Target, Users, MonitorPlay, GraduationCap, CheckCircle } from 'lucide-react';
 
 export function About() {
   const aboutSchema = {
@@ -69,7 +69,7 @@ export function About() {
                 Our mission is to simplify computer education and make it accessible to everyone. We believe that with the right guidance, structured materials, and practical tutorials, anyone can master technology and succeed in their careers.
               </p>
               <p className="text-lg text-gray-700">
-                Through our Android app, YouTube channel, and website, we provide a unified learning experience that connects free resources with premium, structured learning paths.
+                Through our YouTube channel and interactive web learning portal, we provide a unified learning experience that connects free resources with premium, structured learning paths.
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -101,17 +101,17 @@ export function About() {
             </div>
             <div>
               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                <GraduationCap className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Android App</h3>
-              <p className="text-gray-600">The core of our platform offering an integrated experience with notes, tests, and premium courses.</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Paid Batches & Courses</h3>
+              <p className="text-gray-600">Structured masterclasses, live doubt clearing, and full syllabus mastery accessible directly in your web browser.</p>
             </div>
             <div>
               <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Free Resources</h3>
-              <p className="text-gray-600">High-quality PDFs, notes, and study guides available via our website and app.</p>
+              <p className="text-gray-600">High-quality PDFs, notes, and study guides available directly on our web portal.</p>
             </div>
           </div>
         </div>

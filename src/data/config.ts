@@ -4,7 +4,7 @@ export const siteConfig = {
   brandAlternates: ['Skill.py', 'Skill Dot Py', 'Skilldotpy NIELIT', 'Skilldotpy Academy', 'Skilldotpy Education'],
   title: 'Skilldotpy - NIELIT O Level (M1, M2, M3, M4) & CCC Chapter Wise Notes, MCQs & Paid Courses',
   tagline: 'India\'s #1 Learning Hub for NIELIT O Level (R5.1), CCC, Python & Practical Computer Education',
-  description: 'Free & Paid NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5) & CCC exam preparation: Chapter-wise notes, instant MCQ practice, CBT mock tests, video masterclasses, practical coding & Android app.',
+  description: 'Free & Paid NIELIT O Level (M1-R5, M2-R5, M3-R5, M4-R5) & CCC exam preparation: Chapter-wise notes, instant MCQ practice, CBT mock tests, video masterclasses & practical coding.',
   url: 'https://skilldotpy.com',
   ogImage: 'https://skilldotpy.com/skilldotpy-logo.svg',
   // E-E-A-T: Experience, Expertise, Authoritativeness, Trustworthiness signals
@@ -31,10 +31,10 @@ export const siteConfig = {
     // ═══════════════════════════════════════════════════════════════
     'Skilldotpy', 'skilldotpy', 'skill.py', 'Skill.py', 'Skill Dot Py',
     'skill dot py', 'skilldotpy.com', 'www.skilldotpy.com',
-    'Skilldotpy YouTube', 'Skilldotpy app', 'Skilldotpy apk download',
+    'Skilldotpy YouTube', 'Skilldotpy courses',
     'Skilldotpy notes', 'Skilldotpy O level', 'Skilldotpy CCC',
     'Skilldotpy python', 'Er. Aditya Pathak', 'Aditya Pathak NIELIT',
-    'Aditya Sir O level', 'skilldotpy android app download',
+    'Aditya Sir O level',
 
     // ═══════════════════════════════════════════════════════════════
     // 1. O LEVEL CHAPTER WISE NOTES — PRIMARY TARGET CLUSTER
@@ -208,27 +208,5 @@ export const siteConfig = {
     telegram: 'https://t.me/skilldotpy',
     instagram: 'https://instagram.com/skilldotpy',
     whatsapp: 'https://wa.me/9335521389?text=Hello%20Sir%2C%20I%20have%20a%20query%20about%20NIELIT%20O%20Level%20and%20CCC%20courses',
-  },
-  app: {
-    name: 'Skilldotpy Android App',
-    apkUrl: '/skilldotpy-latest.apk',
-    fallbackApkUrl: 'https://skilldotpy.com/skilldotpy-latest.apk',
-    version: '2.4.0 (Latest 2026 Edition)',
-    releaseDate: 'August 2026',
-    size: '18 MB',
-    apkFileName: 'skilldotpy-latest.apk',
-    installVideoUrl: '/videos/how-to-install-skilldotpy-apk.mp4',
-    installVideoFallbackUrl: 'https://skilldotpy.com/videos/how-to-install-skilldotpy-apk.mp4',
-    requirements: 'Android 7.0 and above',
-    rating: '4.9 ★',
-    downloads: '100+ Active Students',
-    highlights: [
-      'Chapter-wise Full HD Video Lectures in Hindi & English',
-      'Downloadable Printable PDF Notes & Handwritten Summaries',
-      'NIELIT Online CBT Mock Test Series with Timer & Negative Marking',
-      'All 4 Modules Practical Solved Code & Arduino Simulation Codes',
-      'Direct Doubt Clearing with Teacher via Chat Support',
-      'Offline Download Mode to Learn without Internet'
-    ]
   }
 };

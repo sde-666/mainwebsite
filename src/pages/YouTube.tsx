@@ -134,10 +134,10 @@ export function YouTube() {
             </div>
 
             <Link
-              to="/app"
+              to="/courses"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:underline"
             >
-              Want structured test series & offline videos? Get App →
+              Want structured masterclasses & PDF notes? Explore Paid Courses →
             </Link>
           </div>
 

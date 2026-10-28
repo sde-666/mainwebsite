@@ -11,10 +11,10 @@ export function Tutorials() {
     <>
       <SEO 
         title="Tutorials & Guides" 
-        description="Step-by-step guides on preparing for NIELIT O Level & CCC exams, installing the Skilldotpy Android app, and accessing free PDF study notes."
+        description="Step-by-step guides on preparing for NIELIT O Level & CCC exams, enrolling in paid masterclasses, and accessing free PDF study notes."
         keywords={[
           'Skilldotpy tutorials',
-          'How to install Skilldotpy APK',
+          'How to enroll in NIELIT course',
           'How to prepare NIELIT O level at home',
           'How to clear CCC exam in first attempt'
         ]}

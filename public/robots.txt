@@ -32,12 +32,8 @@ Allow: /resources/*
 Allow: /tutorials
 Allow: /tutorials/*
 Allow: /youtube
-Allow: /app
-Allow: /app/*
-Allow: /app-download
 Allow: /downloads/
 Allow: /downloads/*.pdf
-Allow: /app-screenshots/
 Allow: /about
 Allow: /founder
 Allow: /faq
@@ -95,7 +91,6 @@ Allow: /skilldotpy-logo.svg
 Allow: /skilldotpy-horizontal.svg
 Allow: /nielit-logo.svg
 Allow: /nielit-emblem.svg
-Allow: /app-screenshots/
 Allow: /public/
 
 User-agent: Bingbot

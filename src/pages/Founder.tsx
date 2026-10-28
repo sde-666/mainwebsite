@@ -12,7 +12,6 @@ import {
   Sparkles,
   BookOpen,
   MonitorPlay,
-  Smartphone,
   Award,
   Target,
 } from 'lucide-react';
@@ -449,13 +448,13 @@ export function Founder() {
             </div>
 
             <div className="text-center p-6">
-              <Smartphone className="w-10 h-10 text-blue-600 mx-auto mb-4" />
+              <GraduationCap className="w-10 h-10 text-blue-600 mx-auto mb-4" />
               <h3 className="font-bold text-lg mb-2">
-                Website & App
+                Online Learning Portal
               </h3>
               <p className="text-gray-600">
-                Access Skilldotpy learning resources through the website and
-                Android application.
+                Access Skilldotpy learning resources, mock tests, and paid batches
+                through our modern web portal on any device.
               </p>
             </div>
 

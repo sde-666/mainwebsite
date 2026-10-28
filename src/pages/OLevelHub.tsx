@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Download, 
-  Smartphone, 
   Layers, 
   Laptop, 
   CheckCircle2, 
@@ -97,7 +96,7 @@ export function OLevelHub() {
         case 2: return <Code className="w-6 h-6 text-amber-700" />;
         case 3: return <div className="w-6 h-6 rounded bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">5</div>;
         case 4: return <div className="w-6 h-6 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">3</div>;
-        case 5: return <Smartphone className="w-6 h-6 text-rose-500" />;
+        case 5: return <Laptop className="w-6 h-6 text-rose-500" />;
         case 6: return <div className="w-6 h-6 rounded bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center shadow-2xs">JS</div>;
         case 7: return <Sparkles className="w-6 h-6 text-purple-600" />;
         case 8: return <Globe className="w-6 h-6 text-teal-600" />;
@@ -239,11 +238,11 @@ export function OLevelHub() {
                 <span>CBT Mock Test</span>
               </Link>
               <Link
-                to="/app"
+                to="/courses"
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-xs transition-colors"
               >
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>Get App</span>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Paid Batches</span>
               </Link>
             </div>
           </div>
@@ -669,7 +668,7 @@ export function OLevelHub() {
                       { num: 2, icon: <Code className="w-7 h-7 text-amber-700" />, title: 'HTML Editors' },
                       { num: 3, icon: <div className="w-7 h-7 rounded bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">5</div>, title: 'HTML5 Elements' },
                       { num: 4, icon: <div className="w-7 h-7 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">3</div>, title: 'CSS3' },
-                      { num: 5, icon: <Smartphone className="w-7 h-7 text-rose-500" />, title: 'Responsive CSS' },
+                      { num: 5, icon: <Laptop className="w-7 h-7 text-rose-500" />, title: 'Responsive CSS' },
                       { num: 6, icon: <div className="w-7 h-7 rounded bg-amber-400 text-slate-900 font-black text-xs flex items-center justify-center shadow-2xs">JS</div>, title: 'JavaScript' },
                     ].map((ch) => (
                       <Link
@@ -916,11 +915,11 @@ export function OLevelHub() {
 
             <div className="pt-2">
               <Link
-                to="/app"
+                to="/courses"
                 className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-xs"
               >
-                <Smartphone className="w-4 h-4" />
-                <span>Get Approved Project Source Code in App →</span>
+                <BookOpen className="w-4 h-4" />
+                <span>Explore O Level Courses & Project Guidance →</span>
               </Link>
             </div>
           </div>

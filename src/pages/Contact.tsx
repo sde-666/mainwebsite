@@ -30,7 +30,7 @@ export function Contact() {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
     name: 'Contact Skilldotpy Support',
-    description: 'Get in touch with Skilldotpy for student support, NIELIT examination advice, or technical assistance with the Android app.',
+    description: 'Get in touch with Skilldotpy for student support, NIELIT examination advice, course enrollment queries, or technical assistance.',
     mainEntity: {
       '@type': 'EducationalOrganization',
       name: 'Skilldotpy',
@@ -43,7 +43,7 @@ export function Contact() {
     <>
       <SEO 
         title="Contact Student Support" 
-        description="Contact Skilldotpy student support for guidance on NIELIT O Level & CCC exam prep, free PDF notes downloads, mock tests and mobile app support." 
+        description="Contact Skilldotpy student support for guidance on NIELIT O Level & CCC exam prep, free PDF notes downloads, mock tests, and paid batch access." 
         keywords={[
           'Contact Skilldotpy',
           'Skilldotpy support email',
@@ -71,7 +71,7 @@ export function Contact() {
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Get in Touch</h2>
             <p className="text-gray-600 mb-8">
-              Whether you have a question about our NIELIT courses, need help installing the Android app, or want to report an issue, our team is ready to assist you.
+              Whether you have a question about our NIELIT courses, need help accessing study materials, or want to report an issue, our team is ready to assist you.
             </p>
             
             <div className="space-y-6">
@@ -186,7 +186,7 @@ export function Contact() {
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-2 border bg-white"
                   >
                     <option>Course Inquiry</option>
-                    <option>App Installation Issue</option>
+                    <option>Website / Portal Access Issue</option>
                     <option>Notes Download Query</option>
                     <option>Payment/Refund</option>
                     <option>Other</option>

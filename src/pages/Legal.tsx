@@ -62,23 +62,23 @@ export function Terms() {
     <LegalLayout title="Terms and Conditions">
       <p>Last updated: {new Date().toLocaleDateString()}</p>
       <h2>1. Acceptance of Terms</h2>
-      <p>By accessing this Website and the {siteConfig.name} App, you are agreeing to be bound by these Website and App Terms and Conditions of Use and agree that you are responsible for the agreement with any applicable local laws.</p>
+      <p>By accessing this Website, you are agreeing to be bound by these Website Terms and Conditions of Use and agree that you are responsible for the agreement with any applicable local laws.</p>
       
       <h2>2. Use License</h2>
-      <p>Permission is granted to temporarily download one copy of the materials (information or software) on {siteConfig.name}'s Website and App for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
+      <p>Permission is granted to temporarily download one copy of the materials (information or software) on {siteConfig.name}'s Website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
       <ul>
         <li>modify or copy the materials;</li>
         <li>use the materials for any commercial purpose, or for any public display (commercial or non-commercial);</li>
-        <li>attempt to decompile or reverse engineer any software contained on {siteConfig.name}'s Website or App;</li>
+        <li>attempt to decompile or reverse engineer any software contained on {siteConfig.name}'s Website;</li>
         <li>remove any copyright or other proprietary notations from the materials; or</li>
         <li>transfer the materials to another person or "mirror" the materials on any other server.</li>
       </ul>
 
       <h2>3. Disclaimer</h2>
-      <p>All the materials on {siteConfig.name}'s Website and App are provided "as is". {siteConfig.name} makes no warranties, may it be expressed or implied, therefore negates all other warranties.</p>
+      <p>All the materials on {siteConfig.name}'s Website are provided "as is". {siteConfig.name} makes no warranties, may it be expressed or implied, therefore negates all other warranties.</p>
 
       <h2>4. Limitations</h2>
-      <p>In no event shall {siteConfig.name} or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on {siteConfig.name}'s Website or App.</p>
+      <p>In no event shall {siteConfig.name} or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on {siteConfig.name}'s Website.</p>
     </LegalLayout>
   );
 }
@@ -88,7 +88,7 @@ export function Disclaimer() {
     <LegalLayout title="Disclaimer">
       <p>Last updated: {new Date().toLocaleDateString()}</p>
       <h2>Educational Purposes Only</h2>
-      <p>The information and materials contained on the {siteConfig.name} website, YouTube channel, and Android application are for educational and informational purposes only. We strive to provide accurate and up-to-date information regarding NIELIT courses, programming, and computer education, but we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability with respect to the website or the information, products, services, or related graphics contained on the website.</p>
+      <p>The information and materials contained on the {siteConfig.name} website and YouTube channel are for educational and informational purposes only. We strive to provide accurate and up-to-date information regarding NIELIT courses, programming, and computer education, but we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability with respect to the website or the information, products, services, or related graphics contained on the website.</p>
       
       <h2>Not Affiliated with NIELIT</h2>
       <p>{siteConfig.name} is an independent educational platform. We are NOT officially affiliated with, endorsed by, or connected to the National Institute of Electronics & Information Technology (NIELIT) or any other government agency. "O Level" and "CCC" are courses conducted by NIELIT, and our content serves only as supplementary study material.</p>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Youtube, Mail, Smartphone, ExternalLink, ShieldCheck, Award, MessageCircle } from 'lucide-react';
+import { Youtube, Mail, ExternalLink, ShieldCheck, Award, MessageCircle, BookOpen, Video } from 'lucide-react';
 import { siteConfig } from '../data/config';
 import { BrandLogo } from './BrandLogo';
 import { NielitLogo } from './NielitLogo';
@@ -15,19 +15,19 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-white p-1.5 shadow-md flex items-center justify-center shrink-0">
-                <img src="/skilldotpy-logo.svg" alt="Skilldotpy App" className="w-full h-full object-contain" />
+                <img src="/skilldotpy-logo.svg" alt="Skilldotpy" className="w-full h-full object-contain" />
               </div>
               <div>
-                <h4 className="text-white font-bold text-base">Study on the go with Skilldotpy Android App</h4>
-                <p className="text-xs text-slate-400">Offline video player, chapter tests, practical source code & instant updates.</p>
+                <h4 className="text-white font-bold text-base">Learn NIELIT O Level & CCC with Skilldotpy</h4>
+                <p className="text-xs text-slate-400">Chapter-wise sequential video classes, handwritten PDF notes, CBT mock tests & practical labs.</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                to="/app"
+                to="/courses"
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-lg text-xs shadow-lg shadow-blue-500/20 transition-colors"
               >
-                <Smartphone className="w-4 h-4" /> Download Official APK (v{siteConfig.app.version.split(' ')[0]})
+                <Video className="w-4 h-4" /> Explore Paid Batches
               </Link>
               <a
                 href={siteConfig.links.youtube}
@@ -187,8 +187,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/app" className="text-slate-400 hover:text-blue-400 transition-colors">
-                  Install Skilldotpy APK
+                <Link to="/courses" className="text-slate-400 hover:text-blue-400 transition-colors">
+                  Paid Courses & Video Batches
                 </Link>
               </li>
               <li>
