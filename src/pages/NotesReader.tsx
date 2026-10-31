@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Eye,
@@ -12,6 +12,7 @@ import {
   X,
   Menu,
   Maximize2,
+  ShieldAlert,
   Minimize2,
   Bookmark,
   BookmarkCheck,
@@ -232,6 +233,7 @@ export function NotesReader() {
   // Interactive & Feedback Elements
   const [shareToast, setShareToast] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [screenshotBlocked, setScreenshotBlocked] = useState(false);
   const [computedReadMin, setComputedReadMin] = useState(1);
 
   const mainScrollContainerRef = useRef<HTMLDivElement>(null);
@@ -320,6 +322,82 @@ export function NotesReader() {
       document.removeEventListener('cut', handleCopyProtection, true);
       document.removeEventListener('contextmenu', handleContextMenu, true);
       window.removeEventListener('keydown', handleKeyProtection, true);
+    };
+  }, []);
+
+  // Screenshot Prevention: PrintScreen key blocking, clipboard wiping, visibility/blur overlay
+  useEffect(() => {
+    let hideTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const showBlockOverlay = () => {
+      setScreenshotBlocked(true);
+      // Auto-dismiss after 4 seconds so it doesn't permanently lock the UI
+      if (hideTimeout) clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => setScreenshotBlocked(false), 4000);
+    };
+
+    // 1. Block PrintScreen key and wipe clipboard
+    const handleScreenshotKeys = (e: KeyboardEvent) => {
+      const key = e.key;
+      // PrintScreen / Snapshot key
+      if (key === 'PrintScreen' || key === 'Snapshot') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        // Attempt to overwrite clipboard with empty/warning text
+        try {
+          navigator.clipboard.writeText('⚠️ Screenshot disabled – Skilldotpy content is protected.').catch(() => {});
+        } catch {}
+        showBlockOverlay();
+        return false;
+      }
+      // Windows Snipping Tool: Win+Shift+S
+      if ((e.metaKey || e.key === 'Meta') && e.shiftKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        showBlockOverlay();
+        return false;
+      }
+      // macOS: Cmd+Shift+3, Cmd+Shift+4, Cmd+Shift+5
+      if (e.metaKey && e.shiftKey && ['3', '4', '5'].includes(e.key)) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        showBlockOverlay();
+        return false;
+      }
+    };
+
+    // 2. Visibility API – tab hidden (screenshot tools, OS screen capture, etc.)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        showBlockOverlay();
+      }
+    };
+
+    // 3. Window blur – captures focus loss from overlay tools (e.g., Snipping Tool, ShareX)
+    const handleWindowBlur = () => {
+      showBlockOverlay();
+    };
+
+    // 4. When the user returns, dismiss the overlay
+    const handleWindowFocus = () => {
+      if (hideTimeout) clearTimeout(hideTimeout);
+      // Small delay so overlay is visible briefly as a warning before dismissing
+      hideTimeout = setTimeout(() => setScreenshotBlocked(false), 800);
+    };
+
+    window.addEventListener('keyup', handleScreenshotKeys, true);
+    window.addEventListener('keydown', handleScreenshotKeys, true);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
+
+    return () => {
+      if (hideTimeout) clearTimeout(hideTimeout);
+      window.removeEventListener('keyup', handleScreenshotKeys, true);
+      window.removeEventListener('keydown', handleScreenshotKeys, true);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
     };
   }, []);
 
@@ -957,6 +1035,26 @@ export function NotesReader() {
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2 nr-pop">
           <Check className="w-4 h-4 text-emerald-400" />
           <span>Note link copied to clipboard!</span>
+        </div>
+      )}
+
+      {/* Screenshot Prevention Overlay – shown when a capture attempt is detected */}
+      {screenshotBlocked && (
+        <div className="screenshot-block-overlay" aria-live="assertive">
+          <div className="screenshot-block-card">
+            <div className="screenshot-block-icon">
+              <ShieldAlert className="w-10 h-10 text-red-400" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-4">
+              Screenshot Blocked
+            </h2>
+            <p className="text-sm text-slate-300 mt-2 max-w-xs text-center leading-relaxed">
+              This content is protected. Screenshots, screen recordings, and screen-sharing are not allowed.
+            </p>
+            <span className="text-[11px] text-slate-500 mt-4 font-semibold tracking-wide uppercase">
+              © Skilldotpy · Content Protection
+            </span>
+          </div>
         </div>
       )}
 

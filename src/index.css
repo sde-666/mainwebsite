@@ -1025,8 +1025,71 @@
   .mq-ring-bar, .mq-progress > span { transition: none !important; }
 }
 
-/* Print Friendly Stylesheet */
+/* ========================================================================= */
+/* SCREENSHOT / PRINT PROTECTION                                              */
+/* ========================================================================= */
+
+/* Full-screen overlay shown when a screenshot attempt is detected */
+.screenshot-block-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.96);
+  backdrop-filter: blur(32px) saturate(0);
+  -webkit-backdrop-filter: blur(32px) saturate(0);
+  animation: ssb-fade-in 0.2s ease-out;
+}
+
+.screenshot-block-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 2rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(15, 15, 25, 0.85);
+  box-shadow: 0 0 80px rgba(239, 68, 68, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  max-width: 360px;
+  width: 90%;
+}
+
+.screenshot-block-icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.12);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  animation: ssb-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ssb-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ssb-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+  50% { transform: scale(1.06); box-shadow: 0 0 20px 4px rgba(239, 68, 68, 0.15); }
+}
+
+/* Print: hide all notes reader content and show a protection notice */
 @media print {
+  /* Hide the entire notes reader */
+  .nr-root,
+  .notes-body,
+  .notes-protected-content,
+  .notes-main-content {
+    visibility: hidden !important;
+    display: none !important;
+  }
+
+  /* General print fallback for non-notes pages */
   body {
     background-color: white !important;
     color: black !important;
@@ -1037,12 +1100,20 @@
   .print-only-header {
     display: block !important;
   }
-  .notes-main-content {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
+
+  /* Show a content-protected notice when printing is attempted */
+  body::after {
+    content: '⚠️ Skilldotpy – This content is protected and cannot be printed or screenshot.';
+    display: block !important;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: 700;
+    color: #666;
+    text-align: center;
+    max-width: 400px;
+    line-height: 1.6;
   }
 }
