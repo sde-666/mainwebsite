@@ -114,219 +114,238 @@ export function Home() {
 
 
 
-      {/* HERO SECTION - MODERN, CLEAN, MOBILE-FIRST (Inspired by reference design) */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#eef4fe] via-[#f7faff] to-[#ffffff] text-slate-900 pt-7 pb-12 sm:pt-10 sm:pb-16 lg:pt-14 lg:pb-20 border-b border-slate-200/60">
-        
-        {/* Soft Background Ambient Glows & Vector Waves */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] sm:w-[900px] sm:h-[450px] bg-gradient-to-tr from-blue-300/25 via-indigo-300/20 to-purple-300/20 rounded-full blur-3xl pointer-events-none -z-0"></div>
-        <div className="absolute -bottom-10 left-0 right-0 h-28 sm:h-36 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-0"></div>
-        
-        {/* Subtle decorative dot grids on left and right for desktop */}
-        <div className="hidden sm:block absolute top-12 left-4 lg:left-12 opacity-30 pointer-events-none">
-          <div className="grid grid-cols-4 gap-2">
-            {[...Array(16)].map((_, i) => (
-              <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-500/60"></div>
-            ))}
-          </div>
-        </div>
-        <div className="hidden sm:block absolute top-12 right-4 lg:right-12 opacity-30 pointer-events-none">
-          <div className="grid grid-cols-4 gap-2">
-            {[...Array(16)].map((_, i) => (
-              <div key={i} className="w-1.5 h-1.5 rounded-full bg-indigo-500/60"></div>
-            ))}
-          </div>
-        </div>
+      {/* ═══════════════════════════════════════════════════════════════
+          HERO SECTION — Two-Column Layout (Examjila-inspired, Skilldotpy brand)
+          Mobile: stacked | Desktop: left content + right visual panel
+         ═══════════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden bg-white text-slate-900 pt-8 pb-10 sm:pt-10 sm:pb-14 lg:pt-12 lg:pb-16 border-b border-slate-200">
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-5xl">
-          
-          <div className="flex flex-col items-center text-center space-y-4 sm:space-y-6">
+        {/* Very subtle warm background tint */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/40 pointer-events-none" />
 
-            {/* 1. EYEBROW TAG */}
-            <div className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-blue-50/90 border border-blue-200/90 text-blue-800 text-[11px] sm:text-xs font-extrabold shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-              <span>NIELIT O Level & CCC की तैयारी अब और आसान</span>
-            </div>
+        {/* Dot grid pattern — decorative */}
+        <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
-            {/* 3. MAIN HERO HEADLINE */}
-            <div className="space-y-1 sm:space-y-2 max-w-4xl mx-auto">
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-slate-950 tracking-tight leading-[1.15]">
-                <span className="block text-slate-900">O Level और CCC में</span>
-                <span className="block mt-1 sm:mt-2">
-                  पाएं पहली बार में{' '}
-                  <span className="relative inline-block text-[#e76767]">
-                    100% सफलता
-                    {/* Artistic gradient underline curve matching reference */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-6xl">
+
+          {/* ── TWO-COLUMN FLEX ROW ── */}
+          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12 xl:gap-16">
+
+            {/* ════════════════════════════
+                LEFT COLUMN — TEXT CONTENT
+               ════════════════════════════ */}
+            <div className="flex-1 w-full text-center lg:text-left">
+
+              {/* Eyebrow pill badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] sm:text-xs font-bold mb-4 sm:mb-5 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block"></span>
+                NIELIT Certified Exam Preparation Platform
+              </div>
+
+              {/* Main headline — bold, two-line */}
+              <h1 className="text-[2rem] sm:text-[2.6rem] md:text-5xl lg:text-[3.2rem] font-black text-slate-900 tracking-tight leading-[1.12] mb-4 sm:mb-5">
+                <span className="block">O Level, CCC में करें</span>
+                <span className="block mt-1">
+                  पहली बार में{' '}
+                  <span className="relative inline-block">
+                    <span className="text-[#d94f4f]">सफलता हासिल</span>
+                    {/* hand-drawn underline */}
                     <svg
-                      className="absolute -bottom-2 sm:-bottom-3 left-0 w-full overflow-visible"
-                      height="8"
-                      viewBox="0 0 200 8"
+                      className="absolute -bottom-1.5 sm:-bottom-2 left-0 w-full overflow-visible"
+                      height="7"
+                      viewBox="0 0 260 7"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
                     >
-                      <path
-                        d="M2 6C60 1.5 140 1.5 198 6"
-                        stroke="url(#hero-curve-gradient)"
-                        strokeWidth="3.5"
-                        strokeLinecap="round"
-                      />
-                      <defs>
-                        <linearGradient id="hero-curve-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#2563eb" />
-                          <stop offset="50%" stopColor="#4f46e5" />
-                          <stop offset="100%" stopColor="#9333ea" />
-                        </linearGradient>
-                      </defs>
+                      <path d="M3 5.5C70 1.5 190 1.5 257 5.5" stroke="#d94f4f" strokeWidth="3" strokeLinecap="round" />
                     </svg>
                   </span>
                 </span>
               </h1>
-            </div>
 
-            {/* 4. SUBHEADING */}
-            <p className="text-xs sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal px-2">
-              फ्री PDF नोट्स, वीडियो लेक्चर, लाइव प्रैक्टिस, ऑनलाइन टेस्ट और बेहतरीन स्टडी मटीरियल के साथ करें अपनी तैयारी को स्मार्ट।
-            </p>
+              {/* Subheading */}
+              <p className="text-sm sm:text-base md:text-[1.05rem] text-slate-600 leading-relaxed max-w-lg mx-auto lg:mx-0 mb-6 sm:mb-7">
+                Free chapter-wise notes, video lectures, online MCQ tests, CBT mock exams &amp; practical labs — सब कुछ एक जगह, हिंदी &amp; English में।
+              </p>
 
-            {/* 5. 4 CORE PILLARS / RESOURCE CARDS ROW (Responsive 4 items / 2x2 on mobile) */}
-            <div className="w-full max-w-3xl pt-2 sm:pt-3">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 bg-white/80 backdrop-blur-md p-2.5 sm:p-3.5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs">
-                
-                {/* 1. Free PDF Notes */}
+              {/* CTA Buttons — 3 buttons like reference */}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mb-7 sm:mb-8">
                 <Link
                   to="/chapter-wise-notes"
-                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 hover:bg-blue-50/70 active:bg-blue-100 border border-slate-100 hover:border-blue-200 transition-all flex flex-col items-center text-center group"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-white text-sm bg-blue-600 hover:bg-blue-700 active:scale-95 shadow-md shadow-blue-600/20 transition-all"
                 >
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-2 shadow-2xs group-hover:scale-105 transition-transform">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-blue-700 transition-colors">
-                    Chapter-Wise नोट्स
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
-                    सभी विषय (M1-M4 & CCC)
-                  </span>
+                  <BookOpen className="w-4 h-4" />
+                  View Notes
                 </Link>
-
-                {/* 2. Video Lectures */}
-                <a
-                  href={siteConfig.links.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 hover:bg-purple-50/70 active:bg-purple-100 border border-slate-100 hover:border-purple-200 transition-all flex flex-col items-center text-center group"
-                >
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-2 shadow-2xs group-hover:scale-105 transition-transform">
-                    <Video className="w-5 h-5" />
-                  </div>
-                  <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-purple-700 transition-colors">
-                    वीडियो लेक्चर
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
-                    आसान भाषा में
-                  </span>
-                </a>
-
-                {/* 3. Online Test */}
                 <Link
                   to="/mock-test"
-                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 hover:bg-emerald-50/70 active:bg-emerald-100 border border-slate-100 hover:border-emerald-200 transition-all flex flex-col items-center text-center group"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-white text-sm bg-indigo-600 hover:bg-indigo-700 active:scale-95 shadow-md shadow-indigo-600/20 transition-all"
                 >
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 shadow-2xs group-hover:scale-105 transition-transform">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </div>
-                  <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-700 transition-colors">
-                    ऑनलाइन टेस्ट
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
-                    100+ MCQs & CBT
-                  </span>
+                  <CheckCircle2 className="w-4 h-4" />
+                  Live Test दें
                 </Link>
-
-                {/* 4. Practice Set */}
                 <Link
-                  to="/chapter-wise-mcq"
-                  className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 hover:bg-amber-50/70 active:bg-amber-100 border border-slate-100 hover:border-amber-200 transition-all flex flex-col items-center text-center group"
+                  to="/resources"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-slate-800 text-sm bg-white hover:bg-slate-50 border border-slate-300 shadow-sm transition-all"
                 >
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-2 shadow-2xs group-hover:scale-105 transition-transform">
-                    <BarChart3 className="w-5 h-5" />
-                  </div>
-                  <span className="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-amber-700 transition-colors">
-                    प्रैक्टिस सेट
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
-                    टॉपिक वाइज़
-                  </span>
+                  <Download className="w-4 h-4 text-[#d94f4f]" />
+                  Download PDFs (Free)
                 </Link>
-
               </div>
-            </div>
 
-            {/* 6. CALL TO ACTION BUTTONS */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto pt-2">
-              <Link
-                to="/resources"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl font-extrabold text-white text-xs sm:text-sm bg-[#e77979] hover:opacity-90 active:scale-95 shadow-md shadow-[#e77979]/25 transition-all cursor-pointer group"
-              >
-                <Download className="w-4 h-4 sm:w-4.5 sm:h-4.5 group-hover:translate-y-0.5 transition-transform" />
-                <span>Study Material डाउनलोड करें </span>
-              </Link>
-
-              <Link
-                to="/o-level"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-2xl font-bold text-slate-800 hover:text-blue-700 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-300/80 shadow-2xs transition-all text-xs sm:text-sm cursor-pointer"
-              >
-                <BookOpen className="w-4 h-4 text-blue-600" />
-                <span>O Level नोट्स & सिलेबस देखें</span>
-              </Link>
-            </div>
-
-            {/* 7. BOTTOM TRUST PROOF STRIP (Floating Glass Bar) */}
-            <div className="w-full max-w-4xl bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-5 mt-6 sm:mt-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 md:divide-x divide-slate-100">
-                
-                <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-1 sm:pt-0">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">NIELIT द्वारा प्रमाणित</span>
-                    <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">नवीनतम R5.1 पैटर्न</span>
-                  </div>
+              {/* Trust strip — avatars + text */}
+              <div className="flex items-center justify-center lg:justify-start gap-3">
+                {/* Avatar stack */}
+                <div className="flex -space-x-2.5">
+                  {['bg-blue-400', 'bg-emerald-400', 'bg-amber-400', 'bg-rose-400'].map((color, i) => (
+                    <div
+                      key={i}
+                      className={`w-8 h-8 rounded-full ${color} border-2 border-white flex items-center justify-center text-white text-[10px] font-bold shadow-sm`}
+                    >
+                      {['A', 'R', 'S', 'P'][i]}
+                    </div>
+                  ))}
                 </div>
-
-                <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-2 sm:pt-0 md:pl-4">
-                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                    <Award className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">विशेषज्ञों द्वारा तैयार</span>
-                    <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">अनुभवी कंप्यूटर शिक्षक</span>
-                  </div>
+                <div className="text-left">
+                  <span className="block text-xs sm:text-sm font-bold text-slate-900">Trusted by 50,000+ Students</span>
+                  <span className="block text-[10px] sm:text-xs text-slate-500">Across India — O Level &amp; CCC Exam Prep</span>
                 </div>
-
-                <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-2 sm:pt-0 md:pl-4">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                    <Users className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">600+</span>
-                    <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">सफल छात्र</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-2 sm:pt-0 md:pl-4">
-                  <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
-                    <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
-                  </div>
-                  <div className="text-left">
-                    <span className="block text-xs sm:text-sm font-extrabold text-slate-900">पहली बार में सफलता</span>
-                    <span className="block text-[10px] sm:text-[11px] text-slate-500 font-medium">हमारा वादा</span>
-                  </div>
-                </div>
-
               </div>
+
+              {/* Quick stat pills row */}
+              <div className="mt-5 flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+                {[
+                  { label: '1.4M+', sub: 'MCQs Attempted', color: 'bg-blue-50 border-blue-200 text-blue-800' },
+                  { label: '20K+', sub: 'MCQ Bank', color: 'bg-amber-50 border-amber-200 text-amber-800' },
+                  { label: '6+ Yrs', sub: 'Expert Content', color: 'bg-emerald-50 border-emerald-200 text-emerald-800' },
+                ].map((stat) => (
+                  <div key={stat.label} className={`inline-flex flex-col items-center px-4 py-2 rounded-xl border font-semibold text-center ${stat.color}`}>
+                    <span className="text-sm font-black">{stat.label}</span>
+                    <span className="text-[10px] opacity-80">{stat.sub}</span>
+                  </div>
+                ))}
+              </div>
+
             </div>
+
+            {/* ════════════════════════════
+                RIGHT COLUMN — VISUAL PANEL
+               ════════════════════════════ */}
+            <div className="w-full lg:w-[420px] xl:w-[460px] shrink-0 relative">
+
+              {/* Main card — colored background + illustration */}
+              <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#f5a623] via-[#f9b830] to-[#f5a623] p-1 shadow-2xl shadow-amber-200/60">
+                <div className="relative rounded-[20px] overflow-hidden bg-gradient-to-br from-[#fbb524] to-[#f5a623] min-h-[280px] sm:min-h-[320px] flex items-end justify-center">
+
+                  {/* Background circle glow */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-56 h-56 sm:w-72 sm:h-72 rounded-full bg-white/15 blur-2xl" />
+                  </div>
+
+                  {/* SVG Illustration — student studying at laptop */}
+                  <svg
+                    viewBox="0 0 320 280"
+                    className="relative z-10 w-full max-w-[300px] sm:max-w-[340px] mx-auto"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-label="Student studying on laptop"
+                    role="img"
+                  >
+                    {/* desk */}
+                    <rect x="40" y="210" width="240" height="12" rx="4" fill="#78350f" opacity="0.6"/>
+                    <rect x="30" y="222" width="260" height="6" rx="3" fill="#451a03" opacity="0.4"/>
+
+                    {/* laptop body */}
+                    <rect x="90" y="162" width="140" height="6" rx="3" fill="#374151"/>
+                    <rect x="80" y="168" width="160" height="8" rx="4" fill="#1f2937"/>
+
+                    {/* laptop screen */}
+                    <rect x="94" y="100" width="132" height="90" rx="6" fill="#1e293b"/>
+                    <rect x="94" y="100" width="132" height="4" rx="2" fill="#334155"/>
+                    {/* screen glow */}
+                    <rect x="98" y="106" width="124" height="82" rx="4" fill="url(#screenGrad)"/>
+                    {/* screen content lines */}
+                    <rect x="106" y="116" width="60" height="4" rx="2" fill="white" opacity="0.7"/>
+                    <rect x="106" y="124" width="90" height="3" rx="1.5" fill="#93c5fd" opacity="0.6"/>
+                    <rect x="106" y="131" width="75" height="3" rx="1.5" fill="#93c5fd" opacity="0.5"/>
+                    <rect x="106" y="145" width="30" height="12" rx="4" fill="#2563eb" opacity="0.9"/>
+                    <text x="121" y="155" fill="white" fontSize="6" fontWeight="bold" textAnchor="middle">MCQ</text>
+                    {/* webcam dot */}
+                    <circle cx="160" cy="104" r="2" fill="#475569"/>
+
+                    {/* person body */}
+                    <ellipse cx="160" cy="210" rx="38" ry="12" fill="#92400e" opacity="0.3"/>
+                    {/* torso */}
+                    <rect x="136" y="168" width="48" height="44" rx="12" fill="#2563eb"/>
+                    {/* collar */}
+                    <rect x="152" y="168" width="16" height="8" rx="4" fill="#1d4ed8"/>
+                    {/* left arm */}
+                    <path d="M136 180 Q110 192 102 198" stroke="#f9a8d4" strokeWidth="14" strokeLinecap="round" fill="none"/>
+                    {/* right arm */}
+                    <path d="M184 180 Q210 192 218 198" stroke="#f9a8d4" strokeWidth="14" strokeLinecap="round" fill="none"/>
+                    {/* left hand */}
+                    <circle cx="100" cy="200" r="8" fill="#f9a8d4"/>
+                    {/* right hand */}
+                    <circle cx="220" cy="200" r="8" fill="#f9a8d4"/>
+
+                    {/* neck */}
+                    <rect x="153" y="152" width="14" height="18" rx="6" fill="#f9a8d4"/>
+                    {/* head */}
+                    <ellipse cx="160" cy="140" rx="26" ry="28" fill="#f9a8d4"/>
+                    {/* hair */}
+                    <ellipse cx="160" cy="118" rx="26" ry="12" fill="#1c1917"/>
+                    <ellipse cx="140" cy="130" rx="8" ry="14" fill="#1c1917"/>
+                    <ellipse cx="180" cy="130" rx="8" ry="14" fill="#1c1917"/>
+                    {/* headphones */}
+                    <path d="M134 128 Q134 108 160 108 Q186 108 186 128" stroke="#fbbf24" strokeWidth="5" fill="none" strokeLinecap="round"/>
+                    <rect x="130" y="126" width="8" height="12" rx="4" fill="#f59e0b"/>
+                    <rect x="182" y="126" width="8" height="12" rx="4" fill="#f59e0b"/>
+                    {/* eyes */}
+                    <ellipse cx="150" cy="140" rx="4" ry="4.5" fill="white"/>
+                    <ellipse cx="170" cy="140" rx="4" ry="4.5" fill="white"/>
+                    <circle cx="151" cy="141" r="2.5" fill="#1e293b"/>
+                    <circle cx="171" cy="141" r="2.5" fill="#1e293b"/>
+                    {/* smile */}
+                    <path d="M152 150 Q160 156 168 150" stroke="#1e293b" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                    <defs>
+                      <linearGradient id="screenGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor="#0f172a"/>
+                        <stop offset="100%" stopColor="#1e3a5f"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+
+                </div>
+              </div>
+
+              {/* Floating stat card — top right: MCQ Tests */}
+              <div className="absolute -top-3 -right-2 sm:-top-4 sm:-right-4 z-20 bg-white rounded-2xl shadow-lg border border-slate-100 px-3.5 py-2.5 flex items-center gap-2.5 min-w-[130px]">
+                <div className="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+                  <BarChart3 className="w-4.5 h-4.5 text-blue-600" />
+                </div>
+                <div>
+                  <span className="block text-sm font-black text-slate-900">1.4M+</span>
+                  <span className="block text-[10px] text-slate-500 font-medium">MCQs Attempted</span>
+                </div>
+              </div>
+
+              {/* Floating stat card — bottom left: Rating */}
+              <div className="absolute -bottom-3 -left-2 sm:-bottom-4 sm:-left-4 z-20 bg-white rounded-2xl shadow-lg border border-slate-100 px-3.5 py-2.5 flex items-center gap-2.5 min-w-[120px]">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                  <Star className="w-4.5 h-4.5 text-amber-500 fill-amber-400" />
+                </div>
+                <div>
+                  <span className="block text-sm font-black text-slate-900">4.9</span>
+                  <span className="block text-[10px] text-slate-500 font-medium">Student Rating</span>
+                </div>
+              </div>
+
+            </div>
+            {/* END RIGHT COLUMN */}
 
           </div>
+          {/* END TWO-COLUMN ROW */}
 
         </div>
       </section>
